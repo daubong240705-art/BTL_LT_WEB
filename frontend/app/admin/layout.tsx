@@ -1,3 +1,6 @@
+import AdminSidebar from "./components/admin.sidebar";
+
+
 
 export default function RootLayout({
   children,
@@ -5,10 +8,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <div className="min-h-screen bg-gray-900 flex">
+      <AdminSidebar />
+      <main className="flex-1 min-w-0">
         {children}
-      </body>
-    </html>
+      </main>
+    </div>
   );
 }
+
+
+
