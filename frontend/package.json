@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "api": "json-server --watch db.json --port 3001 --delay 500"
+    "api": "json-server --watch db.json --port 3001"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
