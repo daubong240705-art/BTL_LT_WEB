@@ -4,11 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Save, Upload } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCategories } from "@/lib/api/categories";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Movie } from "@/app/types/movie";
+import { createMovie, updateMovie } from "@/lib/api/movie";
 
 
 type Props = {
@@ -29,12 +30,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
         queryFn: fetchCategories,
     });
 
-    const [selectedCategories, setSelectedCategories] = useState<number[]>(
-        mode === "edit" && initialData?.categories
-            ? initialData.categories
-            : []
-    );
-
+    const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [posterFile, setPosterFile] = useState<File | null>(null);
     const [posterPreview, setPosterPreview] = useState<string | null>(null);
@@ -49,6 +45,57 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
         const previewUrl = URL.createObjectURL(file);
         setPosterPreview(previewUrl);
     };
+
+
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: (data: Movie) =>
+            mode === "add"
+                ? createMovie(data)
+                : updateMovie(initialData!.id!, data),
+
+        onSuccess: async (movie) => {
+            await Promise.all(
+                selectedCategories.map((catId) =>
+                    fetch("http://localhost:3000/movie_categories", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            movie_id: movie.id,
+                            category_id: catId,
+                        }),
+                    })
+                )
+            );
+
+            queryClient.invalidateQueries({ queryKey: ["movies"] });
+
+            onClose();
+        },
+    });
+
+
+
+    const [title, setTitle] = useState(initialData?.title ?? "");
+    const [slug, setSlug] = useState(initialData?.slug ?? "");
+    const [year, setYear] = useState(initialData?.publish_year ?? 2024);
+    const [status, setStatus] = useState<Movie["status"]>("ongoing");
+    const [description, setDescription] = useState(initialData?.description ?? "");
+
+    const handleSubmit = () => {
+        const payload: Movie = {
+            title,
+            slug,
+            description,
+            status,
+            publish_year: year,
+            poster_url: posterPreview ?? "",
+        };
+
+        mutation.mutate(payload);
+    };
+
 
     return (
         <div className="flex flex-col h-full">
@@ -83,11 +130,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Năm</label>
                                 <Input type="number"
                                     placeholder="Năm sản xuất"
+                                    value={year}
+                                    onChange={(e) => setYear(Number(e.target.value))}
                                     className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Trạng thái</label>
-                                <Select>
+                                <Select value={status} onValueChange={(v) => setStatus(v as Movie["status"])}>
                                     <SelectTrigger
                                         className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none
                                         data-placeholder:text-gray-400
@@ -113,13 +162,17 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-400 block">Tên phim</label>
                                 <Input type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
                                     placeholder="Nhập tên phim..."
                                     className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
-                            {/* className="w-full bg-gray-900 text-white pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 border border-gray-700" */}
+
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-400  block">Đường dẫn (Slug)</label>
                                 <Input type="text"
+                                    value={slug}
+                                    onChange={(e) => setSlug(e.target.value)}
                                     className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
                         </div>
@@ -157,11 +210,11 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         <div>
                             <label className="text-sm font-semibold text-gray-400 mb-2 block">Mô tả nội dung</label>
                             <Textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Nhập tóm tắt nội dung phim..."
                                 className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                         </div>
-
-
                     </div>
                 </div>
 
@@ -171,20 +224,16 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
             <div className="px-6 py-4 border-t border-gray-800 flex justify-end gap-3 bg-gray-900">
                 <button
                     onClick={onClose}
-                    className="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800"
-                >
+                    className="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800">
                     Hủy bỏ
                 </button>
 
                 <button
-                    onClick={() => {
-                        console.log("Submit");
-                        onClose();
-                    }}
-                    className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2"
-                >
+                    disabled={mutation.isPending}
+                    onClick={handleSubmit}
+                    className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2">
                     <Save className="w-4 h-4" />
-                    Lưu tất cả
+                    {mutation.isPending ? "Đang lưu..." : "Lưu tất cả"}
                 </button>
             </div>
         </div>

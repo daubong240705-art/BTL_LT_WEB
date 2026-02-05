@@ -1,10 +1,10 @@
-export type Movie = {
+
+export interface Movie {
     id?: number;
     title: string;
     slug: string;
-    year: number;
+    description: string;
     status: "ongoing" | "completed";
-    description?: string;
-    poster?: string;
-    categories?: number[];
-};
+    publish_year: number;
+    poster_url: string;
+}
