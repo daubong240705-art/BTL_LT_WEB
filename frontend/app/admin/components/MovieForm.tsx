@@ -8,10 +8,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCategories } from "@/lib/api/categories";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Movie } from "@/app/types/movie";
+
 
 type Props = {
     mode: "add" | "edit";
-    initialData?: any;
+    initialData?: Movie;
     onClose: () => void;
 };
 
@@ -28,8 +30,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
     });
 
     const [selectedCategories, setSelectedCategories] = useState<number[]>(
-        mode === "edit" && initialData?.categoryIds
-            ? initialData.categoryIds
+        mode === "edit" && initialData?.categories
+            ? initialData.categories
             : []
     );
 
@@ -109,7 +111,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                     <div className="col-span-8 space-y-6">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold text-gray-400 block">Tên Tiếng Việt</label>
+                                <label className="text-sm font-semibold text-gray-400 block">Tên phim</label>
                                 <Input type="text"
                                     placeholder="Nhập tên phim..."
                                     className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
@@ -124,7 +126,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                         <div>
                             <label className="text-sm font-semibold text-gray-400 mb-2 block">Thể loại</label>
-                            <div className="flex flex-wrap gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <div className="flex justify-between flex-wrap gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                                 {isLoading && (
                                     <span className="text-sm text-gray-500">Đang tải thể loại...</span>
                                 )}
@@ -144,7 +146,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                                 setSelectedCategories((prev) =>
                                                     isSelected ? prev.filter((id) => id !== cat.id) : [...prev, cat.id])
                                             }
-                                            className={`px-3 py-1 rounded text-sm font-medium border transition-all ${isSelected ? "bg-red-600 border-red-600 text-white" : "bg-gray-700 border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white"}`}>
+                                            className={`px-3 py-1 w-23 rounded text-sm font-medium border transition-all ${isSelected ? "bg-red-600 border-red-600 text-white" : "bg-gray-700 border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white"}`}>
                                             {cat.name}
                                         </Button>
                                     );

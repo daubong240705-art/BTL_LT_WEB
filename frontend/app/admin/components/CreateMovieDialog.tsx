@@ -8,14 +8,17 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Edit } from "lucide-react";
 import MovieForm from "./MovieForm";
+import { Movie } from "@/app/types/movie";
 
 
 type Props = {
     open: boolean;
     onOpenChange: (v: boolean) => void;
     mode: "add" | "edit";
-    initialData?: any;
+    initialData?: Movie;
 };
+
+
 
 export default function MovieDialog({
     open,
@@ -37,7 +40,6 @@ export default function MovieDialog({
                     </DialogTitle>
                 </DialogHeader>
 
-                {/* BODY */}
                 <MovieForm
                     mode={mode}
                     initialData={initialData}

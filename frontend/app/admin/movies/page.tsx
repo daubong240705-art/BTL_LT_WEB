@@ -6,6 +6,7 @@ import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import CreateMovieDialog from "../components/CreateMovieDialog";
 
+
 export default function AdminMoviesPage() {
     const [open, setOpen] = useState(false)
     const [mode, setMode] = useState<"add" | "edit">("add");
@@ -39,7 +40,7 @@ export default function AdminMoviesPage() {
                     <Input
                         type="text"
                         placeholder="Tìm kiếm phim"
-                        className="w-full bg-gray-900 text-white pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 border border-gray-700"
+                        className="w-full  bg-gray-900 text-white pl-12 pr-4  rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 border border-gray-700"
                     />
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 </div>
