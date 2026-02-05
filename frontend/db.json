@@ -1,379 +1,397 @@
 {
-    "users": [
-        {
-            "id": 1,
-            "username": "admin",
-            "email": "admin@gmail.com",
-            "password": "$2a$10$hashed",
-            "full_name": "Administrator",
-            "avatar_url": "https://i.pravatar.cc/150?img=1",
-            "role": "ADMIN",
-            "created_at": "2024-01-01T10:00:00",
-            "updated_at": "2024-01-01T10:00:00"
-        },
-        {
-            "id": 2,
-            "username": "user01",
-            "email": "user01@gmail.com",
-            "password": "$2a$10$hashed",
-            "full_name": "Nguyễn Văn A",
-            "avatar_url": "https://i.pravatar.cc/150?img=2",
-            "role": "USER",
-            "created_at": "2024-01-10T10:00:00",
-            "updated_at": "2024-01-10T10:00:00"
-        }
-    ],
-    "categories": [
-        {
-            "id": 1,
-            "name": "Hành động",
-            "slug": "hanh-dong"
-        },
-        {
-            "id": 2,
-            "name": "Phiêu lưu",
-            "slug": "phieu-luu"
-        },
-        {
-            "id": 3,
-            "name": "Anime",
-            "slug": "anime"
-        },
-        {
-            "id": 4,
-            "name": "Tình cảm",
-            "slug": "tinh-cam"
-        },
-        {
-            "id": 5,
-            "name": "Kinh dị",
-            "slug": "kinh-di"
-        },
-        {
-            "id": 6,
-            "name": "Hài hước",
-            "slug": "hai-huoc"
-        },
-        {
-            "id": 7,
-            "name": "Viễn tưởng",
-            "slug": "vien-tuong"
-        }
-    ],
-    "movies": [
-        {
-            "id": 1,
-            "title": "One Piece",
-            "description": "Hành trình trở thành Vua Hải Tặc của Luffy.",
-            "type": "SERIES",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=1",
-            "publish_year": 1999,
-            "view_count": 1200000,
-            "slug": "one-piece",
-            "created_at": "2024-02-01T08:00:00",
-            "updated_at": "2024-02-01T08:00:00"
-        },
-        {
-            "id": 2,
-            "title": "Naruto",
-            "description": "Câu chuyện ninja của Naruto Uzumaki.",
-            "type": "SERIES",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=2",
-            "publish_year": 2002,
-            "view_count": 980000,
-            "slug": "naruto",
-            "created_at": "2024-02-05T08:00:00",
-            "updated_at": "2024-02-05T08:00:00"
-        },
-        {
-            "id": 3,
-            "title": "Your Name",
-            "description": "Câu chuyện hoán đổi thân xác đầy cảm xúc.",
-            "type": "MOVIE",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=3",
-            "publish_year": 2016,
-            "view_count": 450000,
-            "slug": "your-name",
-            "created_at": "2024-02-10T08:00:00",
-            "updated_at": "2024-02-10T08:00:00"
-        },
-        {
-            "id": 4,
-            "title": "Attack on Titan",
-            "description": "Cuộc chiến sinh tồn chống lại những người khổng lồ ăn thịt người.",
-            "type": "SERIES",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=4",
-            "publish_year": 2013,
-            "view_count": 2100000,
-            "slug": "attack-on-titan",
-            "created_at": "2024-02-15T08:00:00",
-            "updated_at": "2024-02-28T08:00:00"
-        },
-        {
-            "id": 5,
-            "title": "Dune: Part Two",
-            "description": "Paul Atreides hợp tác với Chani và người Fremen để trả thù những kẻ đã hủy hoại gia đình mình.",
-            "type": "MOVIE",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=5",
-            "publish_year": 2024,
-            "view_count": 890000,
-            "slug": "dune-part-two",
-            "created_at": "2024-03-01T08:00:00",
-            "updated_at": "2024-03-01T08:00:00"
-        },
-        {
-            "id": 6,
-            "title": "Mai",
-            "description": "Câu chuyện về cuộc đời đầy sóng gió của người phụ nữ tên Mai.",
-            "type": "MOVIE",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=6",
-            "publish_year": 2024,
-            "view_count": 3200000,
-            "slug": "mai",
-            "created_at": "2024-02-14T08:00:00",
-            "updated_at": "2024-02-14T08:00:00"
-        },
-        {
-            "id": 7,
-            "title": "Quật Mộ Trùng Ma",
-            "description": "Exhuma: Một gia đình giàu có nhờ hai pháp sư trẻ giải cứu đứa con mới sinh khỏi một thế lực siêu nhiên.",
-            "type": "MOVIE",
-            "status": "PUBLISHED",
-            "poster_url": "https://picsum.photos/300/450?random=7",
-            "publish_year": 2024,
-            "view_count": 1500000,
-            "slug": "exhuma",
-            "created_at": "2024-03-15T08:00:00",
-            "updated_at": "2024-03-15T08:00:00"
-        }
-    ],
-    "movie_categories": [
-        {
-            "movie_id": 1,
-            "category_id": 1
-        },
-        {
-            "movie_id": 1,
-            "category_id": 2
-        },
-        {
-            "movie_id": 1,
-            "category_id": 3
-        },
-        {
-            "movie_id": 2,
-            "category_id": 1
-        },
-        {
-            "movie_id": 2,
-            "category_id": 3
-        },
-        {
-            "movie_id": 3,
-            "category_id": 4
-        },
-        {
-            "movie_id": 3,
-            "category_id": 3
-        },
-        {
-            "movie_id": 4,
-            "category_id": 1
-        },
-        {
-            "movie_id": 4,
-            "category_id": 3
-        },
-        {
-            "movie_id": 4,
-            "category_id": 5
-        },
-        {
-            "movie_id": 5,
-            "category_id": 1
-        },
-        {
-            "movie_id": 5,
-            "category_id": 2
-        },
-        {
-            "movie_id": 5,
-            "category_id": 7
-        },
-        {
-            "movie_id": 6,
-            "category_id": 4
-        },
-        {
-            "movie_id": 6,
-            "category_id": 6
-        },
-        {
-            "movie_id": 7,
-            "category_id": 5
-        },
-        {
-            "movie_id": 7,
-            "category_id": 2
-        }
-    ],
-    "episodes": [
-        {
-            "id": 1,
-            "movie_id": 1,
-            "name": "Tập 1: Luffy ra khơi",
-            "slug": "one-piece-ep-1",
-            "video_url": "https://example.com/video/op1.mp4",
-            "duration": "24:00",
-            "episode_order": 1,
-            "created_at": "2024-02-01T09:00:00"
-        },
-        {
-            "id": 2,
-            "movie_id": 1,
-            "name": "Tập 2: Gặp Zoro",
-            "slug": "one-piece-ep-2",
-            "video_url": "https://example.com/video/op2.mp4",
-            "duration": "24:00",
-            "episode_order": 2,
-            "created_at": "2024-02-01T09:30:00"
-        },
-        {
-            "id": 3,
-            "movie_id": 2,
-            "name": "Tập 1: Naruto xuất hiện",
-            "slug": "naruto-ep-1",
-            "video_url": "https://example.com/video/naruto1.mp4",
-            "duration": "23:00",
-            "episode_order": 1,
-            "created_at": "2024-02-05T09:00:00"
-        },
-        {
-            "id": 4,
-            "movie_id": 4,
-            "name": "Tập 1: Gửi em của 2000 năm sau",
-            "slug": "aot-ep-1",
-            "video_url": "https://example.com/video/aot1.mp4",
-            "duration": "24:00",
-            "episode_order": 1,
-            "created_at": "2024-02-15T09:00:00"
-        },
-        {
-            "id": 5,
-            "movie_id": 4,
-            "name": "Tập 2: Ngày đó",
-            "slug": "aot-ep-2",
-            "video_url": "https://example.com/video/aot2.mp4",
-            "duration": "24:00",
-            "episode_order": 2,
-            "created_at": "2024-02-15T09:30:00"
-        },
-        {
-            "id": 6,
-            "movie_id": 3,
-            "name": "Full Movie: Your Name",
-            "slug": "your-name-full",
-            "video_url": "https://example.com/video/yourname.mp4",
-            "duration": "01:46:00",
-            "episode_order": 1,
-            "created_at": "2024-02-10T08:00:00"
-        },
-        {
-            "id": 7,
-            "movie_id": 5,
-            "name": "Full Movie: Dune Part Two",
-            "slug": "dune-2-full",
-            "video_url": "https://example.com/video/dune2.mp4",
-            "duration": "02:46:00",
-            "episode_order": 1,
-            "created_at": "2024-03-01T08:00:00"
-        },
-        {
-            "id": 8,
-            "movie_id": 6,
-            "name": "Full Movie: Mai",
-            "slug": "mai-full",
-            "video_url": "https://example.com/video/mai.mp4",
-            "duration": "02:11:00",
-            "episode_order": 1,
-            "created_at": "2024-02-14T08:00:00"
-        },
-        {
-            "id": 9,
-            "movie_id": 7,
-            "name": "Full Movie: Quật Mộ Trùng Ma",
-            "slug": "exhuma-full",
-            "video_url": "https://example.com/video/exhuma.mp4",
-            "duration": "02:14:00",
-            "episode_order": 1,
-            "created_at": "2024-03-15T08:00:00"
-        }
-    ],
-    "comments": [
-        {
-            "id": 1,
-            "user_id": 2,
-            "episode_id": 1,
-            "content": "Phim hay quá! Luffy ngầu bá cháy.",
-            "created_at": "2024-02-02T20:00:00"
-        },
-        {
-            "id": 2,
-            "user_id": 2,
-            "episode_id": 3,
-            "content": "Tuổi thơ ùa về 😭 nhạc phim đỉnh thực sự.",
-            "created_at": "2024-02-06T21:00:00"
-        },
-        {
-            "id": 3,
-            "user_id": 3,
-            "episode_id": 8,
-            "content": "Phim Mai buồn quá, khóc hết nước mắt.",
-            "created_at": "2024-02-16T14:30:00"
-        },
-        {
-            "id": 4,
-            "user_id": 4,
-            "episode_id": 7,
-            "content": "Kỹ xảo Dune 2 ở đẳng cấp khác, nhất định phải xem IMAX.",
-            "created_at": "2024-03-02T10:15:00"
-        },
-        {
-            "id": 5,
-            "user_id": 3,
-            "episode_id": 9,
-            "content": "Phim Hàn dạo này làm kinh dị cuốn thật, đoạn cuối hơi ảo.",
-            "created_at": "2024-03-16T22:00:00"
-        },
-        {
-            "id": 6,
-            "user_id": 2,
-            "episode_id": 4,
-            "content": "Attack on Titan xem lại vẫn nổi da gà.",
-            "created_at": "2024-02-15T12:00:00"
-        }
-    ],
-    "favorites": [
-        {
-            "user_id": 2,
-            "movie_id": 1,
-            "created_at": "2024-02-03T12:00:00"
-        },
-        {
-            "user_id": 2,
-            "movie_id": 3,
-            "created_at": "2024-02-11T12:00:00"
-        }
-    ],
-    "stats": {
-        "totalMovies": 3,
-        "totalUsers": 2,
-        "totalViews": 2630000
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@gmail.com",
+      "password": "$2a$10$hashed",
+      "full_name": "Administrator",
+      "avatar_url": "https://i.pravatar.cc/150?img=1",
+      "role": "ADMIN",
+      "created_at": "2024-01-01T10:00:00",
+      "updated_at": "2024-01-01T10:00:00"
+    },
+    {
+      "id": 2,
+      "username": "user01",
+      "email": "user01@gmail.com",
+      "password": "$2a$10$hashed",
+      "full_name": "Nguyễn Văn A",
+      "avatar_url": "https://i.pravatar.cc/150?img=2",
+      "role": "USER",
+      "created_at": "2024-01-10T10:00:00",
+      "updated_at": "2024-01-10T10:00:00"
     }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Hành động",
+      "slug": "hanh-dong"
+    },
+    {
+      "id": 2,
+      "name": "Phiêu lưu",
+      "slug": "phieu-luu"
+    },
+    {
+      "id": 3,
+      "name": "Anime",
+      "slug": "anime"
+    },
+    {
+      "id": 4,
+      "name": "Tình cảm",
+      "slug": "tinh-cam"
+    },
+    {
+      "id": 5,
+      "name": "Kinh dị",
+      "slug": "kinh-di"
+    },
+    {
+      "id": 6,
+      "name": "Hài hước",
+      "slug": "hai-huoc"
+    },
+    {
+      "id": 7,
+      "name": "Viễn tưởng",
+      "slug": "vien-tuong"
+    }
+  ],
+  "movies": [
+    {
+      "id": 1,
+      "title": "One Piece",
+      "description": "Hành trình trở thành Vua Hải Tặc của Luffy.",
+      "type": "SERIES",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=1",
+      "publish_year": 1999,
+      "view_count": 1200000,
+      "slug": "one-piece",
+      "created_at": "2024-02-01T08:00:00",
+      "updated_at": "2024-02-01T08:00:00"
+    },
+    {
+      "id": 2,
+      "title": "Naruto",
+      "description": "Câu chuyện ninja của Naruto Uzumaki.",
+      "type": "SERIES",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=2",
+      "publish_year": 2002,
+      "view_count": 980000,
+      "slug": "naruto",
+      "created_at": "2024-02-05T08:00:00",
+      "updated_at": "2024-02-05T08:00:00"
+    },
+    {
+      "id": 3,
+      "title": "Your Name",
+      "description": "Câu chuyện hoán đổi thân xác đầy cảm xúc.",
+      "type": "MOVIE",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=3",
+      "publish_year": 2016,
+      "view_count": 450000,
+      "slug": "your-name",
+      "created_at": "2024-02-10T08:00:00",
+      "updated_at": "2024-02-10T08:00:00"
+    },
+    {
+      "id": 4,
+      "title": "Attack on Titan",
+      "description": "Cuộc chiến sinh tồn chống lại những người khổng lồ ăn thịt người.",
+      "type": "SERIES",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=4",
+      "publish_year": 2013,
+      "view_count": 2100000,
+      "slug": "attack-on-titan",
+      "created_at": "2024-02-15T08:00:00",
+      "updated_at": "2024-02-28T08:00:00"
+    },
+    {
+      "id": 5,
+      "title": "Dune: Part Two",
+      "description": "Paul Atreides hợp tác với Chani và người Fremen để trả thù những kẻ đã hủy hoại gia đình mình.",
+      "type": "MOVIE",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=5",
+      "publish_year": 2024,
+      "view_count": 890000,
+      "slug": "dune-part-two",
+      "created_at": "2024-03-01T08:00:00",
+      "updated_at": "2024-03-01T08:00:00"
+    },
+    {
+      "id": 6,
+      "title": "Mai",
+      "description": "Câu chuyện về cuộc đời đầy sóng gió của người phụ nữ tên Mai.",
+      "type": "MOVIE",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=6",
+      "publish_year": 2024,
+      "view_count": 3200000,
+      "slug": "mai",
+      "created_at": "2024-02-14T08:00:00",
+      "updated_at": "2024-02-14T08:00:00"
+    },
+    {
+      "id": 7,
+      "title": "Quật Mộ Trùng Ma",
+      "description": "Exhuma: Một gia đình giàu có nhờ hai pháp sư trẻ giải cứu đứa con mới sinh khỏi một thế lực siêu nhiên.",
+      "type": "MOVIE",
+      "status": "PUBLISHED",
+      "poster_url": "https://picsum.photos/300/450?random=7",
+      "publish_year": 2024,
+      "view_count": 1500000,
+      "slug": "exhuma",
+      "created_at": "2024-03-15T08:00:00",
+      "updated_at": "2024-03-15T08:00:00"
+    },
+    {
+      "id": "0a07",
+      "title": "lazy",
+      "slug": "dwadw",
+      "description": "dwad",
+      "status": "completed",
+      "publish_year": 2024,
+      "poster_url": ""
+    },
+    {
+      "id": "a3ac",
+      "title": "sfsd",
+      "slug": "fesfe",
+      "description": "",
+      "status": "ongoing",
+      "publish_year": 2024,
+      "poster_url": ""
+    }
+  ],
+  "movie_categories": [
+    {
+      "movie_id": 1,
+      "category_id": 1
+    },
+    {
+      "movie_id": 1,
+      "category_id": 2
+    },
+    {
+      "movie_id": 1,
+      "category_id": 3
+    },
+    {
+      "movie_id": 2,
+      "category_id": 1
+    },
+    {
+      "movie_id": 2,
+      "category_id": 3
+    },
+    {
+      "movie_id": 3,
+      "category_id": 4
+    },
+    {
+      "movie_id": 3,
+      "category_id": 3
+    },
+    {
+      "movie_id": 4,
+      "category_id": 1
+    },
+    {
+      "movie_id": 4,
+      "category_id": 3
+    },
+    {
+      "movie_id": 4,
+      "category_id": 5
+    },
+    {
+      "movie_id": 5,
+      "category_id": 1
+    },
+    {
+      "movie_id": 5,
+      "category_id": 2
+    },
+    {
+      "movie_id": 5,
+      "category_id": 7
+    },
+    {
+      "movie_id": 6,
+      "category_id": 4
+    },
+    {
+      "movie_id": 6,
+      "category_id": 6
+    },
+    {
+      "movie_id": 7,
+      "category_id": 5
+    },
+    {
+      "movie_id": 7,
+      "category_id": 2
+    }
+  ],
+  "episodes": [
+    {
+      "id": 1,
+      "movie_id": 1,
+      "name": "Tập 1: Luffy ra khơi",
+      "slug": "one-piece-ep-1",
+      "video_url": "https://example.com/video/op1.mp4",
+      "duration": "24:00",
+      "episode_order": 1,
+      "created_at": "2024-02-01T09:00:00"
+    },
+    {
+      "id": 2,
+      "movie_id": 1,
+      "name": "Tập 2: Gặp Zoro",
+      "slug": "one-piece-ep-2",
+      "video_url": "https://example.com/video/op2.mp4",
+      "duration": "24:00",
+      "episode_order": 2,
+      "created_at": "2024-02-01T09:30:00"
+    },
+    {
+      "id": 3,
+      "movie_id": 2,
+      "name": "Tập 1: Naruto xuất hiện",
+      "slug": "naruto-ep-1",
+      "video_url": "https://example.com/video/naruto1.mp4",
+      "duration": "23:00",
+      "episode_order": 1,
+      "created_at": "2024-02-05T09:00:00"
+    },
+    {
+      "id": 4,
+      "movie_id": 4,
+      "name": "Tập 1: Gửi em của 2000 năm sau",
+      "slug": "aot-ep-1",
+      "video_url": "https://example.com/video/aot1.mp4",
+      "duration": "24:00",
+      "episode_order": 1,
+      "created_at": "2024-02-15T09:00:00"
+    },
+    {
+      "id": 5,
+      "movie_id": 4,
+      "name": "Tập 2: Ngày đó",
+      "slug": "aot-ep-2",
+      "video_url": "https://example.com/video/aot2.mp4",
+      "duration": "24:00",
+      "episode_order": 2,
+      "created_at": "2024-02-15T09:30:00"
+    },
+    {
+      "id": 6,
+      "movie_id": 3,
+      "name": "Full Movie: Your Name",
+      "slug": "your-name-full",
+      "video_url": "https://example.com/video/yourname.mp4",
+      "duration": "01:46:00",
+      "episode_order": 1,
+      "created_at": "2024-02-10T08:00:00"
+    },
+    {
+      "id": 7,
+      "movie_id": 5,
+      "name": "Full Movie: Dune Part Two",
+      "slug": "dune-2-full",
+      "video_url": "https://example.com/video/dune2.mp4",
+      "duration": "02:46:00",
+      "episode_order": 1,
+      "created_at": "2024-03-01T08:00:00"
+    },
+    {
+      "id": 8,
+      "movie_id": 6,
+      "name": "Full Movie: Mai",
+      "slug": "mai-full",
+      "video_url": "https://example.com/video/mai.mp4",
+      "duration": "02:11:00",
+      "episode_order": 1,
+      "created_at": "2024-02-14T08:00:00"
+    },
+    {
+      "id": 9,
+      "movie_id": 7,
+      "name": "Full Movie: Quật Mộ Trùng Ma",
+      "slug": "exhuma-full",
+      "video_url": "https://example.com/video/exhuma.mp4",
+      "duration": "02:14:00",
+      "episode_order": 1,
+      "created_at": "2024-03-15T08:00:00"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "user_id": 2,
+      "episode_id": 1,
+      "content": "Phim hay quá! Luffy ngầu bá cháy.",
+      "created_at": "2024-02-02T20:00:00"
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "episode_id": 3,
+      "content": "Tuổi thơ ùa về 😭 nhạc phim đỉnh thực sự.",
+      "created_at": "2024-02-06T21:00:00"
+    },
+    {
+      "id": 3,
+      "user_id": 3,
+      "episode_id": 8,
+      "content": "Phim Mai buồn quá, khóc hết nước mắt.",
+      "created_at": "2024-02-16T14:30:00"
+    },
+    {
+      "id": 4,
+      "user_id": 4,
+      "episode_id": 7,
+      "content": "Kỹ xảo Dune 2 ở đẳng cấp khác, nhất định phải xem IMAX.",
+      "created_at": "2024-03-02T10:15:00"
+    },
+    {
+      "id": 5,
+      "user_id": 3,
+      "episode_id": 9,
+      "content": "Phim Hàn dạo này làm kinh dị cuốn thật, đoạn cuối hơi ảo.",
+      "created_at": "2024-03-16T22:00:00"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "episode_id": 4,
+      "content": "Attack on Titan xem lại vẫn nổi da gà.",
+      "created_at": "2024-02-15T12:00:00"
+    }
+  ],
+  "favorites": [
+    {
+      "user_id": 2,
+      "movie_id": 1,
+      "created_at": "2024-02-03T12:00:00"
+    },
+    {
+      "user_id": 2,
+      "movie_id": 3,
+      "created_at": "2024-02-11T12:00:00"
+    }
+  ],
+  "stats": {
+    "totalMovies": 3,
+    "totalUsers": 2,
+    "totalViews": 2630000
+  }
 }

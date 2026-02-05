@@ -10,6 +10,8 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Movie } from "@/app/types/movie";
 import { createMovie, updateMovie } from "@/lib/api/movie";
+import EpisodeList from "./EpisodeList";
+
 
 
 type Props = {
@@ -17,6 +19,7 @@ type Props = {
     initialData?: Movie;
     onClose: () => void;
 };
+
 
 
 export default function MovieForm({ mode, initialData, onClose }: Props) {
@@ -215,6 +218,12 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 placeholder="Nhập tóm tắt nội dung phim..."
                                 className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                         </div>
+
+                        {mode === "edit" && initialData?.id && (
+                            <EpisodeList movieId={initialData.id} />
+                        )}
+
+
                     </div>
                 </div>
 
@@ -222,19 +231,19 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
 
             <div className="px-6 py-4 border-t border-gray-800 flex justify-end gap-3 bg-gray-900">
-                <button
+                <Button
                     onClick={onClose}
                     className="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800">
                     Hủy bỏ
-                </button>
+                </Button>
 
-                <button
+                <Button
                     disabled={mutation.isPending}
                     onClick={handleSubmit}
                     className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2">
                     <Save className="w-4 h-4" />
                     {mutation.isPending ? "Đang lưu..." : "Lưu tất cả"}
-                </button>
+                </Button>
             </div>
         </div>
     );

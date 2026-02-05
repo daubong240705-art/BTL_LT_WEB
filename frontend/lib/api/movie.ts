@@ -22,7 +22,10 @@ export async function updateMovie(id: number, data: Movie) {
 
     if (!res.ok) throw new Error("Update movie failed");
     return res.json();
-
 }
 
-
+export const fetchMovies = async (): Promise<Movie[]> => {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error("Failed to fetch movies");
+    return res.json();
+};
