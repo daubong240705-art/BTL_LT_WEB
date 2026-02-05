@@ -25,7 +25,7 @@ export default function MovieDialog({
 }: Props) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="min-w-275 h-[90vh] p-0 bg-gray-900 border-gray-800  flex flex-col" showCloseButton={false}>
+            <DialogContent className="min-w-250 h-[90vh] p-0 bg-gray-900 border-gray-800  flex flex-col" showCloseButton={false}>
                 <DialogHeader className="px-6 py-4 border-b border-gray-800 ">
                     <DialogTitle className="text-xl font-bold text-white flex items-center gap-2 ">
                         {mode === "add" ? (

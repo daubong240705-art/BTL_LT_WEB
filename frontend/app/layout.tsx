@@ -1,5 +1,5 @@
 import "./globals.css";
-
+import ReactQueryProvider from "@/app/providers/ReactQueryProvider";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -8,7 +8,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );
