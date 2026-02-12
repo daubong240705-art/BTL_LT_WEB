@@ -4,15 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Save, Upload } from "lucide-react";
-import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Movie } from "@/app/types/movie";
+import { CreateMovieRequest, Movie } from "@/app/types/movie";
 import EpisodeList from "./EpisodeList";
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm, useWatch } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { Controller, useWatch } from "react-hook-form";
+import { useMovieForm } from "./useMovieForm";
 import { fetchCategories } from "@/lib/api/categories";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createMovie, updateMovie } from "@/lib/api/movie";
+
 
 
 type Props = {
@@ -20,81 +20,15 @@ type Props = {
     initialData?: Movie;
     onClose: () => void;
 };
-const movieSchema = z.object({
-    title: z.string().min(1),
-    slug: z.string().min(1),
-    description: z.string().optional(),
-    status: z.enum(["ongoing", "completed"]),
-    publish_year: z.number().int(),
-    poster: z.instanceof(File).optional(),
-    category_ids: z.array(z.number()),
 
-});
 
-type MovieForm = z.infer<typeof movieSchema>;
 
 export default function MovieForm({ mode, initialData, onClose }: Props) {
-
-
-    const {
-        data: categories = [],
-        isLoading,
-        isError,
-    } = useQuery({
+    const { form, posterPreview } = useMovieForm(mode, initialData);
+    const { data: categories = [], isLoading, isError, } = useQuery({
         queryKey: ["categories"],
         queryFn: fetchCategories,
     });
-
-    const defaultValues = useMemo<MovieForm>(() => {
-        if (mode === "edit" && initialData) {
-            return {
-                title: initialData.title ?? "",
-                slug: initialData.slug ?? "",
-                description: initialData.description ?? "",
-                status: initialData.status,
-                publish_year: initialData.publish_year,
-                category_ids: initialData.category_ids ?? [],
-                poster: undefined,
-            };
-        }
-
-        return {
-            title: "",
-            slug: "",
-            description: "",
-            status: "ongoing",
-            publish_year: new Date().getFullYear(),
-            category_ids: [],
-            poster: undefined,
-        };
-    }, [mode, initialData]);
-
-    const form = useForm<MovieForm>({
-        resolver: zodResolver(movieSchema),
-        defaultValues,
-    });
-
-    const posterFile = useWatch({
-        control: form.control,
-        name: "poster",
-    });
-
-    const posterPreview = useMemo(() => {
-        if (!posterFile) {
-            return mode === "edit" ? initialData?.poster_url ?? null : null;
-        }
-
-        const objectUrl = URL.createObjectURL(posterFile);
-        return objectUrl;
-    }, [posterFile, mode, initialData]);
-
-    useEffect(() => {
-        if (!posterFile) return;
-
-        const objectUrl = URL.createObjectURL(posterFile);
-        return () => URL.revokeObjectURL(objectUrl);
-    }, [posterFile]);
-
 
     const selectedIds =
         useWatch({
@@ -102,11 +36,35 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
             name: "category_ids",
         }) ?? [];
 
+    const queryClient = useQueryClient();
 
+    const mutation = useMutation({
+        mutationFn: (data: CreateMovieRequest) => {
+            if (mode === "edit" && initialData?.id) {
+                return updateMovie(initialData.id, data);
+            }
+
+            return createMovie(data);
+        },
+
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["movies"] });
+            onClose();
+            form.reset();
+        },
+    });
+
+    const onSubmit = (data: CreateMovieRequest) => {
+        mutation.mutate(data);
+    };
+    console.log("Lỗi hiện tại:", form.formState.errors);
     return (
-        <div className="flex flex-col h-full">
 
-            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+        <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col overflow-y-auto h-full custom-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]">
+            <div className="flex-1  p-6 ">
                 <div className="grid grid-cols-12 gap-8">
                     <div className="col-span-4 space-y-6">
                         <div className="space-y-2">
@@ -141,7 +99,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Năm</label>
                                 <Input type="number"
-                                    {...form.register("publish_year")}
+                                    {...form.register("publish_year", { valueAsNumber: true })}
                                     placeholder="Năm sản xuất"
                                     className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
@@ -216,12 +174,9 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                                 form.setValue("category_ids", next, { shouldDirty: true });
                                             }}
                                             className={`px-3 py-1 rounded text-sm border transition
-        ${isSelected
+                                                ${isSelected
                                                     ? "bg-red-600 text-white border-red-600"
-                                                    : "bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
-                                                }
-      `}
-                                        >
+                                                    : "bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"}`}>
                                             {cat.name}
                                         </Button>
                                     );
@@ -238,10 +193,10 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 placeholder="Nhập tóm tắt nội dung phim..."
                                 className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                         </div>
-
                         {mode === "edit" && initialData?.id && (
                             <EpisodeList movieId={initialData.id} />
                         )}
+
                     </div>
                 </div>
 
@@ -256,10 +211,14 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                 </Button>
 
                 <Button
+                    type="submit"
+                    disabled={mutation.isPending}
                     className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2">
                     <Save className="w-4 h-4" />
+                    {mutation.isPending ? "Đang lưu..." : "Lưu"}
                 </Button>
+
             </div>
-        </div>
+        </form>
     );
 }

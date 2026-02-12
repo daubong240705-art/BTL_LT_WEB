@@ -17,6 +17,17 @@ export interface Movie {
     category_ids: number[];
 }
 
+export type CreateMovieRequest = {
+    title: string;
+    slug: string;
+    description?: string;
+    status: "ongoing" | "completed";
+    publish_year: number;
+    category_ids: number[];
+    poster?: File;
+};
+
+
 export interface Episode {
     id?: number;
     movie_id: number;

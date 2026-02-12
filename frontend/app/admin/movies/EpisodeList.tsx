@@ -20,13 +20,12 @@ export default function EpisodeList({ movieId }: Props) {
     });
 
     return (
-        <div className="border-t border-gray-800 pt-4">
-            <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Film className="w-4 h-4 text-blue-500" />
-                    Danh sách tập ({episodes.length})
-                </h3>
-            </div>
+        <> <div className="flex justify-between items-center mb-3">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Film className="w-4 h-4 text-blue-500" />
+                Danh sách tập ({episodes.length})
+            </h3>
+        </div>
 
             <div className="bg-gray-800 rounded-lg border border-gray-700 h-48 overflow-y-auto p-2 space-y-1">
                 {episodes.length ? (
@@ -64,7 +63,7 @@ export default function EpisodeList({ movieId }: Props) {
                         <span className="text-xs">Chưa có tập phim nào</span>
                     </div>
                 )}
-            </div>
-        </div>
+            </div></>
+
     );
 }

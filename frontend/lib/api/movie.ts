@@ -1,8 +1,8 @@
-import { Movie } from "@/app/types/movie";
+import { CreateMovieRequest, Movie } from "@/app/types/movie";
 
 const API_URL = "http://localhost:3001/movies";
 
-export async function createMovie(data: Movie) {
+export async function createMovie(data: CreateMovieRequest) {
     const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -13,7 +13,7 @@ export async function createMovie(data: Movie) {
     return res.json();
 }
 
-export async function updateMovie(id: number, data: Movie) {
+export async function updateMovie(id: number, data: CreateMovieRequest) {
     const res = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
