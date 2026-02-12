@@ -3,6 +3,7 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -38,6 +39,11 @@ export default function MovieDialog({
                         )}
                         {mode === "add" ? "Thêm Phim Mới" : "Chỉnh Sửa Phim"}
                     </DialogTitle>
+                    <DialogDescription className="text-sm text-gray-400">
+                        {mode === "add"
+                            ? "Nhập thông tin để thêm phim mới vào hệ thống"
+                            : "Cập nhật thông tin phim, poster và thể loại"}
+                    </DialogDescription>
                 </DialogHeader>
 
                 <MovieForm

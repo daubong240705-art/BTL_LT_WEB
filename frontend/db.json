@@ -66,91 +66,122 @@
       "title": "One Piece",
       "description": "Hành trình trở thành Vua Hải Tặc của Luffy.",
       "type": "SERIES",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=1",
       "publish_year": 1999,
       "view_count": 1200000,
       "slug": "one-piece",
       "created_at": "2024-02-01T08:00:00",
-      "updated_at": "2024-02-01T08:00:00"
+      "updated_at": "2024-02-01T08:00:00",
+      "category_ids": [
+        1,
+        2,
+        3
+      ]
     },
     {
       "id": 2,
       "title": "Naruto",
       "description": "Câu chuyện ninja của Naruto Uzumaki.",
       "type": "SERIES",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=2",
       "publish_year": 2002,
       "view_count": 980000,
       "slug": "naruto",
       "created_at": "2024-02-05T08:00:00",
-      "updated_at": "2024-02-05T08:00:00"
+      "updated_at": "2024-02-05T08:00:00",
+      "category_ids": [
+        1,
+        3
+      ]
     },
     {
       "id": 3,
       "title": "Your Name",
       "description": "Câu chuyện hoán đổi thân xác đầy cảm xúc.",
       "type": "MOVIE",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=3",
       "publish_year": 2016,
       "view_count": 450000,
       "slug": "your-name",
       "created_at": "2024-02-10T08:00:00",
-      "updated_at": "2024-02-10T08:00:00"
+      "updated_at": "2024-02-10T08:00:00",
+      "category_ids": [
+        4,
+        3
+      ]
     },
     {
       "id": 4,
       "title": "Attack on Titan",
       "description": "Cuộc chiến sinh tồn chống lại những người khổng lồ ăn thịt người.",
       "type": "SERIES",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=4",
       "publish_year": 2013,
       "view_count": 2100000,
       "slug": "attack-on-titan",
       "created_at": "2024-02-15T08:00:00",
-      "updated_at": "2024-02-28T08:00:00"
+      "updated_at": "2024-02-28T08:00:00",
+      "category_ids": [
+        1,
+        3,
+        5
+      ]
     },
     {
       "id": 5,
       "title": "Dune: Part Two",
       "description": "Paul Atreides hợp tác với Chani và người Fremen để trả thù những kẻ đã hủy hoại gia đình mình.",
       "type": "MOVIE",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=5",
       "publish_year": 2024,
       "view_count": 890000,
       "slug": "dune-part-two",
       "created_at": "2024-03-01T08:00:00",
-      "updated_at": "2024-03-01T08:00:00"
+      "updated_at": "2024-03-01T08:00:00",
+      "category_ids": [
+        1,
+        2,
+        7
+      ]
     },
     {
       "id": 6,
       "title": "Mai",
       "description": "Câu chuyện về cuộc đời đầy sóng gió của người phụ nữ tên Mai.",
       "type": "MOVIE",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=6",
       "publish_year": 2024,
       "view_count": 3200000,
       "slug": "mai",
       "created_at": "2024-02-14T08:00:00",
-      "updated_at": "2024-02-14T08:00:00"
+      "updated_at": "2024-02-14T08:00:00",
+      "category_ids": [
+        4,
+        6
+      ]
     },
     {
       "id": 7,
       "title": "Quật Mộ Trùng Ma",
       "description": "Exhuma: Một gia đình giàu có nhờ hai pháp sư trẻ giải cứu đứa con mới sinh khỏi một thế lực siêu nhiên.",
       "type": "MOVIE",
-      "status": "PUBLISHED",
+      "status": "completed",
       "poster_url": "https://picsum.photos/300/450?random=7",
       "publish_year": 2024,
       "view_count": 1500000,
       "slug": "exhuma",
       "created_at": "2024-03-15T08:00:00",
-      "updated_at": "2024-03-15T08:00:00"
+      "updated_at": "2024-03-15T08:00:00",
+      "category_ids": [
+        5,
+        2
+      ]
     },
     {
       "id": "0a07",
@@ -159,7 +190,8 @@
       "description": "dwad",
       "status": "completed",
       "publish_year": 2024,
-      "poster_url": ""
+      "poster_url": "",
+      "category_ids": []
     },
     {
       "id": "a3ac",
@@ -168,77 +200,8 @@
       "description": "",
       "status": "ongoing",
       "publish_year": 2024,
-      "poster_url": ""
-    }
-  ],
-  "movie_categories": [
-    {
-      "movie_id": 1,
-      "category_id": 1
-    },
-    {
-      "movie_id": 1,
-      "category_id": 2
-    },
-    {
-      "movie_id": 1,
-      "category_id": 3
-    },
-    {
-      "movie_id": 2,
-      "category_id": 1
-    },
-    {
-      "movie_id": 2,
-      "category_id": 3
-    },
-    {
-      "movie_id": 3,
-      "category_id": 4
-    },
-    {
-      "movie_id": 3,
-      "category_id": 3
-    },
-    {
-      "movie_id": 4,
-      "category_id": 1
-    },
-    {
-      "movie_id": 4,
-      "category_id": 3
-    },
-    {
-      "movie_id": 4,
-      "category_id": 5
-    },
-    {
-      "movie_id": 5,
-      "category_id": 1
-    },
-    {
-      "movie_id": 5,
-      "category_id": 2
-    },
-    {
-      "movie_id": 5,
-      "category_id": 7
-    },
-    {
-      "movie_id": 6,
-      "category_id": 4
-    },
-    {
-      "movie_id": 6,
-      "category_id": 6
-    },
-    {
-      "movie_id": 7,
-      "category_id": 5
-    },
-    {
-      "movie_id": 7,
-      "category_id": 2
+      "poster_url": "",
+      "category_ids": []
     }
   ],
   "episodes": [

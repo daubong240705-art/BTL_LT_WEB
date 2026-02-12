@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
-import CreateMovieDialog from "../components/MovieDialog";
+import CreateMovieDialog from "./MovieDialog";
 import { fetchMovies } from "@/lib/api/movie";
 import { useQuery } from "@tanstack/react-query";
 import { Movie } from "@/app/types/movie";

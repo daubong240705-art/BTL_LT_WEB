@@ -1,17 +1,18 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Save, Upload } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchCategories } from "@/lib/api/categories";
-import { useRef, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Movie } from "@/app/types/movie";
-import { createMovie, updateMovie } from "@/lib/api/movie";
 import EpisodeList from "./EpisodeList";
-
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCategories } from "@/lib/api/categories";
 
 
 type Props = {
@@ -19,10 +20,21 @@ type Props = {
     initialData?: Movie;
     onClose: () => void;
 };
+const movieSchema = z.object({
+    title: z.string().min(1),
+    slug: z.string().min(1),
+    description: z.string().optional(),
+    status: z.enum(["ongoing", "completed"]),
+    publish_year: z.number().int(),
+    poster: z.instanceof(File).optional(),
+    category_ids: z.array(z.number()),
 
+});
 
+type MovieForm = z.infer<typeof movieSchema>;
 
 export default function MovieForm({ mode, initialData, onClose }: Props) {
+
 
     const {
         data: categories = [],
@@ -33,71 +45,62 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
         queryFn: fetchCategories,
     });
 
-    const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [posterFile, setPosterFile] = useState<File | null>(null);
-    const [posterPreview, setPosterPreview] = useState<string | null>(null);
+    const defaultValues = useMemo<MovieForm>(() => {
+        if (mode === "edit" && initialData) {
+            return {
+                title: initialData.title ?? "",
+                slug: initialData.slug ?? "",
+                description: initialData.description ?? "",
+                status: initialData.status,
+                publish_year: initialData.publish_year,
+                category_ids: initialData.category_ids ?? [],
+                poster: undefined,
+            };
+        }
 
+        return {
+            title: "",
+            slug: "",
+            description: "",
+            status: "ongoing",
+            publish_year: new Date().getFullYear(),
+            category_ids: [],
+            poster: undefined,
+        };
+    }, [mode, initialData]);
 
-    const handlePosterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setPosterFile(file);
-
-        const previewUrl = URL.createObjectURL(file);
-        setPosterPreview(previewUrl);
-    };
-
-
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        mutationFn: (data: Movie) =>
-            mode === "add"
-                ? createMovie(data)
-                : updateMovie(initialData!.id!, data),
-
-        onSuccess: async (movie) => {
-            await Promise.all(
-                selectedCategories.map((catId) =>
-                    fetch("http://localhost:3000/movie_categories", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            movie_id: movie.id,
-                            category_id: catId,
-                        }),
-                    })
-                )
-            );
-
-            queryClient.invalidateQueries({ queryKey: ["movies"] });
-
-            onClose();
-        },
+    const form = useForm<MovieForm>({
+        resolver: zodResolver(movieSchema),
+        defaultValues,
     });
 
+    const posterFile = useWatch({
+        control: form.control,
+        name: "poster",
+    });
+
+    const posterPreview = useMemo(() => {
+        if (!posterFile) {
+            return mode === "edit" ? initialData?.poster_url ?? null : null;
+        }
+
+        const objectUrl = URL.createObjectURL(posterFile);
+        return objectUrl;
+    }, [posterFile, mode, initialData]);
+
+    useEffect(() => {
+        if (!posterFile) return;
+
+        const objectUrl = URL.createObjectURL(posterFile);
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [posterFile]);
 
 
-    const [title, setTitle] = useState(initialData?.title ?? "");
-    const [slug, setSlug] = useState(initialData?.slug ?? "");
-    const [year, setYear] = useState(initialData?.publish_year ?? 2024);
-    const [status, setStatus] = useState<Movie["status"]>("ongoing");
-    const [description, setDescription] = useState(initialData?.description ?? "");
-
-    const handleSubmit = () => {
-        const payload: Movie = {
-            title,
-            slug,
-            description,
-            status,
-            publish_year: year,
-            poster_url: posterPreview ?? "",
-        };
-
-        mutation.mutate(payload);
-    };
+    const selectedIds =
+        useWatch({
+            control: form.control,
+            name: "category_ids",
+        }) ?? [];
 
 
     return (
@@ -108,7 +111,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                     <div className="col-span-4 space-y-6">
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold text-gray-400">Poster phim</label>
-                            <div onClick={() => fileInputRef.current?.click()}
+                            <div onClick={() => document.getElementById("poster")?.click()}
                                 className="relative aspect-2/3 w-full border-2 border-dashed border-gray-700 rounded-xl bg-gray-800 cursor-pointer overflow-hidden">
                                 {posterPreview ? (
                                     // eslint-disable-next-line @next/next/no-img-element
@@ -119,11 +122,17 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                         <span className="text-xs">Upload ảnh</span>
                                     </div>
                                 )}
-                                <input ref={fileInputRef}
+                                <input
                                     type="file"
                                     accept="image/*"
                                     hidden
-                                    onChange={handlePosterChange}
+                                    id="poster"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+
+                                        form.setValue("poster", file);
+                                    }}
                                 />
                             </div>
 
@@ -132,29 +141,29 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Năm</label>
                                 <Input type="number"
+                                    {...form.register("publish_year")}
                                     placeholder="Năm sản xuất"
-                                    value={year}
-                                    onChange={(e) => setYear(Number(e.target.value))}
                                     className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Trạng thái</label>
-                                <Select value={status} onValueChange={(v) => setStatus(v as Movie["status"])}>
-                                    <SelectTrigger
-                                        className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none
+                                <Controller
+                                    control={form.control}
+                                    name="status"
+                                    render={({ field }) => (
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none
                                         data-placeholder:text-gray-400
                                         data-placeholder:font-sm">
-                                        <SelectValue placeholder="Trạng thái" />
-                                    </SelectTrigger>
-                                    <SelectContent className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" >
-                                        <SelectGroup>
-                                            <SelectItem value="ongoing" className="cursor-pointer focus:bg-gray-700 focus:text-white data-[state=checked]:bg-red-600 data-[state=checked]:text-white">
-                                                Đang phát</SelectItem>
-                                            <SelectItem value="completed" className="cursor-pointer focus:bg-gray-700 focus:text-white data-[state=checked]:bg-red-600 data-[state=checked]:text-white">
-                                                Hoàn thành</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                                                <SelectValue placeholder="Trạng thái" />
+                                            </SelectTrigger>
+                                            <SelectContent className=" bg-gray-800 border border-gray-700 text-white">
+                                                <SelectItem value="ongoing" className="cursor-pointer focus:bg-gray-700 focus:text-white data-[state=checked]:bg-red-600 data-[state=checked]:text-white">Đang phát</SelectItem>
+                                                <SelectItem value="completed" className="cursor-pointer focus:bg-gray-700 focus:text-white data-[state=checked]:bg-red-600 data-[state=checked]:text-white">Hoàn thành</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
                             </div>
                         </div>
                     </div>
@@ -165,8 +174,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-400 block">Tên phim</label>
                                 <Input type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
+                                    {...form.register("title")}
                                     placeholder="Nhập tên phim..."
                                     className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
@@ -174,8 +182,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-400  block">Đường dẫn (Slug)</label>
                                 <Input type="text"
-                                    value={slug}
-                                    onChange={(e) => setSlug(e.target.value)}
+                                    {...form.register("slug")}
+                                    placeholder="Nhập đường dẫn phim..."
                                     className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                             </div>
                         </div>
@@ -191,30 +199,42 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                     <span className="text-sm text-red-500">Không tải được thể loại</span>
                                 )}
 
+
+
                                 {categories.map((cat) => {
-                                    const isSelected = selectedCategories.includes(cat.id);
+                                    const isSelected = selectedIds.includes(cat.id);
 
                                     return (
                                         <Button
                                             key={cat.id}
                                             type="button"
-                                            onClick={() =>
-                                                setSelectedCategories((prev) =>
-                                                    isSelected ? prev.filter((id) => id !== cat.id) : [...prev, cat.id])
-                                            }
-                                            className={`px-3 py-1 w-23 rounded text-sm font-medium border transition-all ${isSelected ? "bg-red-600 border-red-600 text-white" : "bg-gray-700 border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white"}`}>
+                                            onClick={() => {
+                                                const next = isSelected
+                                                    ? selectedIds.filter((id) => id !== cat.id)
+                                                    : [...selectedIds, cat.id];
+
+                                                form.setValue("category_ids", next, { shouldDirty: true });
+                                            }}
+                                            className={`px-3 py-1 rounded text-sm border transition
+        ${isSelected
+                                                    ? "bg-red-600 text-white border-red-600"
+                                                    : "bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
+                                                }
+      `}
+                                        >
                                             {cat.name}
                                         </Button>
                                     );
                                 })}
+
+
                             </div>
                         </div>
 
                         <div>
                             <label className="text-sm font-semibold text-gray-400 mb-2 block">Mô tả nội dung</label>
                             <Textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                {...form.register("description")}
                                 placeholder="Nhập tóm tắt nội dung phim..."
                                 className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
                         </div>
@@ -222,8 +242,6 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         {mode === "edit" && initialData?.id && (
                             <EpisodeList movieId={initialData.id} />
                         )}
-
-
                     </div>
                 </div>
 
@@ -238,11 +256,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                 </Button>
 
                 <Button
-                    disabled={mutation.isPending}
-                    onClick={handleSubmit}
                     className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2">
                     <Save className="w-4 h-4" />
-                    {mutation.isPending ? "Đang lưu..." : "Lưu tất cả"}
                 </Button>
             </div>
         </div>

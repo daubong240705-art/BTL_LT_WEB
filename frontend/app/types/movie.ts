@@ -1,4 +1,11 @@
 
+
+export interface Category {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 export interface Movie {
     id?: number;
     title: string;
@@ -7,6 +14,7 @@ export interface Movie {
     status: "ongoing" | "completed";
     publish_year: number;
     poster_url: string;
+    category_ids: number[];
 }
 
 export interface Episode {
