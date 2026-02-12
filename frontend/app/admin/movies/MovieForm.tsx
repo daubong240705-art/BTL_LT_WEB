@@ -22,7 +22,6 @@ type Props = {
 };
 
 
-
 export default function MovieForm({ mode, initialData, onClose }: Props) {
     const { form, posterPreview } = useMovieForm(mode, initialData);
     const { data: categories = [], isLoading, isError, } = useQuery({
@@ -58,9 +57,9 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
     const onSubmit = (data: CreateMovieRequest) => {
         mutation.mutate(data);
     };
+
     console.log("Lỗi hiện tại:", form.formState.errors);
     return (
-
         <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col overflow-y-auto h-full custom-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]">
