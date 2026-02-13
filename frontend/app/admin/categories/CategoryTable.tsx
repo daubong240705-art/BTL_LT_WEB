@@ -47,7 +47,7 @@ export default function CategoryTable({ categories, isLoading }: Props) {
 
 
 
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-4 gap-6">
                     {categories.map((cat) => (
                         <div key={cat.id}
                             className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-all group hover:-translate-y-1">

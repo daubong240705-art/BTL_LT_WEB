@@ -16,7 +16,7 @@ export default function CategoryDialog({ open,
     initialData, }: Props) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="h-80 w-140 p-0 bg-gray-900 border-gray-800  flex flex-col" showCloseButton={false}>
+            <DialogContent className="h- w-140 p-0 bg-gray-900 border-gray-800  flex flex-col" showCloseButton={false}>
                 <DialogHeader className="px-6 py-4 border-b border-gray-800 ">
                     <DialogTitle className="text-xl font-bold text-white flex items-center gap-2 ">
                         {mode === "add" ? (
