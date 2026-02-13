@@ -1,7 +1,15 @@
+"use client"
+import { fetchCategories } from "@/lib/api/categories";
+import { useQuery } from "@tanstack/react-query";
+import CategoryTable from "./CategoryTable";
+
 export default function AdminCategoriesPage() {
+    const { data: categories = [], isLoading } = useQuery({
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
+    })
+
     return (
-        <div>
-            <h1>Trang quản lý danh mục</h1>
-        </div>
+        <CategoryTable categories={categories} isLoading={isLoading} />
     );
 }

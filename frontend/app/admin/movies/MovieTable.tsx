@@ -5,16 +5,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import CreateMovieDialog from "./MovieDialog";
-import { fetchMovies } from "@/lib/api/movie";
-import { useQuery } from "@tanstack/react-query";
-import { Movie } from "@/app/types/movie";
+import { Category, Movie } from "@/app/types/movie";
+
 
 type Props = {
     movies: Movie[];
+    categories: Category[];
     isLoading: boolean;
 };
 
-export default function MoviesTable({ movies, isLoading }: Props) {
+export default function MoviesTable({ movies, categories, isLoading }: Props) {
     const [open, setOpen] = useState(false)
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedMovie, setSelectedMovie] = useState<Movie | undefined>();
@@ -31,8 +31,7 @@ export default function MoviesTable({ movies, isLoading }: Props) {
                         setMode("add");
                         setOpen(true);
                     }}
-                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium shadow-lg shadow-green-900/20"
-                >
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium shadow-lg shadow-green-900/20">
                     <Plus className="w-5 h-5" />
                     <span>Thêm phim</span>
                 </Button>
@@ -43,8 +42,7 @@ export default function MoviesTable({ movies, isLoading }: Props) {
                     <Input
                         type="text"
                         placeholder="Tìm kiếm phim"
-                        className="w-full  bg-gray-900 text-white pl-12 pr-4  rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 border border-gray-700"
-                    />
+                        className="w-full  bg-gray-900 text-white pl-12 pr-4  rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 border border-gray-700" />
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 </div>
             </div>
@@ -56,6 +54,7 @@ export default function MoviesTable({ movies, isLoading }: Props) {
                             <TableRow className="bg-gray-900/50 text-left border-b border-gray-700">
                                 <TableHead className="px-6 py-4 text-gray-400 font-semibold text-sm uppercase tracking-wider">ID</TableHead>
                                 <TableHead className="px-6 py-4 text-gray-400 font-semibold text-sm uppercase tracking-wider">Thông tin phim</TableHead>
+                                <TableHead className="px-6 py-4 text-gray-400 font-semibold text-sm uppercase tracking-wider">Thể loại</TableHead>
                                 <TableHead className="px-6 py-4 text-gray-400 font-semibold text-sm uppercase tracking-wider">Trạng thái</TableHead>
                                 <TableHead className="px-6 py-4 text-gray-400 font-semibold text-sm uppercase tracking-wider">Sửa/xoá</TableHead>
                             </TableRow>
@@ -97,6 +96,22 @@ export default function MoviesTable({ movies, isLoading }: Props) {
                                     </TableCell>
 
                                     <TableCell className="px-6 py-4x">
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {movie.category_ids.slice(0, 2).map((id) => {
+                                                const categoryName = categories.find(c => c.id === id)?.name || id;
+                                                return (
+                                                    <span key={categoryName} className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded text-xs border border-gray-600">
+                                                        {categoryName}
+                                                    </span>);
+                                            })}
+                                            {movie.category_ids.length > 2 && (
+                                                <span className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded text-xs border border-gray-600">
+                                                    +{movie.category_ids.length - 2}
+                                                </span>
+                                            )} </div>
+                                    </TableCell>
+
+                                    <TableCell className="px-6 py-4x">
                                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${movie.status === 'ongoing'
                                             ? 'bg-green-500/10 text-green-500 border-green-500/20'
                                             : 'bg-blue-500/10 text-blue-500 border-blue-500/20'
@@ -116,20 +131,12 @@ export default function MoviesTable({ movies, isLoading }: Props) {
 
                                                 }}
                                                 className="p-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-colors border border-blue-600/20"
-                                                title="Chỉnh sửa"
-                                            // onClick={() => handleEditMovie(movie)}
-                                            >
+                                                title="Chỉnh sửa">
                                                 <Edit className="w-4 h-4" />
                                             </Button>
                                             <Button
-                                                // onClick={() => setConfirmDialog({
-                                                //     isOpen: true,
-                                                //     movieId: movie.id,
-                                                //     movieTitle: movie.titleVi
-                                                // })}
                                                 className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors border border-red-600/20"
-                                                title="Xóa"
-                                            >
+                                                title="Xóa">
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
