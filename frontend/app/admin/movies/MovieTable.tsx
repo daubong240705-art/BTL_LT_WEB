@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
-import CreateMovieDialog from "./MovieDialog";
+import MovieDialog from "./MovieDialog";
 import { Category, Movie } from "@/app/types/movie";
 
 
@@ -130,13 +130,11 @@ export default function MoviesTable({ movies, categories, isLoading }: Props) {
                                                     setSelectedMovie(movie);
 
                                                 }}
-                                                className="p-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-colors border border-blue-600/20"
-                                                title="Chỉnh sửa">
+                                                className="p-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-colors border border-blue-600/20">
                                                 <Edit className="w-4 h-4" />
                                             </Button>
                                             <Button
-                                                className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors border border-red-600/20"
-                                                title="Xóa">
+                                                className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors border border-red-600/20">
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
@@ -148,7 +146,7 @@ export default function MoviesTable({ movies, categories, isLoading }: Props) {
 
                         </TableBody>
                     </Table>
-                    <CreateMovieDialog
+                    <MovieDialog
                         open={open}
                         onOpenChange={setOpen}
                         mode={mode}

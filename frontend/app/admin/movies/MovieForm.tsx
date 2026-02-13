@@ -58,12 +58,12 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
         mutation.mutate(data);
     };
 
-    console.log("Lỗi hiện tại:", form.formState.errors);
+    console.log(form.formState.errors);
     return (
         <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col overflow-y-auto h-full custom-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]">
-            <div className="flex-1  p-6 ">
+            <div className="flex-1 p-6 ">
                 <div className="grid grid-cols-12 gap-8">
                     <div className="col-span-4 space-y-6">
                         <div className="space-y-2">
