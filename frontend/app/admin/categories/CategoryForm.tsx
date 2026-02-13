@@ -19,9 +19,14 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                         </label>
                         <Input
                             type="text"
-                            className="w-full bg-gray-800 text-white px-4 py-6 rounded-lg border border-gray-700 focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all"
+                            className="w-full bg-gray-800
+                            border border-gray-700
+                            text-white px-4 py-5 rounded-lg
+                            focus-visible:ring-0
+                            focus:border-green-500
+                            hover:border-green-500
+                            transition-all"
                             placeholder="Nhập tên thể loại"
-                            autoFocus
                         />
                     </div>
 
@@ -31,7 +36,13 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                         </label>
                         <Input
                             type="text"
-                            className="w-full bg-gray-800 text-white px-4 py-6 rounded-lg border border-gray-700 focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all"
+                            className="w-full bg-gray-800
+                            border border-gray-700
+                            text-white px-4 py-5 rounded-lg
+                            focus-visible:ring-0
+                            focus:border-green-500
+                            hover:border-green-500
+                            transition-all"
                             placeholder="Nhập đường dẫn"
                             required
                         />

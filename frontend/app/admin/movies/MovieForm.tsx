@@ -1,5 +1,4 @@
 "use client";
-
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -100,7 +99,12 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 <Input type="number"
                                     {...form.register("publish_year", { valueAsNumber: true })}
                                     placeholder="Năm sản xuất"
-                                    className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
+                                    className="w-full bg-gray-800 border-gray-700
+                                    text-white px-4 py-2.5 rounded-lg
+                                    focus-visible:ring-0
+                                    focus:border-red-500
+                                    hover:border-red-500
+                                    transition-all" />
                             </div>
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Trạng thái</label>
@@ -109,14 +113,19 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                     name="status"
                                     render={({ field }) => (
                                         <Select value={field.value} onValueChange={field.onChange}>
-                                            <SelectTrigger className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none
-                                        data-placeholder:text-gray-400
-                                        data-placeholder:font-sm">
+                                            <SelectTrigger className="w-full bg-gray-800 border-gray-700
+                                            text-white px-4 py-2.5 rounded-lg
+                                            focus-visible:ring-0
+                                            focus:border-red-500
+                                            hover:border-red-500
+                                            transition-all
+                                            data-placeholder:text-gray-400
+                                            data-placeholder:font-sm">
                                                 <SelectValue placeholder="Trạng thái" />
                                             </SelectTrigger>
                                             <SelectContent className=" bg-gray-800 border border-gray-700 text-white">
-                                                <SelectItem value="ongoing" className="cursor-pointer focus:bg-gray-700 focus:text-white data-[state=checked]:bg-red-600 data-[state=checked]:text-white">Đang phát</SelectItem>
-                                                <SelectItem value="completed" className="cursor-pointer focus:bg-gray-700 focus:text-white data-[state=checked]:bg-red-600 data-[state=checked]:text-white">Hoàn thành</SelectItem>
+                                                <SelectItem value="ongoing" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600 ">Đang phát</SelectItem>
+                                                <SelectItem value="completed" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Hoàn thành</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     )}
@@ -133,7 +142,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 <Input type="text"
                                     {...form.register("title")}
                                     placeholder="Nhập tên phim..."
-                                    className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
+                                    className="w-full bg-gray-800
+                                    border border-gray-700
+                                    text-white px-4 py-5 rounded-lg
+                                    focus-visible:ring-0
+                                    focus:border-red-500
+                                    hover:border-red-500
+                                    transition-all" />
                             </div>
 
                             <div className="space-y-2">
@@ -141,7 +156,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 <Input type="text"
                                     {...form.register("slug")}
                                     placeholder="Nhập đường dẫn phim..."
-                                    className="w-full h-10 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
+                                    className="w-full bg-gray-800
+                                    border border-gray-700
+                                    text-white px-4 py-5 rounded-lg
+                                    focus-visible:ring-0
+                                    focus:border-red-500
+                                    hover:border-red-500
+                                    transition-all" />
                             </div>
                         </div>
 
@@ -190,7 +211,12 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <Textarea
                                 {...form.register("description")}
                                 placeholder="Nhập tóm tắt nội dung phim..."
-                                className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-red-600 focus:outline-none" />
+                                className="w-full h-30 bg-gray-800 border border-gray-700
+                                text-white px-4 py-2.5 rounded-lg
+                                focus-visible:ring-0
+                                focus:border-red-500
+                                hover:border-red-500
+                                transition-all" />
                         </div>
                         {mode === "edit" && initialData?.id && (
                             <EpisodeList movieId={initialData.id} />

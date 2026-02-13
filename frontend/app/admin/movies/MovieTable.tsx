@@ -42,7 +42,12 @@ export default function MoviesTable({ movies, categories, isLoading }: Props) {
                     <Input
                         type="text"
                         placeholder="Tìm kiếm phim"
-                        className="w-full  bg-gray-900 text-white pl-12 pr-4  rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 border border-gray-700" />
+                        className="w-full bg-gray-900 border-gray-700
+                        text-white pl-12 pr-4 py-5 rounded-lg
+                        focus-visible:ring-0
+                        focus:border-red-500
+                        hover:border-red-500
+                        transition-all " />
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 </div>
             </div>
@@ -111,7 +116,7 @@ export default function MoviesTable({ movies, categories, isLoading }: Props) {
                                             )} </div>
                                     </TableCell>
 
-                                    <TableCell className="px-6 py-4x">
+                                    <TableCell className="px-6 py-4">
                                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${movie.status === 'ongoing'
                                             ? 'bg-green-500/10 text-green-500 border-green-500/20'
                                             : 'bg-blue-500/10 text-blue-500 border-blue-500/20'
