@@ -9,7 +9,7 @@ import { CreateMovieRequest, Movie } from "@/app/types/type";
 import EpisodeList from "./EpisodeList";
 import { Controller, useWatch } from "react-hook-form";
 import { useMovieForm } from "./useMovieForm";
-import { fetchCategories } from "@/lib/api/categories";
+import { fetchCategories } from "@/lib/api/category";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createMovie, updateMovie } from "@/lib/api/movie";
 

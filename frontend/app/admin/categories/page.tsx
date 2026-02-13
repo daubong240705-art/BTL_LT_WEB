@@ -1,5 +1,5 @@
 "use client"
-import { fetchCategories } from "@/lib/api/categories";
+import { fetchCategories } from "@/lib/api/category";
 import { useQuery } from "@tanstack/react-query";
 import CategoryTable from "./CategoryTable";
 

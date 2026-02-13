@@ -17,6 +17,17 @@ export interface Movie {
     category_ids: number[];
 }
 
+
+export type User = {
+    id: number;
+    username: string;
+    email: string;
+    password: string;
+    full_name: string;
+    avatar_url: string;
+    role: "ADMIN" | "USER";
+};
+
 export type CreateMovieRequest = {
     title: string;
     slug: string;
@@ -26,7 +37,6 @@ export type CreateMovieRequest = {
     category_ids: number[];
     poster?: File;
 };
-
 
 export interface Episode {
     id?: number;
