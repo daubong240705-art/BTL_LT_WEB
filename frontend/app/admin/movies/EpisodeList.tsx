@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchEpisodesByMovie } from "@/lib/api/episode";
 import { Film, Edit, Trash2 } from "lucide-react";
-import { Episode } from "@/app/types/movie";
+import { Episode } from "@/app/types/type";
 
 
 type Props = {

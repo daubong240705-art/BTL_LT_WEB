@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Save, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CreateMovieRequest, Movie } from "@/app/types/movie";
+import { CreateMovieRequest, Movie } from "@/app/types/type";
 import EpisodeList from "./EpisodeList";
 import { Controller, useWatch } from "react-hook-form";
 import { useMovieForm } from "./useMovieForm";

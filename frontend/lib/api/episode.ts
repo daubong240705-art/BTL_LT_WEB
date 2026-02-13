@@ -1,4 +1,4 @@
-import { Episode } from "@/app/types/movie";
+import { Episode } from "@/app/types/type";
 
 
 const API_URL = "http://localhost:3001/episodes";

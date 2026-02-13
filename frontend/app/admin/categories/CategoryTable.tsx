@@ -1,4 +1,4 @@
-import { Category } from "@/app/types/movie"
+import { Category } from "@/app/types/type"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Film, Plus, Search, Trash } from "lucide-react";

@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import MovieDialog from "./MovieDialog";
-import { Category, Movie } from "@/app/types/movie";
+import { Category, Movie } from "@/app/types/type";
 
 
 type Props = {

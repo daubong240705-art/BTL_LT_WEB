@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
-import { Movie } from "@/app/types/movie";
+import { Movie } from "@/app/types/type";
 
 export const movieSchema = z.object({
     title: z.string().min(1),
