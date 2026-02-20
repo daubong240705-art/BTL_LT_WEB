@@ -8,6 +8,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+import java.util.HashSet;
+
 @Entity
 @Table(name = "movies")
 @Getter
@@ -52,4 +55,11 @@ public class Movie {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "movie_category", // bảng trung gian
+            joinColumns = @JoinColumn(name = "movie_id"), // Cột khóa ngoại nối với bảng movies
+            inverseJoinColumns = @JoinColumn(name = "category_id") // Cột khóa ngoại nối với bảng categories
+    )
+    private Set<Category> categories = new HashSet<>();
 }
