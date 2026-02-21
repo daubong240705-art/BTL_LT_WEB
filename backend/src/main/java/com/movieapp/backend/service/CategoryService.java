@@ -1,7 +1,7 @@
 package com.movieapp.backend.service;
 
 import com.movieapp.backend.domain.Category;
-import com.movieapp.backend.dto.CategoryDTO;
+import com.movieapp.backend.dto.Category.CategoryDTO;
 import com.movieapp.backend.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 

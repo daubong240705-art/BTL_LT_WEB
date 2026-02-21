@@ -1,6 +1,6 @@
 package com.movieapp.backend.controller;
 
-import com.movieapp.backend.dto.CategoryDTO;
+import com.movieapp.backend.dto.Category.CategoryDTO;
 import com.movieapp.backend.service.CategoryService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

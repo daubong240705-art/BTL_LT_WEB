@@ -1,4 +1,4 @@
-package com.movieapp.backend.dto;
+package com.movieapp.backend.dto.Category;
 
 import lombok.Builder;
 import lombok.Data;

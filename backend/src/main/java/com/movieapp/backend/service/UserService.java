@@ -1,7 +1,7 @@
 package com.movieapp.backend.service;
 
 import com.movieapp.backend.domain.User;
-import com.movieapp.backend.dto.UserDTO;
+import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

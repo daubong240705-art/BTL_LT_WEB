@@ -1,6 +1,6 @@
 package com.movieapp.backend.controller;
 
-import com.movieapp.backend.dto.UserDTO;
+import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.service.UserService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

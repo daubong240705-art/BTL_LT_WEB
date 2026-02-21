@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 
-import com.movieapp.backend.dto.CategoryDTO;
+import com.movieapp.backend.dto.Category.CategoryDTO;
 
 @Data
 @Builder

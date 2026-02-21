@@ -4,7 +4,7 @@ import com.movieapp.backend.domain.Category;
 import com.movieapp.backend.domain.Movie;
 import com.movieapp.backend.domain.MovieStatus;
 import com.movieapp.backend.domain.MovieType;
-import com.movieapp.backend.dto.CategoryDTO;
+import com.movieapp.backend.dto.Category.CategoryDTO;
 import com.movieapp.backend.dto.Movie.MovieDTO;
 import com.movieapp.backend.dto.Movie.MovieRequest;
 import com.movieapp.backend.repository.CategoryRepository;
