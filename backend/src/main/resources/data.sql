@@ -44,3 +44,33 @@ INSERT IGNORE INTO movie_category (movie_id, category_id) VALUES (1, 2);
 -- Arcane (id=2) có thể loại Hành động (id=1) và Hoạt hình (id=3)
 INSERT IGNORE INTO movie_category (movie_id, category_id) VALUES (2, 1);
 INSERT IGNORE INTO movie_category (movie_id, category_id) VALUES (2, 3);
+
+
+-- 4. Chèn dữ liệu Người dùng (Users)
+-- Tài khoản ADMIN
+INSERT IGNORE INTO users (id, username, email, password, full_name, avatar_url, role, created_at, updated_at)
+VALUES (
+    1,
+    'admin',
+    'admin@movieapp.com',
+    '123456', -- Lưu ý: Mật khẩu hiện tại đang để tạm dạng chữ thường để test
+    'Quản Trị Viên',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
+    'ADMIN',
+    NOW(),
+    NOW()
+);
+
+-- Tài khoản USER bình thường
+INSERT IGNORE INTO users (id, username, email, password, full_name, avatar_url, role, created_at, updated_at)
+VALUES (
+    2,
+    'khangia1',
+    'user1@gmail.com',
+    '123456',
+    'Khán Giả VIP',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=User1',
+    'USER',
+    NOW(),
+    NOW()
+);

@@ -1,31 +1,30 @@
-import { User } from "@/app/types/type"
+// import { User } from "@/app/types/type"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Mail, Plus, Search, Shield, Trash2 } from "lucide-react";
-import { useState } from "react";
-import UserDialog from "./UserDialog";
+import { Edit, Film, Mail, Plus, Search, Shield, Trash2 } from "lucide-react";
+import { useAdminUsers } from "./hooks/useAdminUsers";
+// import { useState } from "react";
+// import UserDialog from "./UserDialog";
 
-type Props = {
-    users: User[],
-    isLoading: boolean
-}
-export default function UserTable({ users, isLoading }: Props) {
-    const [open, setOpen] = useState(false)
-    const [mode, setMode] = useState<"add" | "edit">("add");
-    const [selectedUser, setSelectedUser] = useState<User | undefined>();
+
+export default function UserTable() {
+    const { data: users, isLoading, isError, error } = useAdminUsers();
+    // const [open, setOpen] = useState(false)
+    // const [mode, setMode] = useState<"add" | "edit">("add");
+    // const [selectedUser, setSelectedUser] = useState<User | undefined>();
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-white">Trang quản lý người dùng</h1>
-                    <p className="text-gray-400 text-sm mt-1">Tổng số: {users.length} người dùng</p>
+                    <p className="text-gray-400 text-sm mt-1">Tổng số: {users?.length} người dùng</p>
                 </div>
                 <Button
-                    onClick={() => {
-                        setMode("add");
-                        setOpen(true);
-                    }}
+                    // onClick={() => {
+                    //     setMode("add");
+                    //     setOpen(true);
+                    // }}
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium shadow-lg shadow-green-900/20">
                     <Plus className="w-5 h-5" />
                     <span>Thêm người dùng</span>
@@ -67,22 +66,16 @@ export default function UserTable({ users, isLoading }: Props) {
                             </TableRow>
                         </TableHeader>
                         <TableBody className="divide-y divide-gray-700">
-                            {/* {isLoading && (
-                                <TableRow className="hover:bg-gray-700/30 transition-colors group">
-                                    <TableCell colSpan={4} className="px-6 py-4 text-gray-400">
-                                        Đang tải người dùng...
-                                    </TableCell>
-                                </TableRow>
-                            )} */}
 
-                            {users.map((user) => (
+
+                            {users?.map((user) => (
                                 <TableRow key={user.id} className="hover:bg-gray-700/30 transition-all group hover:-translate-y-1">
                                     <TableCell className="px-6 py-4 text-gray-500 font-mono">{user.id}</TableCell>
                                     <TableCell className="px-6 py-4">
                                         <div className="flex items-center gap-4">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
-                                                src={user.avatar_url}
+                                                src={user.avatarUrl}
                                                 alt={user.username}
                                                 width={48}
                                                 height={64}
@@ -90,7 +83,7 @@ export default function UserTable({ users, isLoading }: Props) {
                                             />
                                             <div>
                                                 <div className="text-white font-bold group-hover:text-blue-500 transition-colors">
-                                                    {user.full_name}
+                                                    {user.fullName}
                                                 </div>
                                                 <div className="text-gray-500 text-xs mt-1">
                                                     {user.username}
@@ -120,11 +113,11 @@ export default function UserTable({ users, isLoading }: Props) {
                                     <TableCell className="px-6 py-4">
                                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button
-                                                onClick={() => {
-                                                    setMode("edit");
-                                                    setOpen(true);
-                                                    setSelectedUser(user);
-                                                }}
+                                                // onClick={() => {
+                                                //     setMode("edit");
+                                                //     setOpen(true);
+                                                //     setSelectedUser(user);
+                                                // }}
                                                 className="p-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-colors border border-blue-600/20">
                                                 <Edit className="w-4 h-4" />
                                             </Button>
@@ -141,12 +134,29 @@ export default function UserTable({ users, isLoading }: Props) {
 
                         </TableBody>
                     </Table>
-                    <UserDialog
+
+                    {isLoading && (
+
+                        <div className="flex flex-col items-center justify-center py-20 bg-gray-800/30 rounded-xl border border-dashed border-gray-700">
+                            <Film className="w-16 h-16 text-gray-600 mb-4" />
+                            <h3 className="text-xl font-semibold text-white mb-2">Đang tải thể loại...</h3>
+                        </div>
+
+                    )}
+                    {isError && (
+
+                        <div className="flex flex-col items-center justify-center py-20 bg-gray-800/30 rounded-xl border border-dashed border-gray-700">
+                            <Film className="w-16 h-16 text-gray-600 mb-4" />
+                            <h3 className="text-xl font-semibold text-white mb-2">Đã xảy ra lỗi: {error.message}</h3>
+                        </div>
+
+                    )}
+                    {/* <UserDialog
                         open={open}
                         onOpenChange={setOpen}
                         mode={mode}
                         initialData={selectedUser}
-                    />
+                    /> */}
                 </div>
             </div>
         </div >

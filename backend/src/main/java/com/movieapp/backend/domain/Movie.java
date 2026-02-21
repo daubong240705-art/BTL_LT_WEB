@@ -12,6 +12,8 @@ import java.util.HashSet;
 @Table(name = "movies")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Movie {
 
     @Id

@@ -1,6 +1,17 @@
 
 export type MovieType = 'SINGLE' | 'SERIES';
 export type MovieStatus = 'ONGOING' | 'COMPLETED';
+export type Role = 'ADMIN' | 'USER';
+
+export interface User {
+    id: number;
+    username: string;
+    email: string;
+    fullName: string;
+    avatarUrl: string;
+    role: Role;
+    createdAt: string;
+}
 
 export interface Category {
     id: number;
