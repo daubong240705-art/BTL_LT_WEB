@@ -3,17 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Film, Plus, Search, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useAdminMovies } from "./hooks/useAdminMovies";
+// import { useState } from "react";
 // import MovieDialog from "./MovieDialog";
 // import { Category, Movie } from "@/app/types/type";
-import { useAdminMovies } from "./hooks/useAdminMovies";
+
 
 
 
 export default function MoviesTable() {
     const { data: movies, isLoading, isError, error } = useAdminMovies();
-    const [open, setOpen] = useState(false)
-    const [mode, setMode] = useState<"add" | "edit">("add");
+    // const [open, setOpen] = useState(false)
+    // const [mode, setMode] = useState<"add" | "edit">("add");
     // const [selectedMovie, setSelectedMovie] = useState<Movie | undefined>();
 
     return (
@@ -24,10 +25,10 @@ export default function MoviesTable() {
                     <p className="text-gray-400 text-sm mt-1">Tổng số: {movies?.length} phim</p>
                 </div>
                 <Button
-                    onClick={() => {
-                        setMode("add");
-                        setOpen(true);
-                    }}
+                    // onClick={() => {
+                    //     setMode("add");
+                    //     setOpen(true);
+                    // }}
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium shadow-lg shadow-green-900/20">
                     <Plus className="w-5 h-5" />
                     <span>Thêm phim</span>

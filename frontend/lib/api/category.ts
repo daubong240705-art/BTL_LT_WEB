@@ -1,4 +1,5 @@
 export type Category = {
+    slug: ReactNode;
     id: number;
     name: string;
 };

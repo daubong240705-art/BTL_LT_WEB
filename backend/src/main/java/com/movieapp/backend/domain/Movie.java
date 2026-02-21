@@ -1,13 +1,10 @@
 package com.movieapp.backend.domain;
 
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Set;
 import java.util.HashSet;
 
