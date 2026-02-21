@@ -1,4 +1,3 @@
-"use client"
 import { ChevronDown, Film, Heart, Search } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button"
@@ -8,16 +7,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useQuery } from "@tanstack/react-query";
-import { fetchCategories } from "@/lib/api/category";
+
 import { Input } from "@/components/ui/input";
+import { getCategories } from "../service/main.api";
 
-
+const categories = await getCategories();
 export default function Header() {
-    const { data: categories = [] } = useQuery({
-        queryKey: ["categories"],
-        queryFn: fetchCategories,
-    })
+
     return (
         <header className="bg-[#141414] border-b border-gray-800/50 sticky top-0 z-50 backdrop-blur-sm">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
