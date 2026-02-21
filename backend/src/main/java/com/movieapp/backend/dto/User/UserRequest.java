@@ -1,17 +1,13 @@
 package com.movieapp.backend.dto.User;
 
-import lombok.Builder;
 import lombok.Data;
 
-
-
 @Data
-@Builder
-public class UserDTO {
-    private Long id;
+public class UserRequest {
     private String username;
     private String email;
     private String fullName;
+    private String password;
     private String avatarUrl;
     private String role;
 }

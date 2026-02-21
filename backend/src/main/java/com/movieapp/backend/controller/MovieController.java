@@ -33,21 +33,21 @@ public class MovieController {
         return movieService.getMovieBySlug(slug);
     }
 
-    // API: THÊM PHIM MỚI
+    // API: Thêm phim
     @PostMapping
     public ResponseEntity<MovieDTO> createMovie(@RequestBody MovieRequest request) {
         MovieDTO createdMovie = movieService.createMovie(request);
-        return new ResponseEntity<>(createdMovie, HttpStatus.CREATED); // Trả về mã 201 Created
+        return new ResponseEntity<>(createdMovie, HttpStatus.CREATED);
     }
 
-    // API: CẬP NHẬT PHIM (Dựa vào ID)
+    // API: Cập nhật phim bằng id
     @PutMapping("/{id}")
     public ResponseEntity<MovieDTO> updateMovie(@PathVariable("id") Long id, @RequestBody MovieRequest request) {
         MovieDTO updatedMovie = movieService.updateMovie(id, request);
-        return ResponseEntity.ok(updatedMovie); // Trả về mã 200 OK
+        return ResponseEntity.ok(updatedMovie); 
     }
 
-    // API: XÓA PHIM (Dựa vào ID)
+    // API: Xoá phim bằng id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable("id") Long id) {
         movieService.deleteMovie(id);
