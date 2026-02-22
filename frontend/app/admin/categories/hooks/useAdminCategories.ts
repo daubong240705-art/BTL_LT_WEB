@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { CategoryApi } from "../service/category.api";
+import { CategoryApi } from "../../service/api/category.api";
 
 export const useAdminCategories = () => {
     return useQuery({

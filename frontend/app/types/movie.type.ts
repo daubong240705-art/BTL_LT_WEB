@@ -34,3 +34,19 @@ export interface Movie {
     updatedAt: string;
     categories: Category[];
 }
+
+export interface MovieRequest {
+    id: number;
+    title: string;
+    description: string;
+    type: MovieType;
+    status: MovieStatus;
+    posterUrl: string;
+    thumbUrl: string;
+    publishYear: number;
+    viewCount: number;
+    slug: string;
+    createdAt: string;
+    updatedAt: string;
+    categories: string[];
+}

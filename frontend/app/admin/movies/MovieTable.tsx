@@ -4,8 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Film, Plus, Search, Trash2 } from "lucide-react";
 import { useAdminMovies } from "./hooks/useAdminMovies";
-// import { useState } from "react";
-// import MovieDialog from "./MovieDialog";
+import { useState } from "react";
+import MovieDialog from "./MovieDialog";
+import { Movie } from "@/app/types/movie.type";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { movieApi } from "../service/api/movie.api";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 // import { Category, Movie } from "@/app/types/type";
 
 
@@ -13,9 +17,27 @@ import { useAdminMovies } from "./hooks/useAdminMovies";
 
 export default function MoviesTable() {
     const { data: movies, isLoading, isError, error } = useAdminMovies();
-    // const [open, setOpen] = useState(false)
-    // const [mode, setMode] = useState<"add" | "edit">("add");
-    // const [selectedMovie, setSelectedMovie] = useState<Movie | undefined>();
+    const [isMovieDialogOpen, setIsMovieDialogOpen] = useState(false);
+    const [mode, setMode] = useState<"add" | "edit">("add");
+    const [movieToDelete, setMovieToDelete] = useState<Movie | null>(null);
+    const [selectedMovie, setSelectedMovie] = useState<Movie | undefined>();
+    const queryClient = useQueryClient();
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => movieApi.deleteMovie(id),
+
+        onSuccess: () => {
+            // toast.success("Xoá phim thành công");
+
+            queryClient.invalidateQueries({
+                queryKey: ["movies"],
+            });
+        },
+
+        // onError: () => {
+        //     toast.error("Xoá thất bại");
+        // },
+    });
 
     return (
         <div className="space-y-6">
@@ -25,10 +47,10 @@ export default function MoviesTable() {
                     <p className="text-gray-400 text-sm mt-1">Tổng số: {movies?.length} phim</p>
                 </div>
                 <Button
-                    // onClick={() => {
-                    //     setMode("add");
-                    //     setOpen(true);
-                    // }}
+                    onClick={() => {
+                        setMode("add");
+                        setIsMovieDialogOpen(true);
+                    }}
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium shadow-lg shadow-green-900/20">
                     <Plus className="w-5 h-5" />
                     <span>Thêm phim</span>
@@ -67,15 +89,6 @@ export default function MoviesTable() {
                         </TableHeader>
 
                         <TableBody className="divide-y divide-gray-700">
-
-
-                            {/* {isLoading && (
-                                <TableRow className="hover:bg-gray-700/30 transition-colors group">
-                                    <TableCell colSpan={4} className="px-6 py-4 text-gray-400">
-                                        Đang tải phim...
-                                    </TableCell>
-                                </TableRow>
-                            )} */}
 
                             {movies?.map((movie) => (
                                 <TableRow key={movie.id} className="hover:bg-gray-700/30 transition-all group hover:-translate-y-1">
@@ -131,15 +144,18 @@ export default function MoviesTable() {
                                     <TableCell className="px-6 py-4">
                                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button
-                                                // onClick={() => {
-                                                //     setMode("edit");
-                                                //     setOpen(true);
-                                                //     setSelectedMovie(movie);
-                                                // }}
+                                                onClick={() => {
+                                                    setMode("edit");
+                                                    setSelectedMovie(movie);
+                                                    setIsMovieDialogOpen(true);
+                                                }}
                                                 className="p-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-colors border border-blue-600/20">
                                                 <Edit className="w-4 h-4" />
                                             </Button>
                                             <Button
+                                                type="button"
+                                                variant="destructive"
+                                                onClick={() => setMovieToDelete(movie)}
                                                 className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors border border-red-600/20">
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
@@ -152,6 +168,7 @@ export default function MoviesTable() {
 
                         </TableBody>
                     </Table>
+
                     {isLoading && (
                         <div className="flex flex-col items-center justify-center py-20 bg-gray-800/30 rounded-xl border border-dashed border-gray-700">
                             <Film className="w-16 h-16 text-gray-600 mb-4" />
@@ -165,12 +182,23 @@ export default function MoviesTable() {
                         </div>
                     )}
 
-                    {/* <MovieDialog
-                        open={open}
-                        onOpenChange={setOpen}
+                    <MovieDialog
+                        open={isMovieDialogOpen}
+                        onOpenChange={setIsMovieDialogOpen}
                         mode={mode}
                         initialData={selectedMovie}
-                    /> */}
+                    />
+                    <ConfirmDialog
+                        isOpen={!!movieToDelete}
+                        onClose={() => setMovieToDelete(null)}
+                        onConfirm={() => {
+                            if (movieToDelete) {
+                                deleteMutation.mutate(movieToDelete.id);
+                            }
+                        }}
+                        title="Xác nhận xoá phim"
+                        message="Hành động này không thể hoàn tác. Bạn có chắc muốn xoá phim này không?"
+                    />
                 </div>
             </div>
         </div >
