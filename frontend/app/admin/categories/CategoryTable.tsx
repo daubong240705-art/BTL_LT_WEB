@@ -1,20 +1,36 @@
-// import { Category } from "@/app/types/type"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Film, Plus, Search, Trash } from "lucide-react";
 import { useAdminCategories } from "./hooks/useAdminCategories";
-// import { useState } from "react";
-// import CategoryDialog from "./CategoryDialog";
+import { useState } from "react";
+import CategoryDialog from "./CategoryDialog";
+import { Category } from "@/app/types/movie.type";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { categoryApi } from "../service/api/category.api";
 
 
 
 export default function CategoryTable() {
     const { data: categories, isLoading, isError, error } = useAdminCategories();
-    console.log(categories)
-    // const [open, setOpen] = useState(false)
-    // const [mode, setMode] = useState<"add" | "edit">("add");
-    // const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
+    const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+    const [mode, setMode] = useState<"add" | "edit">("add");
+    const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
 
+    const queryClient = useQueryClient();
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => categoryApi.deleteCategory(id),
+        onSuccess: () => {
+            // toast.success("Xoá phim thành công");
+            queryClient.invalidateQueries({
+                queryKey: ["categories"],
+            });
+        },
+        // onError: () => {
+        //     toast.error("Xoá thất bại");
+        // },
+    });
     return (
         <div>
             <div className="space-y-6">
@@ -24,10 +40,10 @@ export default function CategoryTable() {
                         <p className="text-gray-400 text-sm mt-1">Tổng số: {categories?.length} thể loại</p>
                     </div>
                     <Button
-                        // onClick={() => {
-                        //     setMode("add");
-                        //     setOpen(true);
-                        // }}
+                        onClick={() => {
+                            setMode("add");
+                            setIsCategoryDialogOpen(true);
+                        }}
                         className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium shadow-lg shadow-green-900/20">
                         <Plus className="w-5 h-5" />
                         <span>Thêm thể loại</span>
@@ -69,16 +85,20 @@ export default function CategoryTable() {
                             <div className="flex items-center justify-between pt-4 border-t border-gray-700/50">
                                 <div className="flex gap-2">
                                     <Button
-                                        // onClick={() => {
-                                        //     setMode("edit");
-                                        //     setOpen(true);
-                                        //     setSelectedCategory(cat);
+                                        onClick={() => {
+                                            setMode("edit");
+                                            setIsCategoryDialogOpen(true);
+                                            setSelectedCategory(cat);
 
-                                        // }}
+                                        }}
                                         className="p-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-colors border border-blue-600/20">
                                         <Edit className="w-4 h-4" />
                                     </Button>
-                                    <Button className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors border border-red-600/20">
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        onClick={() => setCategoryToDelete(cat)}
+                                        className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors border border-red-600/20">
                                         <Trash className="w-4 h-4" />
                                     </Button>
                                 </div>
@@ -105,12 +125,23 @@ export default function CategoryTable() {
 
                 )}
             </div >
-            {/* <CategoryDialog
-                open={open}
-                onOpenChange={setOpen}
+            <CategoryDialog
+                open={isCategoryDialogOpen}
+                onOpenChange={setIsCategoryDialogOpen}
                 mode={mode}
                 initialData={selectedCategory}
-            /> */}
+            />
+            <ConfirmDialog
+                isOpen={!!categoryToDelete}
+                onClose={() => setCategoryToDelete(null)}
+                onConfirm={() => {
+                    if (categoryToDelete) {
+                        deleteMutation.mutate(categoryToDelete.id);
+                    }
+                }}
+                title="Xác nhận xoá thể loại"
+                message="Hành động này không thể hoàn tác. Bạn có chắc muốn xoá thể loại này không?"
+            />
         </div>
     )
 }

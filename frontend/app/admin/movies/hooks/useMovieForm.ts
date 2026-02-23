@@ -5,53 +5,54 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const movieSchema = z.object({
-    title: z
-        .string()
-        .min(1, "Tiêu đề không được để trống")
-        .max(255, "Tiêu đề quá dài"),
+const movieSchema = z
+    .object({
+        title: z
+            .string()
+            .min(1, "Tiêu đề không được để trống")
+            .max(255, "Tiêu đề quá dài"),
 
-    slug: z
-        .string()
-        .min(1, "Slug không được để trống")
-        .regex(/^[a-z0-9-]+$/, "Slug chỉ gồm chữ thường, số và dấu -"),
+        slug: z
+            .string()
+            .min(1, "Slug không được để trống")
+            .regex(/^[a-z0-9-]+$/, "Slug chỉ gồm chữ thường, số và dấu -"),
 
-    description: z
-        .string()
-        .min(1, "Mô tả không được để trống"),
+        description: z
+            .string()
+            .min(1, "Mô tả không được để trống"),
 
-    type: z.enum(["SINGLE", "SERIES"], {
-        message: "Type không hợp lệ",
-    }),
+        type: z.enum(["SINGLE", "SERIES"], {
+            message: "Type không hợp lệ",
+        }),
 
-    status: z.enum(["ONGOING", "COMPLETED"], {
-        message: "Satatus không hợp lệ",
-    }),
+        status: z.enum(["ONGOING", "COMPLETED"], {
+            message: "Satatus không hợp lệ",
+        }),
 
-    posterUrl: z
-        .string()
-        .url("Poster phải là URL hợp lệ")
-        .optional()
-        .or(z.literal("")),
+        posterUrl: z
+            .string()
+            .url("Poster phải là URL hợp lệ")
+            .optional()
+            .or(z.literal("")),
 
-    thumbUrl: z
-        .string()
-        .url("Thumbnail phải là URL hợp lệ")
-        .optional()
-        .or(z.literal("")),
+        thumbUrl: z
+            .string()
+            .url("Thumbnail phải là URL hợp lệ")
+            .optional()
+            .or(z.literal("")),
 
-    publishYear: z.preprocess(
-        (val) => Number(val),
-        z.number()
-            .int("Năm phải là số nguyên")
-            .min(1900, "Năm không hợp lệ")
-            .max(new Date().getFullYear(), "Năm không hợp lệ")
-    ),
+        publishYear: z.preprocess(
+            (val) => Number(val),
+            z.number()
+                .int("Năm phải là số nguyên")
+                .min(1900, "Năm không hợp lệ")
+                .max(new Date().getFullYear(), "Năm không hợp lệ")
+        ),
 
-    categoryIds: z
-        .array(z.number().int().positive())
-        .min(1, "Phải chọn ít nhất 1 thể loại"),
-})
+        categoryIds: z
+            .array(z.number().int().positive())
+            .min(1, "Phải chọn ít nhất 1 thể loại"),
+    })
 
 export type MovieFormValues = z.infer<typeof movieSchema>;
 
@@ -89,7 +90,6 @@ export function useMovieForm(
                 publishYear: initialData.publishYear,
                 categoryIds: initialData.categories?.map(c => c.id) ?? [],
             });
-
         }
     }, [mode, initialData, form]);
 

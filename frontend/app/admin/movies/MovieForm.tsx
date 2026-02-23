@@ -8,11 +8,12 @@ import EpisodeList from "./EpisodeList";
 import { Controller } from "react-hook-form";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CategoryApi } from "../service/api/category.api";
+import { categoryApi } from "../service/api/category.api";
 
 import { MovieFormValues, useMovieForm } from "./hooks/useMovieForm";
 import { Movie } from "@/app/types/movie.type";
 import { movieApi } from "../service/api/movie.api";
+import { FormError } from "@/components/shared/FormError";
 
 
 
@@ -29,32 +30,12 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
     const form = useMovieForm(mode, initialData);
     const { data: categories = [], isLoading, isError, } = useQuery({
         queryKey: ["categories"],
-        queryFn: CategoryApi.getAllAdminCategories,
+        queryFn: categoryApi.getAllAdminCategories,
     });
 
     const selected = form.watch("categoryIds") || [];
 
     const queryClient = useQueryClient();
-
-    // const mutation = useMutation({
-    //     mutationFn: (data: CreateMovieRequest) => {
-    //         if (mode === "edit" && initialData?.id) {
-    //             return updateMovie(initialData.id, data);
-    //         }
-
-    //         return createMovie(data);
-    //     },
-    //     onSuccess: () => {
-    //         queryClient.invalidateQueries({ queryKey: ["movies"] });
-    //         onClose();
-    //         form.reset();
-    //     },
-    // });
-
-    // const onSubmit = (data: CreateMovieRequest) => {
-    //     mutation.mutate(data);
-    // };
-
     const mutation = useMutation({
         mutationFn: (data: MovieFormValues) =>
             mode === "add"
@@ -62,33 +43,22 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                 : movieApi.updateMovie(initialData!.id, data),
 
         onSuccess: () => {
-            // toast.success(
-            //     mode === "add"
-            //         ? "Tạo phim thành công"
-            //         : "Cập nhật thành công"
-            // );
-
             queryClient.invalidateQueries({
                 queryKey: ["movies"],
             });
 
-            if (mode === "add") {
-                form.reset();
-            }
+            onClose();
+
         },
 
-        // onError: (error: any) => {
-        //     console.error(error);
-        //     toast.error("Có lỗi xảy ra");
-        // },
     });
 
 
     const onSubmit = (data: MovieFormValues) => {
-        console.log("SUBMIT DATA:", data);
+        // console.log("SUBMIT DATA:", data);
         mutation.mutate(data);
     };
-    console.log(form.formState.errors);
+    // console.log(form.formState.errors);
     // console.log(initialData);
     return (
         <form
@@ -160,24 +130,44 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                     </div>
 
                     {/* CỘT PHẢI: Thông tin chi tiết */}
-                    <div className="col-span-8 space-y-5">
+                    <div className="col-span-8 space-y-">
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-gray-400 block">Tên phim</label>
+                            <div>
+                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Tên phim</label>
                                 <Input type="text"
                                     {...form.register("title")}
                                     placeholder="Nhập tên phim..."
-                                    className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-5 rounded-lg
-                                    focus-visible:ring-0 focus:border-red-500 hover:border-red-500 transition-all" />
+                                    className="w-full bg-gray-800 border
+                                    border-gray-700 text-white
+                                    px-4 py-5 rounded-lg
+                                    focus:ring-2
+                                    focus:ring-red-500
+                                    focus:border-red-500
+                                    hover:border-red-500
+                                    hover:shadow-lg
+                                    hover:shadow-red-500/20
+                                    transition-all" />
+                                <FormError message={form.formState.errors.title?.message} />
+
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-gray-400 block">Đường dẫn (Slug)</label>
+                            <div >
+                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Đường dẫn</label>
                                 <Input type="text"
                                     {...form.register("slug")}
                                     placeholder="Nhập đường dẫn phim..."
-                                    className="w-full bg-gray-800 border border-gray-700 text-white px-4 py-5 rounded-lg
-                                    focus-visible:ring-0 focus:border-red-500 hover:border-red-500 transition-all" />
+                                    className="w-full bg-gray-800 border
+                                    border-gray-700 text-white
+                                    px-4 py-5 rounded-lg
+                                    focus:ring-2
+                                    focus:ring-red-500
+                                    focus:border-red-500
+                                    hover:border-red-500
+                                    hover:shadow-lg
+                                    hover:shadow-red-500/20
+                                    transition-all" />
+                                <FormError message={form.formState.errors.slug?.message} />
+
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-4">
@@ -190,6 +180,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                     text-white px-4 py-2.5 rounded-lg
                                     focus-visible:ring-0 focus:border-red-500 hover:border-red-500
                                     transition-all" />
+                                <FormError message={form.formState.errors.publishYear?.message} />
+
                             </div>
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Trạng thái</label>
@@ -200,8 +192,12 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                         <Select key={field.value} value={field.value} onValueChange={field.onChange}>
                                             <SelectTrigger className="w-full bg-gray-800 border-gray-700
                                             text-white px-4 py-2.5 rounded-lg
-                                            focus-visible:ring-0 focus:border-red-500 hover:border-red-500
-                                            transition-all data-placeholder:text-gray-400 data-placeholder:font-sm">
+                                            focus-visible:ring-0
+                                            focus:border-red-500
+                                            hover:border-red-500
+                                            transition-all
+                                            data-placeholder:text-gray-400
+                                            data-placeholder:font-sm">
                                                 <SelectValue placeholder="Trạng thái" />
                                             </SelectTrigger>
                                             <SelectContent className=" bg-gray-800 border border-gray-700 text-white">
@@ -211,6 +207,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                         </Select>
                                     )}
                                 />
+                                <FormError message={form.formState.errors.status?.message} />
+
                             </div>
                             <div>
                                 <label className="text-sm font-semibold text-gray-400 mb-1 block">Loại phim</label>
@@ -232,11 +230,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                         </Select>
                                     )}
                                 />
+                                <FormError message={form.formState.errors.type?.message} />
+
                             </div>
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Thể loại</label>
+                            <label className="text-sm font-semibold text-gray-400 mb-1 block">Thể loại</label>
                             <div className="flex justify-between flex-wrap gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                                 {isLoading && (
                                     <span className="text-sm text-gray-500">Đang tải thể loại...</span>
@@ -269,15 +269,26 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                     );
                                 })}
                             </div>
+                            <FormError message={form.formState.errors.categoryIds?.message} />
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Mô tả nội dung</label>
+                            <label className="text-sm font-semibold text-gray-400 mb-1 block">Mô tả nội dung</label>
                             <Textarea
                                 {...form.register("description")}
                                 placeholder="Nhập tóm tắt nội dung phim..."
-                                className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg
-                                focus-visible:ring-0 focus:border-red-500 hover:border-red-500 transition-all" />
+                                className="w-full h-30 bg-gray-800 border
+                                border-gray-700 text-white 
+                                px-4 py-2.5 rounded-lg
+                                focus:ring-2
+                                focus:ring-red-500
+                                focus:border-red-500
+                                hover:border-red-500
+                                hover:shadow-lg
+                                hover:shadow-red-500/20
+                                transition-all" />
+                            <FormError message={form.formState.errors.description?.message} />
+
                         </div>
 
                         {mode === "edit" && initialData?.id && (
@@ -299,7 +310,6 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                 <Button
                     type="submit"
                     disabled={mutation.isPending}
-
                     className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2">
                     <Save className="w-4 h-4" />
                     {mutation.isPending ? "Đang lưu..." : "Lưu"}

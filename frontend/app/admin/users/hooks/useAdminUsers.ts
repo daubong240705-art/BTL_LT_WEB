@@ -5,8 +5,7 @@ import { userApi } from '../../service/api/user.api';
 
 export const useAdminUsers = () => {
   return useQuery<User[], Error>({
-    queryKey: ['admin', 'users'],
+    queryKey: ['users'],
     queryFn: userApi.getAllAdminUsers,
-    staleTime: 5 * 60 * 1000,
   });
 };

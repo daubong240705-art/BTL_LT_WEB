@@ -58,6 +58,7 @@ public class UserService {
         user.setFullName(request.getFullName());
         user.setAvatarUrl(request.getAvatarUrl());
         user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        user.setPassword(request.getPassword());
         User updatedUser = userRepository.save(user);
         return mapToDTO(updatedUser);
     }

@@ -1,7 +1,8 @@
-import { Category } from "@/app/types/type";
+
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Edit, Plus } from "lucide-react";
 import CategoryForm from "./CategoryForm";
+import { Category } from "@/app/types/movie.type";
 
 
 type Props = {

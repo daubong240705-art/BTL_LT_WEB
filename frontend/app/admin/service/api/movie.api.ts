@@ -18,6 +18,7 @@ export const movieApi = {
     const res = await api.put(`/movies/${id}`, data);
     return res.data;
   },
+
   deleteMovie: (id: number) =>
     api.delete(`/movies/${id}`),
 };
