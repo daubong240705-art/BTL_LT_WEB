@@ -49,9 +49,12 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                             className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus: ring-green-500
                             focus:border-green-500
                             hover:border-green-500
+                            hover:shadow-lg
+                            hover:shadow-green-500/20
                             transition-all"
                             placeholder="Nhập tên thể loại"
                         />
@@ -68,9 +71,12 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                             className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus: ring-green-500
                             focus:border-green-500
                             hover:border-green-500
+                            hover:shadow-lg
+                            hover:shadow-green-500/20
                             transition-all"
                             placeholder="Nhập đường dẫn"
                         />

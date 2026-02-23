@@ -79,9 +79,12 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                             className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus:ring-blue-500
                             focus:border-blue-500
                             hover:border-blue-500
+                            hover:shadow-lg
+                            hover:shadow-blue-500/20
                             transition-all"
                         />
 
@@ -97,9 +100,12 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus:ring-blue-500
                             focus:border-blue-500
                             hover:border-blue-500
+                            hover:shadow-lg
+                            hover:shadow-blue-500/20
                             transition-all"
                             />
                         </div>
@@ -125,9 +131,12 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 pl-10 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus:ring-blue-500
                             focus:border-blue-500
                             hover:border-blue-500
+                            hover:shadow-lg
+                            hover:shadow-blue-500/20
                             transition-all"
                             />
                         </div>
@@ -180,9 +189,12 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                             className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus:ring-blue-500
                             focus:border-blue-500
                             hover:border-blue-500
+                            hover:shadow-lg
+                            hover:shadow-blue-500/20
                             transition-all"
                         />
 
@@ -193,9 +205,12 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                             className="w-full bg-gray-800
                             border border-gray-700
                             text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus:ring-blue-500
                             focus:border-blue-500
                             hover:border-blue-500
+                            hover:shadow-lg
+                            hover:shadow-blue-500/20
                             transition-all"
                         />
                     </div>

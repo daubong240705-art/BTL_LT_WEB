@@ -47,7 +47,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable("id") Long id,
             @RequestBody CategoryRequest request) {
         CategoryDTO updatedCategory = categoryService.updateCategory(id, request);
-        return ResponseEntity.ok(updatedCategory); // Trả về mã 200 OK
+        return ResponseEntity.ok(updatedCategory);
     }
 
     // API : Xoá thể loại

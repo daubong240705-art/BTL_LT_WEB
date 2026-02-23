@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/movies")
@@ -23,8 +24,13 @@ public class MovieController {
 
     // API: Lấy danh sách phim
     @GetMapping
-    public List<MovieDTO> getAllMovies() {
-        return movieService.getAllMovies();
+    public ResponseEntity<List<MovieDTO>> getAllMovies(
+            @RequestParam("curent") Optional<String> curentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        String sCurent = curentOptional.isPresent() ? curentOptional.get() : "";
+        String sPageSize = curentOptional.isPresent() ? pageSizeOptional.get() : "";
+
+        return ResponseEntity.ok(movieService.getAllMovies());
     }
 
     // API: Lấy chi tiết phim bằng slug
@@ -44,7 +50,7 @@ public class MovieController {
     @PutMapping("/{id}")
     public ResponseEntity<MovieDTO> updateMovie(@PathVariable("id") Long id, @RequestBody MovieRequest request) {
         MovieDTO updatedMovie = movieService.updateMovie(id, request);
-        return ResponseEntity.ok(updatedMovie); 
+        return ResponseEntity.ok(updatedMovie);
     }
 
     // API: Xoá phim bằng id

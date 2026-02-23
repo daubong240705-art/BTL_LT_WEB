@@ -57,9 +57,12 @@ export default function CategoryTable() {
                             placeholder="Tìm kiếm thể loại"
                             className="w-full bg-gray-900 border-gray-700
                             text-white pl-12 pr-4 py-5 rounded-lg
-                            focus-visible:ring-0
+                            focus-visible:ring-2
+                            focus:ring-green-500
                             focus:border-green-500
                             hover:border-green-500
+                            hover:shadow-lg
+                            hover:shadow-green-500/50
                             transition-all " />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                     </div>

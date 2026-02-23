@@ -1,6 +1,13 @@
+"use client"
 import { Film, Play, User } from "lucide-react";
+import { useAdminUsers } from "./users/hooks/useAdminUsers";
+import { useAdminCategories } from "./categories/hooks/useAdminCategories";
+import { useAdminMovies } from "./movies/hooks/useAdminMovies";
 
 export default function AdminPage() {
+    const { data: users } = useAdminUsers();
+    const { data: movies } = useAdminMovies();
+
     return (
         <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6 ">
@@ -14,7 +21,7 @@ export default function AdminPage() {
                         <div className="bg-white/20 p-3 rounded-lg">
                             <Film className="w-6 h-6" />
                         </div>
-                        <span className="text-2xl font-bold">123</span>
+                        <span className="text-2xl font-bold">{movies?.length}</span>
                     </div>
                     <h3 className="text-sm font-medium opacity-90">Tổng số phim</h3>
                 </div>
@@ -26,7 +33,7 @@ export default function AdminPage() {
                         <div className="bg-white/20 p-3 rounded-lg">
                             <User className="w-6 h-6" />
                         </div>
-                        <span className="text-2xl font-bold">123</span>
+                        <span className="text-2xl font-bold">{users?.length}</span>
                     </div>
                     <h3 className="text-sm font-medium opacity-90">Tổng số người dùng</h3>
                 </div>
@@ -38,7 +45,7 @@ export default function AdminPage() {
                         <div className="bg-white/20 p-3 rounded-lg">
                             <Play className="w-6 h-6" />
                         </div>
-                        <span className="text-2xl font-bold">123</span>
+                        <span className="text-2xl font-bold">?</span>
                     </div>
                     <h3 className="text-sm font-medium opacity-90">Tổng số luợt xem</h3>
                 </div>

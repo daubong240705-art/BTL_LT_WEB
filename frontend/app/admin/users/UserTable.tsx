@@ -59,9 +59,12 @@ export default function UserTable() {
                         placeholder="Tìm kiếm người dùng"
                         className="w-full bg-gray-900 border-gray-700
                         text-white pl-12 pr-4 py-5 rounded-lg
-                        focus-visible:ring-0
+                        focus-visible:ring-2
+                        focus:ring-blue-500
                         focus:border-blue-500
                         hover:border-blue-500
+                        hover:shadow-lg
+                        hover:shadow-blue-500/50
                         transition-all " />
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 </div>
