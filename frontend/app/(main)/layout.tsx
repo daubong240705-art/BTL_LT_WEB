@@ -1,6 +1,9 @@
 import Footer from "./components/main.footer";
 import Header from "./components/main.header";
+import { getCategories } from "./service/main.api";
 
+
+const categories = await getCategories();
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -9,7 +12,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
+        <Header
+          categories={categories} />
         {children}
         <Footer />
       </body>

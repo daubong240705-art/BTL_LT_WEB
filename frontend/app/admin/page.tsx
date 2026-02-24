@@ -1,7 +1,7 @@
 "use client"
 import { Film, Play, User } from "lucide-react";
 import { useAdminUsers } from "./users/hooks/useAdminUsers";
-import { useAdminCategories } from "./categories/hooks/useAdminCategories";
+
 import { useAdminMovies } from "./movies/hooks/useAdminMovies";
 
 export default function AdminPage() {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+// import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +29,13 @@ public class MovieService {
 
     public List<MovieDTO> getAllMovies() {
         List<Movie> movies = movieRepository.findAll();
+        return movies.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<MovieDTO> getAllMoviesBySlug(String slug) {
+        List<Movie> movies = movieRepository.findMoviesByCategorySlug(slug);
         return movies.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());

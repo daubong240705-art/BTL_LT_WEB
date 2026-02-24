@@ -14,6 +14,7 @@ import { MovieFormValues, useMovieForm } from "./hooks/useMovieForm";
 import { Movie } from "@/app/types/movie.type";
 import { movieApi } from "../service/api/movie.api";
 import { FormError } from "@/components/shared/FormError";
+import { useEffect } from "react";
 
 
 
@@ -52,7 +53,6 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
         },
 
     });
-
 
     const onSubmit = (data: MovieFormValues) => {
         // console.log("SUBMIT DATA:", data);

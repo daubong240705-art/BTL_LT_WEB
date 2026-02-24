@@ -3,7 +3,6 @@ package com.movieapp.backend.controller;
 import com.movieapp.backend.dto.Movie.MovieDTO;
 import com.movieapp.backend.dto.Movie.MovieRequest;
 import com.movieapp.backend.service.MovieService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +26,8 @@ public class MovieController {
     public ResponseEntity<List<MovieDTO>> getAllMovies(
             @RequestParam("curent") Optional<String> curentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-        String sCurent = curentOptional.isPresent() ? curentOptional.get() : "";
-        String sPageSize = curentOptional.isPresent() ? pageSizeOptional.get() : "";
+        // String sCurent = curentOptional.isPresent() ? curentOptional.get() : "";
+        // String sPageSize = curentOptional.isPresent() ? pageSizeOptional.get() : "";
 
         return ResponseEntity.ok(movieService.getAllMovies());
     }
@@ -37,6 +36,11 @@ public class MovieController {
     @GetMapping("/{slug}")
     public MovieDTO getMovieBySlug(@PathVariable("slug") String slug) {
         return movieService.getMovieBySlug(slug);
+    }
+
+    @GetMapping("/category/{slug}")
+    public List<MovieDTO> getAllMovieBySlug(@PathVariable("slug") String slug) {
+        return movieService.getAllMoviesBySlug(slug);
     }
 
     // API: Thêm phim

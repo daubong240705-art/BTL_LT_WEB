@@ -1,3 +1,4 @@
+"use client"
 import { ChevronDown, Film, Heart, Search } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button"
@@ -9,13 +10,27 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { Input } from "@/components/ui/input";
-import { getCategories } from "../service/main.api";
 
-const categories = await getCategories();
-export default function Header() {
+import { useEffect, useState } from "react";
+import { Category } from "@/app/types/movie.type";
 
+type Props = {
+    categories: Category[]
+}
+export default function Header({ categories }: Props) {
+    const [scrolled, setScrolled] = useState(false)
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 1)
+        }
+
+        window.addEventListener("scroll", handleScroll, { passive: true })
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
     return (
-        <header className="bg-[#141414] border-b border-gray-800/50 sticky top-0 z-50 backdrop-blur-sm">
+        <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-200
+        ${scrolled ? "bg-[#141414] " : "bg-transparent"}
+      `}>
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors">
@@ -26,7 +41,7 @@ export default function Header() {
                     <nav className="flex items-center gap-6">
                         <Link href="" className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors">Phim bộ</Link>
                         <Link href="" className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors">Phim lẻ</Link>
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                             <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors focus:outline-none" >
                                 Thể Loại <ChevronDown className="w-4 h-4" />
                             </DropdownMenuTrigger>
