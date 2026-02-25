@@ -1,8 +1,11 @@
 import { User } from "@/app/types/movie.type";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { userApi } from "../../service/api/user.api";
 
 
 
@@ -69,3 +72,22 @@ export function useUserForm(
 
     return form;
 }
+
+export const useUserMutation = (
+    mode: "add" | "edit",
+    userId?: number,
+    onClose?: () => void
+) => {
+    const router = useRouter();
+
+    return useMutation({
+        mutationFn: (data: UserFormValues) =>
+            mode === "add"
+                ? userApi.createUser(data)
+                : userApi.updateUser(userId!, data),
+        onSuccess: () => {
+            router.refresh();
+            onClose?.();
+        },
+    });
+};

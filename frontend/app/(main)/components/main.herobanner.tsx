@@ -14,20 +14,17 @@ export default function HeroBanner({ MovieBanner }: Props) {
                 <div className="absolute left-0 top-0 h-full w-[60%] bg-linear-to-r from-black via-black/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 w-full h-[35%] bg-linear-to-t from-black via-black/70 to-transparent" />
                 <div className="absolute top-0 left-0 w-full h-[25%] bg-linear-to-b from-black/80 to-transparent" />
-                <div className="relative container mx-auto px-4 h-full flex items-center">
-                    <div className="max-w-2xl animate-in slide-in-from-left duration-500">
-
+                <div className="relative container mx-auto px-4 pb-15 h-full flex items-center">
+                    <div className="max-w-2xl">
                         <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
                             {MovieBanner.title}
                         </h1>
-
                         <div className="flex items-center gap-4 text-gray-300 mb-6 font-medium">
                             <span>{MovieBanner.publishYear}</span>
                             <span className="bg-gray-800/80 px-3 py-1 rounded border border-gray-700">
                                 {MovieBanner.status === 'ONGOING' ? 'Đang phát' : 'Hoàn thành'}
                             </span>
                         </div>
-
                         <p className="text-gray-300 text-lg mb-8 line-clamp-3 leading-relaxed">
                             {MovieBanner.description}
                         </p>

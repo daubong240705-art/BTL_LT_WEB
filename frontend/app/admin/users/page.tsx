@@ -1,11 +1,14 @@
-"use client"
+import UsersController from "./components/UserController";
 
-import UserTable from "./UserTable";
+export default async function AdminUsersPage() {
+    const res = await fetch("http://localhost:8080/api/v1/users", {
+        cache: "no-store",
+    });
 
-export default function AdminUsersPage() {
+    const users = await res.json();
 
 
     return (
-        <UserTable />
+        <UsersController users={users} />
     );
 }

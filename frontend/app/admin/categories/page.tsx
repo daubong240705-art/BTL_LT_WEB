@@ -1,10 +1,13 @@
-"use client"
-import CategoryTable from "./CategoryTable";
+import CategoriesController from "./components/CategoryController";
 
-export default function AdminCategoriesPage() {
+export default async function AdminCategoriesPage() {
+    const res = await fetch("http://localhost:8080/api/v1/categories", {
+        cache: "no-store",
+    });
 
+    const categories = await res.json();
 
     return (
-        <CategoryTable />
+        <CategoriesController categories={categories} />
     );
 }

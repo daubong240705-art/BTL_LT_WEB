@@ -1,8 +1,11 @@
 import { Category } from "@/app/types/movie.type";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { categoryApi } from "../../service/api/category.api";
 
 const categorySchema = z.object({
     name: z
@@ -40,3 +43,22 @@ export function useCategoryForm(
     }, [mode, initialData, form]);
     return form;
 }
+
+export const useCategoryMutation = (
+    mode: "add" | "edit",
+    categoryId?: number,
+    onClose?: () => void
+) => {
+    const router = useRouter();
+
+    return useMutation({
+        mutationFn: (data: CategoryFormValues) =>
+            mode === "add"
+                ? categoryApi.createCategory(data)
+                : categoryApi.updateCategory(categoryId!, data),
+        onSuccess: () => {
+            router.refresh();
+            onClose?.();
+        },
+    });
+};

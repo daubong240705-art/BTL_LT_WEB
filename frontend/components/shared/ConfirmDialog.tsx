@@ -10,16 +10,16 @@ import {
 } from "../ui/alert-dialog";
 
 interface ConfirmDialogProps {
-    isOpen: boolean;
+    Open: boolean;
     onClose: () => void;
     onConfirm: () => void;
     title: string;
     message: string;
 }
 
-export function ConfirmDialog({ isOpen, onClose, onConfirm, title, message }: ConfirmDialogProps) {
+export function ConfirmDialog({ Open, onClose, onConfirm, title, message }: ConfirmDialogProps) {
     return (
-        <AlertDialog open={isOpen} onOpenChange={onClose}>
+        <AlertDialog open={Open} onOpenChange={onClose}>
             <AlertDialogContent className="bg-gray-900 border-gray-800 text-white">
                 <AlertDialogHeader>
                     <AlertDialogTitle className="text-xl font-bold text-red-500">{title}</AlertDialogTitle>
@@ -31,8 +31,7 @@ export function ConfirmDialog({ isOpen, onClose, onConfirm, title, message }: Co
                     <AlertDialogCancel className="bg-gray-800 text-white hover:bg-gray-700 border-gray-700">Hủy bỏ</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={onConfirm}
-                        className="bg-red-600 hover:bg-red-700 text-white border-0"
-                    >
+                        className="bg-red-600 hover:bg-red-700 text-white border-0" >
                         Xác nhận xóa
                     </AlertDialogAction>
                 </AlertDialogFooter>

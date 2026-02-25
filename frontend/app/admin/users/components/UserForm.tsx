@@ -5,9 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Lock, Mail, Save, User2 } from "lucide-react";
 import { Controller } from "react-hook-form";
-import { UserFormValues, useUserForm } from "./hooks/useUserForm";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { userApi } from "../service/api/user.api";
+import { UserFormValues, useUserForm, useUserMutation } from "../../hooks/user/useUserForm";
+
 
 type Props = {
     mode: "add" | "edit";
@@ -17,27 +16,11 @@ type Props = {
 
 export default function UserForm({ mode, initialData, onClose }: Props) {
     const form = useUserForm(mode, initialData);
-
-    const queryClient = useQueryClient();
-    const mutation = useMutation({
-        mutationFn: (data: UserFormValues) =>
-            mode === "add"
-                ? userApi.createUser(data)
-                : userApi.updateUser(initialData!.id, data),
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["users"] });
-            onClose();
-        },
-    });
-
+    const mutation = useUserMutation(mode, initialData?.id, onClose);
     const onSubmit = (data: UserFormValues) => {
         delete data.confirmPassword;
-        // console.log(data)
         mutation.mutate(data);
-
     };
-    // console.log(form.formState.errors);
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)}>

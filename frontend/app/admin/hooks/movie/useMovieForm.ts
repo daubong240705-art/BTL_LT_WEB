@@ -1,9 +1,12 @@
 
 import { Movie } from "@/app/types/movie.type";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { movieApi } from "../../service/api/movie.api";
 
 const movieSchema = z
     .object({
@@ -76,7 +79,6 @@ export function useMovieForm(
         },
     });
 
-    // Khi edit → set lại data
     useEffect(() => {
         if (mode === "edit" && initialData) {
             form.reset({
@@ -95,3 +97,23 @@ export function useMovieForm(
 
     return form;
 }
+
+export const useMovieMutation = (
+    mode: "add" | "edit",
+    movieId?: number,
+    onClose?: () => void
+) => {
+    const router = useRouter();
+
+    return useMutation({
+        mutationFn: (data: MovieFormValues) =>
+            mode === "add"
+                ? movieApi.createMovie(data)
+                : movieApi.updateMovie(movieId!, data),
+
+        onSuccess: () => {
+            router.refresh();
+            onClose?.();
+        },
+    });
+};

@@ -1,6 +1,6 @@
 import { User } from '@/app/types/movie.type';
 import { api } from './axios';
-import { UserFormValues } from '../../users/hooks/useUserForm';
+import { UserFormValues } from '../../hooks/user/useUserForm';
 
 
 export const userApi = {

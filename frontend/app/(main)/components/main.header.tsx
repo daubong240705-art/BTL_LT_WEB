@@ -1,4 +1,4 @@
-"use client"
+
 import { ChevronDown, Film, Heart, Search } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button"
@@ -11,26 +11,15 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-import { useEffect, useState } from "react";
+
 import { Category } from "@/app/types/movie.type";
 
 type Props = {
     categories: Category[]
 }
 export default function Header({ categories }: Props) {
-    const [scrolled, setScrolled] = useState(false)
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 1)
-        }
-
-        window.addEventListener("scroll", handleScroll, { passive: true })
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])
     return (
-        <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-200
-        ${scrolled ? "bg-[#141414] " : "bg-transparent"}
-      `}>
+        <header className=" bg-[#141414] border-b border-gray-800/50 top-0 left-0 w-full z-500000">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors">

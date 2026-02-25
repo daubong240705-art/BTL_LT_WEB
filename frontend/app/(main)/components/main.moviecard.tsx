@@ -1,4 +1,5 @@
 import { Movie } from '@/app/types/movie.type';
+import Link from 'next/link';
 
 
 
@@ -9,7 +10,9 @@ interface MovieCardProps {
 export function MovieCard({ movie }: MovieCardProps) {
     console.log("aaaa", movie)
     return (
-        <div className="group cursor-pointer">
+        <Link
+            href={`http://localhost:3000/movie/${movie.slug}`}
+            className="group cursor-pointer" >
 
             <div className="relative overflow-hidden rounded-lg aspect-2/3">
                 {/* Poster */}
@@ -48,6 +51,6 @@ export function MovieCard({ movie }: MovieCardProps) {
                 <p className="text-xs text-gray-500 mt-1">{movie.publishYear}</p>
             </div>
 
-        </div>
+        </Link >
     );
 }

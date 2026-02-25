@@ -1,7 +1,7 @@
 
 
 import { api } from './axios';
-import { CategoryFormValues } from '../../categories/hooks/useCategoryForm';
+import { CategoryFormValues } from '../../hooks/category/useCategoryForm';
 import { Category } from '@/app/types/movie.type';
 
 

@@ -26,9 +26,7 @@ function NextArrow(props: ArrowProps) {
     return (
         <button
             onClick={onClick}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all transform hover:scale-110"
-            aria-label="Next slide"
-        >
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all transform hover:scale-110">
             <ChevronRight className="w-6 h-6" />
         </button>
     );
@@ -41,9 +39,7 @@ function PrevArrow(props: ArrowProps) {
     return (
         <button
             onClick={onClick}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all transform hover:scale-110"
-            aria-label="Previous slide"
-        >
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all transform hover:scale-110">
             <ChevronLeft className="w-6 h-6" />
         </button>
     );
@@ -55,14 +51,11 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
         infinite: movies.length > 6,
         speed: 500,
         slidesToShow: 6,
-        // slidesToScroll: 2,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
-
     };
 
-    // Nếu không có phim nào thì không render gì cả
-    // if (!movies || movies.length === 0) return null;
+    if (!movies || movies.length === 0) return null;
 
     return (
         <div className="py-8 px-4 md:px-8">

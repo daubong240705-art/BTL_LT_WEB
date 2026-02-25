@@ -1,6 +1,7 @@
 import { Movie } from '@/app/types/movie.type';
 import { api } from './axios';
-import { MovieFormValues } from '../../movies/hooks/useMovieForm';
+import { MovieFormValues } from '../../hooks/movie/useMovieForm';
+
 
 
 export const movieApi = {

@@ -1,12 +1,10 @@
 
 import { Category } from "@/app/types/movie.type";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Save } from "lucide-react";
-import { CategoryFormValues, useCategoryForm } from "./hooks/useCategoryForm";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { categoryApi } from "../service/api/category.api";
+import { CategoryFormValues, useCategoryForm, useCategoryMutation } from "../../hooks/category/useCategoryForm";
 import { FormError } from "@/components/shared/FormError";
+import { AppInput } from "@/components/shared/AppInput";
 
 type Props = {
     mode: "add" | "edit";
@@ -15,23 +13,8 @@ type Props = {
 };
 export default function CategoryForm({ mode, initialData, onClose }: Props) {
     const form = useCategoryForm(mode, initialData);
-
-    const queryClient = useQueryClient();
-    const mutation = useMutation({
-        mutationFn: (data: CategoryFormValues) =>
-            mode === "add"
-                ? categoryApi.createCategory(data)
-                : categoryApi.updateCategory(initialData!.id, data),
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"],
-            });
-            onClose();
-        }
-    });
+    const mutation = useCategoryMutation(mode, initialData?.id, onClose);
     const onSubmit = (data: CategoryFormValues) => {
-        console.log("jdjda", data)
         mutation.mutate(data);
     }
     // console.log(initialData)
@@ -43,20 +26,11 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                         <label className="block text-sm font-semibold mb-2 text-gray-400">
                             Tên thể loại
                         </label>
-                        <Input
+                        <AppInput
                             {...form.register("name")}
                             type="text"
-                            className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-2
-                            focus: ring-green-500
-                            focus:border-green-500
-                            hover:border-green-500
-                            hover:shadow-lg
-                            hover:shadow-green-500/20
-                            transition-all"
                             placeholder="Nhập tên thể loại"
+                            className="px-4 py-5"
                         />
                         <FormError message={form.formState.errors.name?.message} />
                     </div>
@@ -65,20 +39,11 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                         <label className="block text-sm font-semibold mb-2 text-gray-400">
                             Slug
                         </label>
-                        <Input
+                        <AppInput
                             {...form.register("slug")}
                             type="text"
-                            className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-2
-                            focus: ring-green-500
-                            focus:border-green-500
-                            hover:border-green-500
-                            hover:shadow-lg
-                            hover:shadow-green-500/20
-                            transition-all"
                             placeholder="Nhập đường dẫn"
+                            className="px-4 py-5"
                         />
                         <FormError message={form.formState.errors.slug?.message} />
                     </div>
@@ -91,7 +56,6 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                     className="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800">
                     Hủy bỏ
                 </Button>
-
                 <Button
                     type="submit"
                     disabled={mutation.isPending}
