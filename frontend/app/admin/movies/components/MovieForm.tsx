@@ -70,7 +70,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                         {/*  Thumbnail Phim  */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-400">Thumbnail phim (Ảnh ngang)</label>
+                            <label className="block text-sm font-semibold text-gray-400">Thumbnail phim</label>
                             <div onClick={() => document.getElementById("thumbnail")?.click()}
                                 className="relative aspect-video w-full border-2 border-dashed border-gray-700 rounded-xl bg-gray-800 cursor-pointer overflow-hidden">
                                 {initialData?.thumbUrl ? (

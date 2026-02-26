@@ -19,6 +19,15 @@ export interface Category {
     slug: string;
 }
 
+export interface Episode {
+    id: number;
+    movie_id: number;
+    name: string;
+    slug: string;
+    video_url: string;
+    episode_order: number;
+};
+
 export interface Movie {
     id: number;
     title: string;
@@ -30,8 +39,6 @@ export interface Movie {
     publishYear: number;
     viewCount: number;
     slug: string;
-    createdAt: string;
-    updatedAt: string;
     categories: Category[];
 }
 

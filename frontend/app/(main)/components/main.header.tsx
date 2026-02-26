@@ -19,7 +19,7 @@ type Props = {
 }
 export default function Header({ categories }: Props) {
     return (
-        <header className=" bg-[#141414] border-b border-gray-800/50 top-0 left-0 w-full z-500000">
+        <header className="bg-[#141414] border-b border-gray-800/50 top-0 left-0 w-full z-500000">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors">

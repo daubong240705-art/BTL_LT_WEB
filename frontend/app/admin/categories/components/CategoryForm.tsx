@@ -28,7 +28,7 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                         </label>
                         <AppInput
                             {...form.register("name")}
-                            type="text"
+                            type="text" color="green"
                             placeholder="Nhập tên thể loại"
                             className="px-4 py-5"
                         />
@@ -41,7 +41,7 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                         </label>
                         <AppInput
                             {...form.register("slug")}
-                            type="text"
+                            type="text" color="green"
                             placeholder="Nhập đường dẫn"
                             className="px-4 py-5"
                         />

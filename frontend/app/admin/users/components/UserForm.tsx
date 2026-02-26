@@ -1,11 +1,11 @@
 
 import { User } from "@/app/types/movie.type";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Lock, Mail, Save, User2 } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { UserFormValues, useUserForm, useUserMutation } from "../../hooks/user/useUserForm";
+import { AppInput } from "@/components/shared/AppInput";
 
 
 type Props = {
@@ -32,11 +32,11 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                     <div className="flex flex-col items-center">
                         <div className="group">
                             <div className="w-28 h-28 rounded-full overflow-hidden 
-                        border border-gray-700 bg-gray-900
-                        flex items-center justify-center
-                        transition-all group-hover:border-blue-500
-                        group-hover:shadow-lg
-                        group-hover:shadow-blue-500/20">
+                                border border-gray-700 bg-gray-900
+                                flex items-center justify-center
+                                transition-all group-hover:border-blue-500
+                                group-hover:shadow-lg
+                                group-hover:shadow-blue-500/20">
                                 <User2 className="w-12 h-12 text-gray-500 group-hover:text-blue-400 transition-colors" />
                             </div>
                             <input
@@ -54,74 +54,38 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                         <label className="block text-sm font-semibold mb-2 text-gray-400">
                             Họ và tên
                         </label>
-                        <Input
+                        <AppInput
                             {...form.register("fullName")}
-                            type="text"
+                            type="text" color="blue"
                             placeholder="Nhập họ và tên"
-                            required
-                            className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-2
-                            focus:ring-blue-500
-                            focus:border-blue-500
-                            hover:border-blue-500
-                            hover:shadow-lg
-                            hover:shadow-blue-500/20
-                            transition-all"
-                        />
-
+                            className="text-white px-4 py-5" />
                         <div>
                             <label className="block text-sm font-semibold mb-2 text-gray-400">
                                 Tên đăng nhập
                             </label>
-                            <Input
+                            <AppInput
                                 {...form.register("username")}
-                                type="text"
+                                type="text" color="blue"
                                 placeholder="username"
                                 disabled={mode === "edit"}
-                                className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-2
-                            focus:ring-blue-500
-                            focus:border-blue-500
-                            hover:border-blue-500
-                            hover:shadow-lg
-                            hover:shadow-blue-500/20
-                            transition-all"
-                            />
+                                className="text-white px-4 py-5" />
                         </div>
-
                     </div>
                 </div>
 
 
                 <div className="grid md:grid-cols-2 gap-6">
-
-
                     <div>
                         <label className="block text-sm font-semibold mb-2 text-gray-400">
                             Email
                         </label>
                         <div className="relative">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                            <Input
+                            <AppInput
                                 {...form.register("email")}
-                                type="email"
+                                type="email" color="blue"
                                 placeholder="email@example.com"
-                                required
-                                className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 pl-10 rounded-lg
-                            focus-visible:ring-2
-                            focus:ring-blue-500
-                            focus:border-blue-500
-                            hover:border-blue-500
-                            hover:shadow-lg
-                            hover:shadow-blue-500/20
-                            transition-all"
-                            />
+                                className="text-white px-4 py-5 pl-10" />
                         </div>
                     </div>
 
@@ -137,9 +101,8 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 <Select key={field.value} value={field.value} onValueChange={field.onChange}>
                                     <SelectTrigger className="w-full bg-gray-800 border-gray-700
                                             text-white px-4 py-5 rounded-lg
-                                            focus-visible:ring-0
                                             focus:border-blue-500
-                                            hover:border-blue-500
+                                            hover:border-blue-500/50
                                             transition-all
                                             data-placeholder:text-gray-400
                                             data-placeholder:font-sm">
@@ -163,39 +126,17 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                     <h3 className="text-sm font-semibold text-gray-300 flex items-center gap-2">
                         <Lock className="w-4 h-4" /> Thiết lập mật khẩu
                     </h3>
-
                     <div className="grid md:grid-cols-2 gap-6">
-                        <Input
+                        <AppInput
                             {...form.register("password")}
-                            type="password"
+                            type="password" color="blue"
                             placeholder="Mật khẩu"
-                            className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-2
-                            focus:ring-blue-500
-                            focus:border-blue-500
-                            hover:border-blue-500
-                            hover:shadow-lg
-                            hover:shadow-blue-500/20
-                            transition-all"
-                        />
-
-                        <Input
+                            className="text-white px-4 py-5" />
+                        <AppInput
                             {...form.register("confirmPassword")}
-                            type="password"
+                            type="password" color="blue"
                             placeholder="Xác nhận mật khẩu"
-                            className="w-full bg-gray-800
-                            border border-gray-700
-                            text-white px-4 py-5 rounded-lg
-                            focus-visible:ring-2
-                            focus:ring-blue-500
-                            focus:border-blue-500
-                            hover:border-blue-500
-                            hover:shadow-lg
-                            hover:shadow-blue-500/20
-                            transition-all"
-                        />
+                            className="text-white px-4 py-5" />
                     </div>
                 </div>
 

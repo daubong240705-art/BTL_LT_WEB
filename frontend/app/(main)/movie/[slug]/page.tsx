@@ -1,6 +1,7 @@
 
 import { Calendar, Heart, MessageCircle, Play } from "lucide-react";
 import { getMovieBySlug } from "../../service/main.api";
+import Link from "next/link";
 
 
 type Props = {
@@ -84,8 +85,8 @@ export default async function MovieDetailPage({ params }: Props) {
                         <div className="lg:col-span-2 pt-10 space-y-10  bg-gray-900 rounded-4xl p-7">
                             <div className="flex flex-wrap items-center gap-3">
 
-                                <div
-
+                                <Link
+                                    href={`http://localhost:3000/watch/${movie.slug}`}
                                     className="group relative flex items-center gap-3 bg-linear-to-r
                                     from-green-400 to-green-500
                                     text-black px-8 py-3
@@ -96,7 +97,7 @@ export default async function MovieDetailPage({ params }: Props) {
                                     hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] ">
                                     <Play className="w-5 h-5 fill-current" />
                                     <span>Xem Ngay</span>
-                                </div>
+                                </Link>
 
 
                                 <button className="flex-col flex items-center  hover:bg-gray-700/20 text-gray-300 px-6 py-3 rounded-lg font-semibold transition-all">

@@ -61,4 +61,8 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "category_id") // Cột khóa ngoại nối với bảng categories
     )
     private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Episode> episodes = new HashSet<>();
+
 }
