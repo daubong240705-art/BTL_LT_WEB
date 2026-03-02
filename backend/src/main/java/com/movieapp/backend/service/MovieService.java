@@ -10,6 +10,8 @@ import com.movieapp.backend.dto.Movie.MovieRequest;
 import com.movieapp.backend.repository.CategoryRepository;
 import com.movieapp.backend.repository.MovieRepository;
 import org.springframework.stereotype.Service;
+import com.movieapp.backend.exception.AppException;
+import com.movieapp.backend.exception.ErrorCode;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +44,8 @@ public class MovieService {
 
     public MovieDTO getMovieBySlug(String slug) {
         Movie movie = movieRepository.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bộ phim này!"));
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
         return mapToDTO(movie);
     }
 
@@ -74,10 +77,14 @@ public class MovieService {
 
     // thêm phim
     public MovieDTO createMovie(MovieRequest request) {
+
+        // check slug trùng
+        if (movieRepository.findBySlug(request.getSlug()).isPresent()) {
+            throw new AppException(ErrorCode.MOVIE_SLUG_ALREADY_EXISTS);
+        }
+
         Movie movie = new Movie();
         updateMovieFields(movie, request);
-
-        // Mặc định lượt xem lúc mới tạo là 0
         movie.setViewCount(0L);
 
         Movie savedMovie = movieRepository.save(movie);
@@ -86,8 +93,17 @@ public class MovieService {
 
     // SỬA PHIM
     public MovieDTO updateMovie(Long id, MovieRequest request) {
+
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phim với ID: " + id));
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+        // check slug nếu đổi slug
+        movieRepository.findBySlug(request.getSlug())
+                .ifPresent(existing -> {
+                    if (!existing.getId().equals(id)) {
+                        throw new AppException(ErrorCode.MOVIE_SLUG_ALREADY_EXISTS);
+                    }
+                });
 
         updateMovieFields(movie, request);
 
@@ -97,23 +113,39 @@ public class MovieService {
 
     public void deleteMovie(Long id) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phim với ID: " + id));
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
         movieRepository.delete(movie);
     }
 
     private void updateMovieFields(Movie movie, MovieRequest request) {
+
         movie.setTitle(request.getTitle());
         movie.setSlug(request.getSlug());
         movie.setDescription(request.getDescription());
-        movie.setType(MovieType.valueOf(request.getType()));
-        movie.setStatus(MovieStatus.valueOf(request.getStatus()));
+
+        // BẮT LỖI ENUM
+        try {
+            movie.setType(MovieType.valueOf(request.getType()));
+            movie.setStatus(MovieStatus.valueOf(request.getStatus()));
+        } catch (IllegalArgumentException e) {
+            throw new AppException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+
         movie.setPosterUrl(request.getPosterUrl());
         movie.setThumbUrl(request.getThumbUrl());
         movie.setPublishYear(request.getPublishYear());
 
-        // Xử lý danh sách Thể loại
+        // CHECK CATEGORY EXIST
         if (request.getCategoryIds() != null && !request.getCategoryIds().isEmpty()) {
+
             List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+
+            // nếu thiếu category
+            if (categories.size() != request.getCategoryIds().size()) {
+                throw new AppException(ErrorCode.CATEGORY_NOT_FOUND);
+            }
+
             movie.setCategories(new HashSet<>(categories));
         } else {
             movie.setCategories(new HashSet<>());

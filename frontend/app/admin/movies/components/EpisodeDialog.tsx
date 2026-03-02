@@ -8,27 +8,30 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Edit, X } from "lucide-react";
-import MovieForm from "./MovieForm";
-import { Movie } from "@/app/types/movie.type";
+
+import { Episode } from "@/app/types/movie.type";
 import { Button } from "@/components/ui/button";
+import EpisodeForm from "./EpisodeForm";
 
 type Props = {
     open: boolean;
     onOpenChange: (v: boolean) => void;
     mode: "add" | "edit";
-    initialData?: Movie;
+    initialData?: Episode;
+    movieId: number
 };
 
-export default function MovieDialog({
+export default function Episodedialog({
     open,
     onOpenChange,
     mode,
     initialData,
+    movieId
 }: Props) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
-                className="min-w-250 max-h-[90vh] p-0 bg-gray-900 border-gray-800  flex flex-col" showCloseButton={false}>
+                className="w-140  p-0 bg-gray-900 border-gray-800  flex flex-col" showCloseButton={false}>
                 <DialogHeader className="px-6 py-4 border-b border-gray-800 ">
                     <DialogTitle className="text-xl font-bold text-white flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -37,7 +40,7 @@ export default function MovieDialog({
                             ) : (
                                 <Edit className="text-blue-500" />
                             )}
-                            {mode === "add" ? "Thêm Phim Mới" : "Chỉnh Sửa Phim"}
+                            {mode === "add" ? "Thêm Tập Mới" : "Chỉnh Sửa Tập"}
                         </div>
 
                         <Button
@@ -51,15 +54,16 @@ export default function MovieDialog({
                     </DialogTitle>
                     <DialogDescription className="text-sm text-gray-400">
                         {mode === "add"
-                            ? "Nhập thông tin để thêm phim mới vào hệ thống"
-                            : "Cập nhật thông tin phim, poster và thể loại"}
+                            ? "Nhập thông tin để thêm tập mới vào hệ thống"
+                            : "Cập nhật thông tin tập"}
                     </DialogDescription>
                 </DialogHeader>
 
-                <MovieForm
+                <EpisodeForm
                     mode={mode}
                     initialData={initialData}
                     onClose={() => onOpenChange(false)}
+                    movieId={movieId}
                 />
             </DialogContent>
         </Dialog>

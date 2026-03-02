@@ -24,8 +24,8 @@ export interface Episode {
     movie_id: number;
     name: string;
     slug: string;
-    video_url: string;
-    episode_order: number;
+    videoUrl: string;
+    episodeOrder: number;
 };
 
 export interface Movie {

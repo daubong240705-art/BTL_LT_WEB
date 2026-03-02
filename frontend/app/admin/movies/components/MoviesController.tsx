@@ -8,7 +8,7 @@ import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useDeleteMovie } from "../../hooks/movie/useDeleteMovie";
 
 
-export type MovieDialogState =
+type MovieDialogState =
     | { type: "add" }
     | { type: "edit"; movie: Movie }
     | null;

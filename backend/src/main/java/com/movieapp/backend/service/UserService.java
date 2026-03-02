@@ -5,6 +5,8 @@ import com.movieapp.backend.domain.User;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
 import com.movieapp.backend.repository.UserRepository;
+import com.movieapp.backend.exception.AppException;
+import com.movieapp.backend.exception.ErrorCode;
 
 import org.springframework.stereotype.Service;
 

@@ -86,7 +86,6 @@ public class EpisodeService {
         ep.setVideoUrl(req.getVideoUrl());
         ep.setEpisodeOrder(req.getEpisodeOrder());
 
-        // generate slug: naruto-tap-1
         String slug = movie.getSlug() + "-tap-" + req.getEpisodeOrder();
         ep.setSlug(slug);
     }

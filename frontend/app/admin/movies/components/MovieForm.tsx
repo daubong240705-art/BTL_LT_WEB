@@ -31,15 +31,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
     };
 
     return (
-        <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col overflow-y-auto h-full custom-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]">
-
+        <div className="flex flex-col overflow-y-auto  custom-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]">
             <div className="flex-1 p-6 ">
-                <div className="grid grid-cols-12 gap-8">
-                    {/* CỘT TRÁI: Hình ảnh */}
-                    <div className="col-span-4 space-y-6">
 
+                {/* CỘT TRÁI: Hình ảnh */}
+
+                <form id="movie-form" onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-8">
+                    <div className="col-span-3 space-y-6">
                         {/* Poster Phim */}
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold text-gray-400">Poster phim</label>
@@ -98,10 +96,10 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                     </div>
 
                     {/* CỘT PHẢI: Thông tin chi tiết */}
-                    <div className="col-span-8 space-y-">
+                    <div className="col-span-9 space-y-">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Tên phim</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Tên phim</label>
                                 <AppInput
                                     placeholder="Nhập tên phim..."
                                     type="text" color="red"
@@ -111,7 +109,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             </div>
 
                             <div >
-                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Đường dẫn</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Đường dẫn</label>
                                 <AppInput
                                     placeholder="Nhập đường dẫn phim..."
                                     type="text" color="red"
@@ -123,7 +121,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Năm</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Năm</label>
                                 <AppInput
                                     placeholder="Năm sản xuất"
                                     type="text" color="red"
@@ -132,7 +130,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                 <FormError message={form.formState.errors.publishYear?.message} />
                             </div>
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Trạng thái</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Trạng thái</label>
                                 <Controller
                                     control={form.control}
                                     name="status"
@@ -159,7 +157,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                             </div>
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-1 block">Loại phim</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Loại phim</label>
                                 <Controller
                                     control={form.control}
                                     name="type"
@@ -183,7 +181,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-1 block">Thể loại</label>
+                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Thể loại</label>
                             <div className="grid gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700 grid-cols-[repeat(auto-fill,minmax(110px,1fr))]">
                                 {isLoading && (
                                     <span className="text-sm text-gray-500">Đang tải thể loại...</span>
@@ -219,7 +217,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-1 block">Mô tả nội dung</label>
+                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Mô tả nội dung</label>
                             <Textarea
                                 {...form.register("description")}
                                 placeholder="Nhập tóm tắt nội dung phim..."
@@ -236,11 +234,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             <FormError message={form.formState.errors.description?.message} />
 
                         </div>
-                        {mode === "edit" && initialData?.id && (
-                            <EpisodeList movieId={initialData.id} />
-                        )}
+
+
                     </div>
-                </div>
+                </form>
+                {mode === "edit" && initialData?.id && (
+                    <EpisodeList movieId={initialData.id} />
+                )}
             </div>
 
             {/* FOOTER */}
@@ -254,12 +254,13 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                 <Button
                     type="submit"
+                    form="movie-form"
                     disabled={mutation.isPending}
                     className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2">
                     <Save className="w-4 h-4" />
                     {mutation.isPending ? "Đang lưu..." : "Lưu"}
                 </Button>
             </div>
-        </form>
+        </div>
     )
 }

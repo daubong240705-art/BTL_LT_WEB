@@ -1,6 +1,7 @@
-import { Movie } from '@/app/types/movie.type';
+import { Episode, Movie } from '@/app/types/movie.type';
 import { api } from './axios';
 import { MovieFormValues } from '../../hooks/movie/useMovieForm';
+import { EpisodeFormValues } from '../../hooks/movie/useEpisodeForm';
 
 
 
@@ -22,4 +23,20 @@ export const movieApi = {
 
   deleteMovie: (id: number) =>
     api.delete(`/movies/${id}`),
+
+  async getEpisodeByMovie(id: number): Promise<Episode[]> {
+    const res = await api.get<Episode[]>(`/episodes/movie/${id}`);
+    return res.data;
+  },
+
+
+  async createEpisode(data: EpisodeFormValues & { movieId: number }) {
+    const res = await api.post("/episodes", data);
+    return res.data;
+  },
+
+  async updateEpisode(id: number, data: EpisodeFormValues & { movieId: number }) {
+    const res = await api.put(`/episodes/${id}`, data);
+    return res.data;
+  }
 };

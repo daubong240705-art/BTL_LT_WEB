@@ -1,6 +1,6 @@
 
 import { Calendar, Heart, MessageCircle, Play } from "lucide-react";
-import { getMovieBySlug } from "../../service/main.api";
+import { getMovieBySlug, getMovieEpisode } from "../../service/main.api";
 import Link from "next/link";
 
 
@@ -12,6 +12,7 @@ export default async function MovieDetailPage({ params }: Props) {
     const resolvedParams = await params;
     const movieSlug = resolvedParams.slug;
     const movie = await getMovieBySlug(movieSlug);
+    const episodes = await getMovieEpisode(movie.id);
     console.log(movie)
     return (
         <>
@@ -117,17 +118,17 @@ export default async function MovieDetailPage({ params }: Props) {
                             {/* Episodes */}
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 border-l-4 border-red-600 pl-3">Danh sách tập</h3>
-                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                                    {/* {movie.episodes.map((ep) => (
+                                <div className="grid grid-cols-5 gap-3">
+                                    {episodes.map((ep) => (
                                         <Link
                                             key={ep.id}
-                                            href={`/watch/${movie.id}?ep=${ep.number}`}
+                                            href={`/watch/${movie.id}/${ep.episodeOrder}`}
                                             className="group bg-gray-800 hover:bg-red-600 text-white py-3 rounded-lg text-center font-semibold transition-all border border-gray-700 hover:border-red-500"
                                         >
-                                            <span className="text-xs text-gray-400 block group-hover:text-white/80">Tập</span>
-                                            <span className="text-lg">{ep.number}</span>
+                                            <span className="text-md text-gray-400 block group-hover:text-white/80">Tập {ep.episodeOrder}</span>
+
                                         </Link>
-                                    ))} */}
+                                    ))}
                                 </div>
                             </div>
                         </div>
