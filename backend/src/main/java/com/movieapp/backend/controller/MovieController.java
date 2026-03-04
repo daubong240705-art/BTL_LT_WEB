@@ -7,7 +7,8 @@ import com.movieapp.backend.service.MovieService;
 import com.movieapp.backend.util.ResponseUtil;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/movies")
-@RequiredArgsConstructor
+@AllArgsConstructor
 @CrossOrigin("*")
 public class MovieController {
 

@@ -1,4 +1,4 @@
-package com.movieapp.backend.service.error;
+package com.movieapp.backend.util.error;
 
 public class BadRequestException extends RuntimeException {
 

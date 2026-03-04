@@ -1,18 +1,18 @@
-package com.movieapp.backend.service.error;
+package com.movieapp.backend.util.error;
 
 import com.movieapp.backend.domain.RestResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,19 +21,15 @@ public class GlobalExceptionHandler {
     // VALIDATION ERROR (400)
     // =============================
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<RestResponse<Object>> handleValidation(
-            MethodArgumentNotValidException ex) {
+    public ResponseEntity<RestResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
 
-        BindingResult result = ex.getBindingResult();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-        List<String> errors = result.getFieldErrors()
-                .stream()
-                .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
-                .collect(Collectors.toList());
-
-        return buildResponse(
-                HttpStatus.BAD_REQUEST,
-                errors.size() == 1 ? errors.get(0) : errors);
+        // API trả ra sẽ có dạng: "error": { "username": "không được để trống", "email":
+        // "sai định dạng" }
+        return buildResponse(HttpStatus.BAD_REQUEST, errors);
     }
 
     // =============================
@@ -108,9 +104,6 @@ public class GlobalExceptionHandler {
                 .message(status.getReasonPhrase())
                 .error(error)
                 .build();
-        res.setStatusCode(status.value());
-        res.setMessage(status.getReasonPhrase());
-        res.setError(error);
 
         return ResponseEntity.status(status).body(res);
     }

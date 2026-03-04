@@ -6,9 +6,9 @@ import com.movieapp.backend.dto.Movie.MovieDTO;
 import com.movieapp.backend.dto.Movie.MovieRequest;
 import com.movieapp.backend.repository.CategoryRepository;
 import com.movieapp.backend.repository.MovieRepository;
-import com.movieapp.backend.service.error.BadRequestException;
-import com.movieapp.backend.service.error.ResourceNotFoundException;
 import com.movieapp.backend.service.mapper.MovieMapper;
+import com.movieapp.backend.util.error.BadRequestException;
+import com.movieapp.backend.util.error.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 

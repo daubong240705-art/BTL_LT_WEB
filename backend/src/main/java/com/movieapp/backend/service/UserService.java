@@ -1,12 +1,13 @@
 package com.movieapp.backend.service;
 
-import com.movieapp.backend.domain.Role;
+
 import com.movieapp.backend.domain.User;
+import com.movieapp.backend.domain.enums.Role;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
 import com.movieapp.backend.repository.UserRepository;
-import com.movieapp.backend.service.error.BadRequestException;
 import com.movieapp.backend.service.mapper.UserMapper;
+import com.movieapp.backend.util.error.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -65,5 +66,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
         userRepository.delete(user);
+    }
+
+    public User hadGetUserByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 }

@@ -1,4 +1,4 @@
-package com.movieapp.backend.domain;
+package com.movieapp.backend.domain.enums;
 
 public enum MovieType {
     SINGLE,
