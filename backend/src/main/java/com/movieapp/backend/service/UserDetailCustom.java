@@ -36,6 +36,7 @@ public class UserDetailCustom implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))); // Thêm dấu chấm phẩy
+
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
     }
 }

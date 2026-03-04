@@ -1,19 +1,24 @@
 package com.movieapp.backend.service;
 
-
 import com.movieapp.backend.domain.User;
 import com.movieapp.backend.domain.enums.Role;
+import com.movieapp.backend.dto.Meta;
+import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
 import com.movieapp.backend.repository.UserRepository;
 import com.movieapp.backend.service.mapper.UserMapper;
-import com.movieapp.backend.util.error.BadRequestException;
+import com.movieapp.backend.util.error.CustomValidationException;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,22 +27,40 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toDTO)
-                .toList();
+    public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
+
+        Page<User> pageUser = userRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pageUser.map(userMapper::toDTO).getContent());
+
+        return rs;
     }
 
     public UserDTO createUser(UserRequest request) {
         // CHECK USERNAME
+
+        Map<String, String> errors = new HashMap<>();
+
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new BadRequestException("Username already exists");
+            errors.put("username", "Tên đăng nhập đã tồn tại");
         }
 
-        // CHECK EMAIL
+        // 2. Kiểm tra Email
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already exists");
+            errors.put("email", "Email đã được sử dụng");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new CustomValidationException(errors);
         }
 
         User user = new User();
@@ -68,7 +91,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User hadGetUserByUsername(String username){
+    public User hadGetUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 }

@@ -25,7 +25,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     // AUTH FIELDS
     @Column(nullable = false, length = 50)
     private String username;
@@ -46,7 +45,6 @@ public class User {
 
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
-
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
