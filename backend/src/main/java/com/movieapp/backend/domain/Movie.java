@@ -1,15 +1,19 @@
 package com.movieapp.backend.domain;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Set;
-import java.util.HashSet;
 
 @Entity
-@Table(name = "movies")
+@Table(name = "movies", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_movie_slug", columnNames = "slug")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,16 +24,18 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private MovieType type;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private MovieStatus status;
 
     @Column(name = "poster_url", length = 500)
@@ -41,10 +47,10 @@ public class Movie {
     @Column(name = "publish_year")
     private Integer publishYear;
 
-    @Column(name = "view_count", columnDefinition = "bigint default 0")
-    private Long viewCount;
+    @Column(name = "view_count", nullable = false)
+    private Long viewCount = 0L;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String slug;
 
     @CreationTimestamp
@@ -55,14 +61,11 @@ public class Movie {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "movie_category", // bảng trung gian
-            joinColumns = @JoinColumn(name = "movie_id"), // Cột khóa ngoại nối với bảng movies
-            inverseJoinColumns = @JoinColumn(name = "category_id") // Cột khóa ngoại nối với bảng categories
-    )
+    // RELATIONSHIP
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "movie_category", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Episode> episodes = new HashSet<>();
-
 }

@@ -4,8 +4,11 @@ import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
 import com.movieapp.backend.service.UserService;
 
+import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +23,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@AllArgsConstructor
 @CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     // API: danh sách người dùng
     @GetMapping
@@ -38,8 +39,10 @@ public class UserController {
     // API: Theem ngoui dung
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserRequest request) {
+        String hashPassword = passwordEncoder.encode(request.getPassword());
+        request.setPassword(hashPassword);
         UserDTO createUser = userService.createUser(request);
-        return new ResponseEntity<>(createUser, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createUser);
     }
 
     // API: Cập nhật người dùng

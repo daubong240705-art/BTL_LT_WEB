@@ -5,43 +5,40 @@ import com.movieapp.backend.domain.User;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
 import com.movieapp.backend.repository.UserRepository;
-import com.movieapp.backend.exception.AppException;
-import com.movieapp.backend.exception.ErrorCode;
+import com.movieapp.backend.service.error.BadRequestException;
+import com.movieapp.backend.service.mapper.UserMapper;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserMapper userMapper;
 
     public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-
-        return users.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private UserDTO mapToDTO(User user) {
-        return UserDTO.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .avatarUrl(user.getAvatarUrl())
-                .role(user.getRole().name())
-                .build();
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toDTO)
+                .toList();
     }
 
     public UserDTO createUser(UserRequest request) {
+        // CHECK USERNAME
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new BadRequestException("Username already exists");
+        }
+
+        // CHECK EMAIL
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("Email already exists");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -51,7 +48,7 @@ public class UserService {
         user.setRole(Role.valueOf(request.getRole()));
 
         User saveUser = userRepository.save(user);
-        return mapToDTO(saveUser);
+        return userMapper.toDTO(saveUser);
     }
 
     public UserDTO updateUser(Long id, UserRequest request) {
@@ -60,9 +57,8 @@ public class UserService {
         user.setFullName(request.getFullName());
         user.setAvatarUrl(request.getAvatarUrl());
         user.setRole(Role.valueOf(request.getRole().toUpperCase()));
-        user.setPassword(request.getPassword());
         User updatedUser = userRepository.save(user);
-        return mapToDTO(updatedUser);
+        return userMapper.toDTO(updatedUser);
     }
 
     public void deleteUser(Long id) {
