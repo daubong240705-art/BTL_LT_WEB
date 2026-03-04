@@ -1,6 +1,8 @@
 package com.movieapp.backend.dto.auth;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -11,7 +13,9 @@ public class ResLoginDTO {
 
     @Getter
     @Setter
-    public class UserLogin {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserLogin {
         private Long id;
 
         private String username;

@@ -2,91 +2,115 @@ package com.movieapp.backend.service;
 
 import com.movieapp.backend.domain.Episode;
 import com.movieapp.backend.domain.Movie;
+
+import com.movieapp.backend.dto.Meta;
+import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.dto.Movie.EpisodeDTO;
 import com.movieapp.backend.dto.Movie.EpisodeRequest;
 import com.movieapp.backend.repository.EpisodeRepository;
 import com.movieapp.backend.repository.MovieRepository;
-import org.springframework.stereotype.Service;
+import com.movieapp.backend.service.mapper.EpisodeMapper;
+import com.movieapp.backend.util.error.BadRequestException;
+import com.movieapp.backend.util.error.ResourceNotFoundException;
+
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EpisodeService {
 
     private final EpisodeRepository episodeRepository;
     private final MovieRepository movieRepository;
+    private final EpisodeMapper episodeMapper;
 
-    public EpisodeService(EpisodeRepository episodeRepository,
-            MovieRepository movieRepository) {
-        this.episodeRepository = episodeRepository;
-        this.movieRepository = movieRepository;
+    public ResultPaginationDTO getAllEpisodes(
+            Specification<Episode> spec,
+            Pageable pageable) {
+
+        Page<Episode> page = episodeRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(page.getTotalPages());
+        mt.setTotal(page.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(page.map(episodeMapper::toDTO).getContent());
+
+        return rs;
     }
 
-    // lấy list tập theo movie
-    public List<EpisodeDTO> getEpisodesByMovie(Long movieId) {
-        return episodeRepository.findByMovieIdOrderByEpisodeOrderAsc(movieId)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public EpisodeDTO getEpisodeById(Long id) {
+
+        Episode episode = episodeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy episode id = " + id));
+
+        return episodeMapper.toDTO(episode);
     }
 
-    // lấy episode theo slug (watch page)
-    public EpisodeDTO getEpisodeBySlug(String slug) {
-        Episode ep = episodeRepository.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy tập phim"));
-        return mapToDTO(ep);
-    }
-
-    // tạo episode
     public EpisodeDTO createEpisode(EpisodeRequest request) {
 
+        if (episodeRepository.existsBySlug(request.getSlug())) {
+            throw new BadRequestException("Slug đã tồn tại");
+        }
+
         Movie movie = movieRepository.findById(request.getMovieId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy movie"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy movie"));
 
-        Episode episode = new Episode();
-        updateEpisodeFields(episode, request, movie);
+        Episode episode = Episode.builder()
+                .name(request.getName())
+                .slug(request.getSlug())
+                .videoUrl(request.getVideoUrl())
+                .episodeOrder(request.getEpisodeOrder())
+                .movie(movie)
+                .build();
 
-        return mapToDTO(episodeRepository.save(episode));
+        return episodeMapper.toDTO(episodeRepository.save(episode));
     }
 
-    // update episode
     public EpisodeDTO updateEpisode(Long id, EpisodeRequest request) {
 
         Episode episode = episodeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy episode"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy episode id = " + id));
 
-        Movie movie = movieRepository.findById(request.getMovieId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy movie"));
+        if (!episode.getSlug().equals(request.getSlug())
+                && episodeRepository.existsBySlug(request.getSlug())) {
 
-        updateEpisodeFields(episode, request, movie);
+            throw new BadRequestException("Slug đã tồn tại");
+        }
 
-        return mapToDTO(episodeRepository.save(episode));
+        episode.setName(request.getName());
+        episode.setSlug(request.getSlug());
+        episode.setVideoUrl(request.getVideoUrl());
+        episode.setEpisodeOrder(request.getEpisodeOrder());
+
+        return episodeMapper.toDTO(episodeRepository.save(episode));
     }
 
-    // delete
     public void deleteEpisode(Long id) {
-        episodeRepository.deleteById(id);
+
+        Episode episode = episodeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy episode id = " + id));
+
+        episodeRepository.delete(episode);
     }
 
-    private EpisodeDTO mapToDTO(Episode ep) {
-        return EpisodeDTO.builder()
-                .id(ep.getId())
-                .name(ep.getName())
-                .slug(ep.getSlug())
-                .videoUrl(ep.getVideoUrl())
-                .episodeOrder(ep.getEpisodeOrder())
-                .movieId(ep.getMovie().getId())
-                .build();
-    }
+    public List<EpisodeDTO> getEpisodesByMovieId(Long movieId) {
 
-    private void updateEpisodeFields(Episode ep, EpisodeRequest req, Movie movie) {
-        ep.setMovie(movie);
-        ep.setName(req.getName());
-        ep.setVideoUrl(req.getVideoUrl());
-        ep.setEpisodeOrder(req.getEpisodeOrder());
+        List<Episode> episodes = episodeRepository.findByMovieIdOrderByEpisodeOrderAsc(movieId);
 
-        String slug = movie.getSlug() + "-tap-" + req.getEpisodeOrder();
-        ep.setSlug(slug);
+        return episodes.stream()
+                .map(episodeMapper::toDTO)
+                .toList();
     }
 }

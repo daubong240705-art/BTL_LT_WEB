@@ -39,6 +39,9 @@ public class User {
     @Column(nullable = false, length = 30)
     private Role role;
 
+    @Column(length = 500)
+    private String refreshToken;
+
     // PROFILE
     @Column(name = "full_name", length = 100)
     private String fullName;

@@ -1,22 +1,25 @@
 package com.movieapp.backend.controller;
 
-import com.movieapp.backend.domain.RestResponse;
+import com.movieapp.backend.domain.Movie;
+import com.movieapp.backend.dto.ResultPaginationDTO;
+import com.movieapp.backend.service.EpisodeService;
+import com.movieapp.backend.dto.Movie.EpisodeDTO;
 import com.movieapp.backend.dto.Movie.MovieDTO;
 import com.movieapp.backend.dto.Movie.MovieRequest;
 import com.movieapp.backend.service.MovieService;
-import com.movieapp.backend.util.ResponseUtil;
+import com.movieapp.backend.util.annotation.ApiMessage;
+import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-
 import java.util.List;
 
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
-// import org.springframework.data.web.PageableDefault;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,39 +28,66 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*")
 public class MovieController {
 
+    private final EpisodeService episodeService;
+
     private final MovieService movieService;
 
-    // GET ALL (pagination)
+
+    // API: danh sách phim
     @GetMapping
-    public ResponseEntity<RestResponse<List<MovieDTO>>> getAllMovies() {
-        return ResponseUtil.success(movieService.getAllMovies());
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiMessage("Lấy danh sách phim thành công")
+    public ResultPaginationDTO getAllMovies(
+            @Filter Specification<Movie> spec,
+            Pageable pageable) {
+        return movieService.getAllMovies(spec, pageable);
     }
 
-    // GET BY SLUG
-    @GetMapping("/{slug}")
-    public ResponseEntity<RestResponse<MovieDTO>> getMovieBySlug(@PathVariable("slug") String slug) {
-        return ResponseUtil.success(movieService.getMovieBySlug(slug));
+    // API: lấy phim theo id
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ApiMessage("Lấy thông tin phim thành công")
+    public MovieDTO getMovieBySlug(@PathVariable("id") Long id) {
+        return movieService.getMovieById(id);
     }
 
-    // CREATE
+    // API: thêm phim
     @PostMapping
-    public ResponseEntity<RestResponse<MovieDTO>> createMovie(
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiMessage("Tạo mới phim thành công")
+    public MovieDTO createMovie(
             @Valid @RequestBody MovieRequest request) {
-        return ResponseUtil.created(movieService.createMovie(request));
+        return movieService.createMovie(request);
     }
 
-    // UPDATE
+    // APT: capaj nhât phim
     @PutMapping("/{id}")
-    public ResponseEntity<RestResponse<MovieDTO>> updateMovie(
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiMessage("Cập nhật phim thành công")
+    public MovieDTO updateMovie(
             @PathVariable("id") Long id,
             @Valid @RequestBody MovieRequest request) {
-        return ResponseUtil.created(movieService.updateMovie(id, request));
+        return movieService.updateMovie(id, request);
     }
 
-    // DELETE
+    // API xoá phim
+    @ApiMessage("Xóa người dùng thành công")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable("id") Long id) {
         movieService.deleteMovie(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{movieId}/episodes")
+    @ApiMessage("Lấy danh sách tập phim thành công")
+    public List<EpisodeDTO> getEpisodesByMovie(
+            @PathVariable Long movieId) {
+
+        return episodeService.getEpisodesByMovieId(movieId);
     }
 }

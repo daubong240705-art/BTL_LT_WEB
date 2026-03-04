@@ -101,12 +101,10 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        // Tạo máy giải mã bằng chính Secret Key và Thuật toán HS512 của bạn
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(getSecretKey())
                 .macAlgorithm(SecurityUtil.JWT_ALGORITHM)
                 .build();
 
-        // Bọc trong try-catch để in ra lỗi rõ ràng nếu token bị sai hoặc hết hạn
         return token -> {
             try {
                 return jwtDecoder.decode(token);

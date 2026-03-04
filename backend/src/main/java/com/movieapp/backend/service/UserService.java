@@ -6,23 +6,28 @@ import com.movieapp.backend.dto.Meta;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
+import com.movieapp.backend.dto.auth.SignupDTO;
 import com.movieapp.backend.repository.UserRepository;
 import com.movieapp.backend.service.mapper.UserMapper;
 import com.movieapp.backend.util.error.CustomValidationException;
+import com.movieapp.backend.util.error.ResourceNotFoundException;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserService {
+
+    private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -43,6 +48,14 @@ public class UserService {
         rs.setResult(pageUser.map(userMapper::toDTO).getContent());
 
         return rs;
+    }
+
+    public UserDTO getUserById(Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với id: " + id));
+
+        return userMapper.toDTO(user);
     }
 
     public UserDTO createUser(UserRequest request) {
@@ -87,11 +100,61 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
         userRepository.delete(user);
     }
 
     public User hadGetUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public void updateUserToken(String token, String username) {
+        User currentUser = hadGetUserByUsername(username);
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            userRepository.save(currentUser);
+        }
+    }
+
+    public User getUserByRefreshTokenAndUsername(String token, String username) {
+        return this.userRepository.findByRefreshTokenAndUsername(token, username);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public SignupDTO createUser(SignupDTO signup) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (userRepository.existsByUsername(signup.getUsername())) {
+            errors.put("username", "Tên đăng nhập đã tồn tại");
+        }
+
+        if (userRepository.existsByEmail(signup.getEmail())) {
+            errors.put("email", "Email đã được sử dụng");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new CustomValidationException(errors);
+        }
+
+        User user = new User();
+        user.setUsername(signup.getUsername());
+        user.setEmail(signup.getEmail());
+        user.setFullName(signup.getFullName());
+
+        user.setPassword(passwordEncoder.encode(signup.getPassword()));
+
+        // mặc định role USER
+        user.setRole(Role.USER);
+        User saveUser = userRepository.save(user);
+
+        return userMapper.toSignupDTO(saveUser);
     }
 }

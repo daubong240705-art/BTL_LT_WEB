@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.movieapp.backend.domain.User;
 import com.movieapp.backend.dto.User.UserDTO;
+import com.movieapp.backend.dto.auth.SignupDTO;
 
 @Component
 public class UserMapper {
@@ -16,5 +17,17 @@ public class UserMapper {
                 .avatarUrl(user.getAvatarUrl())
                 .role(user.getRole().name())
                 .build();
+    }
+
+    public SignupDTO toSignupDTO(User user) {
+
+        SignupDTO signup = new SignupDTO();
+
+        signup.setUsername(user.getUsername());
+        signup.setEmail(user.getEmail());
+        signup.setFullName(user.getFullName());
+
+
+        return signup;
     }
 }
