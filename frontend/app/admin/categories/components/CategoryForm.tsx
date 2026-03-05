@@ -1,5 +1,5 @@
 
-import { Category } from "@/app/types/movie.type";
+import { Category } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { CategoryFormValues, useCategoryForm, useCategoryMutation } from "../../hooks/category/useCategoryForm";

@@ -4,7 +4,7 @@ import PageHeader from "../../components/admin.header";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import UserTable from "./UserTable";
 import UserDialog from "./UserDialog";
-import { User } from "@/app/types/movie.type";
+import { User } from "@/app/types/global.type";
 import { useDeleteUser } from "../../hooks/user/useDeleteUser";
 
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import EpisodeList from "./EpisodeList";
 import { Controller } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { Movie } from "@/app/types/movie.type";
+import { Movie } from "@/app/types/global.type";
 import { FormError } from "@/components/shared/FormError";
 import { categoryApi } from "../../service/api/category.api";
 import { AppInput } from "@/components/shared/AppInput";

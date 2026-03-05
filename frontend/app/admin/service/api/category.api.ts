@@ -2,7 +2,7 @@
 
 import { api } from './axios';
 import { CategoryFormValues } from '../../hooks/category/useCategoryForm';
-import { Category } from '@/app/types/movie.type';
+import { Category } from '@/app/types/global.type';
 
 
 export const categoryApi = {

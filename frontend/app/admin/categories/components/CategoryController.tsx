@@ -1,5 +1,5 @@
 "use client";
-import { Category } from "@/app/types/movie.type";
+import { Category } from "@/app/types/global.type";
 import { useState } from "react";
 import PageHeader from "../../components/admin.header";
 import CategoryTable from "./CategoryTable";

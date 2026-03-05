@@ -1,17 +1,28 @@
+import { getMovieBySlug, getMoviesByCategorySlug } from "@/lib/api/main.api";
 import HeroBanner from "./components/main.herobanner";
 import { MovieSlider } from "./components/main.movieslider";
 
-import { getAllMovieByCategorySlug, getMovieBySlug } from "./service/main.api";
 
 
-const MovieBanner = await getMovieBySlug("tieu-yeu")
-const cartoonMovie = await getAllMovieByCategorySlug("hoat-hinh");
-const animeMovie = await getAllMovieByCategorySlug("anime");
-const cinemaMovie = await getAllMovieByCategorySlug("chieu-rap");
+export default async function HomePage() {
 
+    const [
+        bannerRes,
+        cartoonRes,
+        animeRes,
+        cinemaRes
+    ] = await Promise.all([
+        getMovieBySlug("tieu-yeu"),
+        getMoviesByCategorySlug("hoat-hinh"),
+        getMoviesByCategorySlug("anime"),
+        getMoviesByCategorySlug("chieu-rap")
+    ]);
 
-export default function HomePage() {
-    // console.log(actionMovie)
+    const MovieBanner = bannerRes.data!;
+    const cartoonMovie = cartoonRes.data?.result ?? [];
+    const animeMovie = animeRes.data?.result ?? [];
+    const cinemaMovie = cinemaRes.data?.result ?? [];
+    console.log(cartoonMovie);
     return (
         <div className="min-h-screen bg-gray-900">
             <HeroBanner MovieBanner={MovieBanner} />

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Edit, X } from "lucide-react";
 import MovieForm from "./MovieForm";
-import { Movie } from "@/app/types/movie.type";
+import { Movie } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 
 type Props = {

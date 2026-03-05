@@ -1,4 +1,4 @@
-import { User } from "@/app/types/movie.type";
+import { User } from "@/app/types/global.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";

@@ -1,19 +1,20 @@
+import { getCategories } from "@/lib/api/main.api";
 import Footer from "./components/main.footer";
 import Header from "./components/main.header";
-import { getCategories } from "./service/main.api";
 
-
-const categories = await getCategories();
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+
+  const res = await getCategories();
+  const categories = res.data?.result ?? [];
+
   return (
     <html lang="en">
       <body>
-        <Header
-          categories={categories} />
+        <Header categories={categories} />
         {children}
         <Footer />
       </body>

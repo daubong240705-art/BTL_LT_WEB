@@ -1,4 +1,4 @@
-import { User } from '@/app/types/movie.type';
+import { User } from '@/app/types/global.type';
 import { api } from './axios';
 import { UserFormValues } from '../../hooks/user/useUserForm';
 

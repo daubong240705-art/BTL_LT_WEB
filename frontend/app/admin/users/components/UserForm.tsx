@@ -1,5 +1,5 @@
 
-import { User } from "@/app/types/movie.type";
+import { User } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Lock, Mail, Save, User2 } from "lucide-react";

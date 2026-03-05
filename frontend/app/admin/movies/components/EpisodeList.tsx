@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { Film, Edit, Trash2, Plus } from "lucide-react";
-import { Episode } from "@/app/types/movie.type";
+import { Episode } from "@/app/types/global.type";
 import { movieApi } from "../../service/api/movie.api";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";

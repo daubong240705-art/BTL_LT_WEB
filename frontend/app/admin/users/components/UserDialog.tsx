@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Edit, Plus } from "lucide-react";
 import UserForm from "./UserForm";
-import { User } from "@/app/types/movie.type";
+import { User } from "@/app/types/global.type";
 
 type Props = {
     open: boolean;

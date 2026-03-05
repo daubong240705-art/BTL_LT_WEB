@@ -1,4 +1,3 @@
-import { Movie } from "@/app/types/movie.type"
 import { Button } from "@/components/ui/button"
 import { Heart, Info, Play } from "lucide-react"
 

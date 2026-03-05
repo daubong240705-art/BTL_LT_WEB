@@ -1,4 +1,4 @@
-import { Movie } from '@/app/types/movie.type';
+import { Movie } from '@/app/types/global.type';
 import Link from 'next/link';
 
 

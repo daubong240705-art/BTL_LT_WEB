@@ -12,9 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 
 
-import { Category } from "@/app/types/movie.type";
 
-type Props = {
+
+interface Props {
     categories: Category[]
 }
 export default function Header({ categories }: Props) {

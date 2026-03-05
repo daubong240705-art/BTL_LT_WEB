@@ -1,4 +1,4 @@
-package com.movieapp.backend.controller;
+package com.movieapp.backend.controller.admin;
 
 import com.movieapp.backend.domain.Category;
 import com.movieapp.backend.dto.ResultPaginationDTO;

@@ -1,4 +1,4 @@
-import { Episode, Movie } from '@/app/types/movie.type';
+import { Episode, Movie } from '@/app/types/global.type';
 import { api } from './axios';
 import { MovieFormValues } from '../../hooks/movie/useMovieForm';
 import { EpisodeFormValues } from '../../hooks/movie/useEpisodeForm';

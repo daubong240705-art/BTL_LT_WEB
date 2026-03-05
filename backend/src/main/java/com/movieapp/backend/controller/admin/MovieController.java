@@ -1,4 +1,4 @@
-package com.movieapp.backend.controller;
+package com.movieapp.backend.controller.admin;
 
 import com.movieapp.backend.domain.Movie;
 import com.movieapp.backend.dto.ResultPaginationDTO;
@@ -31,7 +31,6 @@ public class MovieController {
     private final EpisodeService episodeService;
 
     private final MovieService movieService;
-
 
     // API: danh sách phim
     @GetMapping
@@ -90,4 +89,5 @@ public class MovieController {
 
         return episodeService.getEpisodesByMovieId(movieId);
     }
+
 }

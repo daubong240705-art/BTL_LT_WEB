@@ -1,4 +1,4 @@
-package com.movieapp.backend.controller;
+package com.movieapp.backend.controller.admin;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;

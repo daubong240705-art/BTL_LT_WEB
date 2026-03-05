@@ -1,5 +1,5 @@
 
-import { Episode } from "@/app/types/movie.type";
+import { Episode } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { FormError } from "@/components/shared/FormError";
