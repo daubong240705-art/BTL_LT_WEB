@@ -1,6 +1,8 @@
 
-import { Calendar, ChevronLeft, Heart, MessageCircle, Play, Send } from "lucide-react";
-import { getMovieBySlug } from "../../service/main.api";
+import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
+import { ChevronLeft, MessageCircle, Play, Send } from "lucide-react";
+import Link from "next/link";
+
 
 
 type Props = {
@@ -10,21 +12,24 @@ type Props = {
 export default async function MovieDetailPage({ params }: Props) {
     const resolvedParams = await params;
     const movieSlug = resolvedParams.slug;
-    const movie = await getMovieBySlug(movieSlug);
-    console.log(movie)
+    const movieRes = await getMovieBySlug(movieSlug);
+    const movie = movieRes.data!;
+    const episodesRes = await getMovieEpisode(movie.slug);
+    const episodes = episodesRes.data?.result ?? [];
+
     return (
         <>
             <div className="min-h-screen bg-gray-900 pb-20">
                 <div className="container mx-auto px-4 py-8">
 
                     {/* Nút Quay Lại */}
-                    <div
-
+                    <Link
+                        href={`http://localhost:3000/movie/${movie.slug}`}
                         className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6 group"
                     >
                         <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                         <span>Quay lại chi tiết phim</span>
-                    </div>
+                    </Link>
 
                     {/* --- KHỐI CHÍNH CĂN GIỮA (Thay đổi ở đây) --- */}
                     {/* max-w-5xl: Giới hạn chiều rộng để không bị bè ra quá to */}
@@ -65,8 +70,8 @@ export default async function MovieDetailPage({ params }: Props) {
                             <div className="lg:col-span-2 space-y-6">
                                 <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
                                     <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
-                                        <span className="text-red-500">Tập 1:</span>
-                                       
+                                        <span className="text-red-500">Tập { }</span>
+
                                     </h1>
                                     <p className="text-gray-400 text-lg mb-4">
                                         Phim: <span className="text-white font-semibold">{movie.title}</span>
@@ -107,7 +112,16 @@ export default async function MovieDetailPage({ params }: Props) {
                                         Danh sách tập
                                     </h2>
                                     <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
-
+                                        {episodes.map((ep) => (
+                                            <Link
+                                                key={ep.id}
+                                                href={`/watch/${movie.slug}/${ep.slug}`}
+                                                scroll={false}
+                                                className="group bg-gray-800 hover:bg-red-600 text-white py-3 rounded-lg text-center font-semibold transition-all border border-gray-700 hover:border-red-500"
+                                            >
+                                                <span>{ep.name}</span>
+                                            </Link>
+                                        ))}
                                     </div>
                                 </div>
                             </div>

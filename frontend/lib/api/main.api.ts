@@ -24,6 +24,14 @@ export const getMovieBySlug = (slug: string) => {
 
 };
 
+export const getMovieEpisode = (slug: string) => {
+    return sendRequest<IBackendRes<IModelPaginate<Episode>>>({
+        url: `${api_url}/movies/${slug}/episodes`,
+        method: "GET",
+    })
+};
+
+
 export const getCategories = () => {
     return sendRequest<IBackendRes<IModelPaginate<Category>>>({
         url: `${api_url}/categories`,

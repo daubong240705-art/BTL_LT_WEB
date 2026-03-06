@@ -4,6 +4,7 @@ import com.movieapp.backend.domain.RestResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,13 +23,10 @@ public class GlobalExceptionHandler {
             InternalAuthenticationServiceException.class
     })
     public ResponseEntity<RestResponse<Object>> handleAuthenticationException(Exception ex) {
-        // Cố tình dùng chung 1 câu thông báo cho mọi trường hợp sai tài khoản/mật khẩu
-        String errorMessage = "Tên đăng nhập hoặc mật khẩu không chính xác";
-
+        String errorMessage = "Ten dang nhap hoac mat khau khong chinh xac";
         return buildResponse(HttpStatus.UNAUTHORIZED, errorMessage);
     }
 
-    // VALIDATION ERROR (400)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -36,20 +34,15 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-        // API trả ra sẽ có dạng: "error": { "username": "không được để trống", "email":
-        // "sai định dạng" }
         return buildResponse(HttpStatus.BAD_REQUEST, errors);
     }
 
-    // NOT FOUND (404)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<RestResponse<Object>> handleNotFound(
             ResourceNotFoundException ex) {
 
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
-
-    // BAD REQUEST (400)
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<RestResponse<Object>> handleBadRequest(
@@ -60,12 +53,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomValidationException.class)
     public ResponseEntity<RestResponse<Object>> handleCustomValidation(CustomValidationException ex) {
-        // Trả về Map chứa danh sách các lỗi (ví dụ: {"username": "...", "email":
-        // "..."})
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getErrors());
     }
 
-    // DUPLICATE UNIQUE (400)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<RestResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<RestResponse<Object>> handleDuplicate(
             DataIntegrityViolationException ex) {
@@ -89,19 +84,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, message);
     }
 
-    // FALLBACK (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestResponse<Object>> handleAll(Exception ex) {
-
-        // Có thể log ở đây
-        // log.error("Unexpected error", ex);
-
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal server error");
     }
 
-    // COMMON BUILDER
     private ResponseEntity<RestResponse<Object>> buildResponse(
             HttpStatus status,
             Object error) {

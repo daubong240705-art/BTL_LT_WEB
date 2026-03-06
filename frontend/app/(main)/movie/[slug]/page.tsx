@@ -1,6 +1,7 @@
 
+import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
 import { Calendar, Heart, MessageCircle, Play } from "lucide-react";
-import { getMovieBySlug, getMovieEpisode } from "../../service/main.api";
+
 import Link from "next/link";
 
 
@@ -11,9 +12,11 @@ type Props = {
 export default async function MovieDetailPage({ params }: Props) {
     const resolvedParams = await params;
     const movieSlug = resolvedParams.slug;
-    const movie = await getMovieBySlug(movieSlug);
-    const episodes = await getMovieEpisode(movie.id);
-    console.log(movie)
+    const movieRes = await getMovieBySlug(movieSlug);
+    const movie = movieRes.data!;
+    const episodesRes = await getMovieEpisode(movie.slug);
+    const episodes = episodesRes.data?.result ?? [];
+
     return (
         <>
             <div className="min-h-screen bg-gray-900">
@@ -122,10 +125,10 @@ export default async function MovieDetailPage({ params }: Props) {
                                     {episodes.map((ep) => (
                                         <Link
                                             key={ep.id}
-                                            href={`/watch/${movie.id}/${ep.episodeOrder}`}
+                                            href={`/watch/${movie.slug}/${ep.slug}`}
                                             className="group bg-gray-800 hover:bg-red-600 text-white py-3 rounded-lg text-center font-semibold transition-all border border-gray-700 hover:border-red-500"
                                         >
-                                            <span className="text-md text-gray-400 block group-hover:text-white/80">Tập {ep.episodeOrder}</span>
+                                            <span className="text-md text-gray-400 block group-hover:text-white/80">{ep.name}</span>
 
                                         </Link>
                                     ))}

@@ -113,4 +113,24 @@ public class EpisodeService {
                 .map(episodeMapper::toDTO)
                 .toList();
     }
+
+    public ResultPaginationDTO getEpisodesByMovieSlug(String movieSlug,
+            Pageable pageable) {
+
+        Page<Episode> page = episodeRepository.findByMovieSlugOrderByEpisodeOrderAsc(movieSlug, pageable);
+
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(page.getTotalPages());
+        mt.setTotal(page.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(page.map(episodeMapper::toDTO).getContent());
+
+        return rs;
+    }
 }

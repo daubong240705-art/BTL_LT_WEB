@@ -20,15 +20,11 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint, AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
-    
 
     public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    // ==========================================
-    // 1. XỬ LÝ 401 UNAUTHORIZED (Chưa đăng nhập, sai hoặc hết hạn Token)
-    // ==========================================
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException)
@@ -39,18 +35,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
 
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
-        // Có thể lấy thông báo lỗi chi tiết từ authException.getMessage() nếu muốn
         res.setError(authException.getMessage());
-        res.setMessage("Token không hợp lệ, đã hết hạn hoặc bạn chưa đăng nhập.");
+        res.setMessage("Token khong hop le, da het han hoac ban chua dang nhap.");
 
-        // Biến Object thành JSON và trả về Frontend
         response.getWriter().write(objectMapper.writeValueAsString(res));
     }
 
-    // ==========================================
-    // 2. XỬ LÝ 403 FORBIDDEN (Có Token nhưng không đủ quyền - VD: User gọi API của
-    // Admin)
-    // ==========================================
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException)
@@ -62,9 +52,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.FORBIDDEN.value());
         res.setError(accessDeniedException.getMessage());
-        res.setMessage("Bạn không có quyền (Role) để truy cập vào tài nguyên này.");
+        res.setMessage("Ban khong co quyen (Role) de truy cap vao tai nguyen nay.");
 
-        // Biến Object thành JSON và trả về Frontend
         response.getWriter().write(objectMapper.writeValueAsString(res));
     }
 }
