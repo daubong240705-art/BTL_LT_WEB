@@ -33,135 +33,137 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final SecurityUtil securityUtil;
-    private final UserService userService;
-    @Value("${movieapp.jwt.refresh-token}")
-    private long refreshTokenExpiration;
+        private final AuthenticationManager authenticationManager;
+        private final SecurityUtil securityUtil;
+        private final UserService userService;
+        @Value("${movieapp.jwt.refresh-token}")
+        private long refreshTokenExpiration;
 
-    // API: Dăng nhập
-    @PostMapping("/login")
-    @ApiMessage("Đăng nhập thành công")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO login) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                login.getUsername(),
-                login.getPassword());
+        // API: Dăng nhập
+        @PostMapping("/login")
+        @ApiMessage("Đăng nhập thành công")
+        public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO login) {
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                login.getUsername(),
+                                login.getPassword());
 
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+                Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        ResLoginDTO res = new ResLoginDTO();
+                ResLoginDTO res = new ResLoginDTO();
 
-        User currentUser = userService.hadGetUserByUsername(login.getUsername());
-        if (currentUser != null) {
-            ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUser.getId(), currentUser.getUsername(),
-                    currentUser.getEmail(), currentUser.getFullName(), currentUser.getAvatarUrl(),
-                    currentUser.getRole().name());
-            res.setUser(userLogin);
+                User currentUser = userService.hadGetUserByUsername(login.getUsername());
+                if (currentUser != null) {
+                        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUser.getId(),
+                                        currentUser.getUsername(),
+                                        currentUser.getEmail(), currentUser.getFullName(), currentUser.getAvatarUrl(),
+                                        currentUser.getRole().name());
+                        res.setUser(userLogin);
+                }
+                String access_token = securityUtil.createAccessToken(authentication.getName(), res);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                res.setAccessToken(access_token);
+
+                String refresh_token = this.securityUtil.createRefreshToken(login.getUsername(), res);
+                userService.updateUserToken(refresh_token, login.getUsername());
+
+                ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh_token)
+                                .httpOnly(true)
+                                .secure(false)
+                                .path("/")
+                                .maxAge(refreshTokenExpiration)
+                                .sameSite("Strict")
+                                .build();
+
+                return ResponseEntity
+                                .ok()
+                                .header("Set-Cookie", cookie.toString())
+                                .body(res);
         }
-        String access_token = securityUtil.createAccessToken(authentication.getName(), res);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        res.setAccessToken(access_token);
 
-        String refresh_token = this.securityUtil.createRefreshToken(login.getUsername(), res);
-        userService.updateUserToken(refresh_token, login.getUsername());
+        // API: láy thông tin tài khoản đăng nhập
+        @GetMapping("/account")
+        @ApiMessage("Lấy thông tin tài khoản")
+        public ResLoginDTO.UserLogin getAccount() {
 
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh_token)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(refreshTokenExpiration)
-                .sameSite("Strict")
-                .build();
+                String username = SecurityUtil.getCurrentUserLogin();
+                User user = userService.hadGetUserByUsername(username);
 
-        return ResponseEntity
-                .ok()
-                .header("Set-Cookie", cookie.toString())
-                .body(res);
-    }
-
-    // API: láy thông tin tài khoản đăng nhập
-    @GetMapping("/account")
-    @ApiMessage("Lấy thông tin tài khoản")
-    public ResLoginDTO.UserLogin getAccount() {
-
-        String username = SecurityUtil.getCurrentUserLogin();
-        User user = userService.hadGetUserByUsername(username);
-
-        return new ResLoginDTO.UserLogin(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getAvatarUrl(),
-                user.getRole().name());
-    }
-
-    // API: Tạo refresh token mới
-    @GetMapping("/refresh")
-    @ApiMessage("Refresh Token thành công")
-    public ResponseEntity<ResLoginDTO> getRefreshToken(
-            @CookieValue(name = "refresh_token") String refresh_token) {
-        Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
-        String username = decodedToken.getSubject();
-
-        User currentUser = userService.getUserByRefreshTokenAndUsername(refresh_token, username);
-        if (currentUser == null) {
-            throw new BadRequestException("Refresh Token không hợp lệ");
+                return new ResLoginDTO.UserLogin(
+                                user.getId(),
+                                user.getUsername(),
+                                user.getEmail(),
+                                user.getFullName(),
+                                user.getAvatarUrl(),
+                                user.getRole().name());
         }
-        ResLoginDTO res = new ResLoginDTO();
-        User currentUserDB = userService.hadGetUserByUsername(username);
-        if (currentUserDB != null) {
-            ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUserDB.getId(),
-                    currentUserDB.getUsername(),
-                    currentUserDB.getEmail(), currentUserDB.getFullName(), currentUserDB.getAvatarUrl(),
-                    currentUserDB.getRole().name());
-            res.setUser(userLogin);
+
+        // API: Tạo refresh token mới
+        @GetMapping("/refresh")
+        @ApiMessage("Refresh Token thành công")
+        public ResponseEntity<ResLoginDTO> getRefreshToken(
+                        @CookieValue(name = "refresh_token") String refresh_token) {
+                Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
+                String username = decodedToken.getSubject();
+
+                User currentUser = userService.getUserByRefreshTokenAndUsername(refresh_token, username);
+                if (currentUser == null) {
+                        throw new BadRequestException("Refresh Token không hợp lệ");
+                }
+                ResLoginDTO res = new ResLoginDTO();
+                User currentUserDB = userService.hadGetUserByUsername(username);
+                if (currentUserDB != null) {
+                        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUserDB.getId(),
+                                        currentUserDB.getUsername(),
+                                        currentUserDB.getEmail(), currentUserDB.getFullName(),
+                                        currentUserDB.getAvatarUrl(),
+                                        currentUserDB.getRole().name());
+                        res.setUser(userLogin);
+                }
+                String access_token = securityUtil.createAccessToken(username, res);
+                res.setAccessToken(access_token);
+
+                String new_refresh_token = this.securityUtil.createRefreshToken(username, res);
+                userService.updateUserToken(new_refresh_token, username);
+
+                ResponseCookie cookie = ResponseCookie.from("refresh_token", new_refresh_token)
+                                .httpOnly(true)
+                                .secure(false)
+                                .path("/")
+                                .maxAge(refreshTokenExpiration)
+                                .sameSite("Strict")
+                                .build();
+
+                return ResponseEntity
+                                .ok()
+                                .header("Set-Cookie", cookie.toString())
+                                .body(res);
         }
-        String access_token = securityUtil.createAccessToken(username, res);
-        res.setAccessToken(access_token);
 
-        String new_refresh_token = this.securityUtil.createRefreshToken(username, res);
-        userService.updateUserToken(new_refresh_token, username);
+        // API: Dăng xuất
+        @PostMapping("/logout")
+        @ApiMessage("Đăng xuất thành công")
+        public ResponseEntity<Void> logout() {
 
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", new_refresh_token)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(refreshTokenExpiration)
-                .sameSite("Strict")
-                .build();
+                String username = SecurityUtil.getCurrentUserLogin();
 
-        return ResponseEntity
-                .ok()
-                .header("Set-Cookie", cookie.toString())
-                .body(res);
-    }
+                userService.updateUserToken(null, username);
 
-    // API: Dăng xuất
-    @PostMapping("/logout")
-    @ApiMessage("Đăng xuất thành công")
-    public ResponseEntity<Void> logout() {
+                ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
+                                .httpOnly(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build();
 
-        String username = SecurityUtil.getCurrentUserLogin();
+                return ResponseEntity.ok()
+                                .header("Set-Cookie", cookie.toString())
+                                .build();
+        }
 
-        userService.updateUserToken(null, username);
-
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
-                .httpOnly(true)
-                .path("/")
-                .maxAge(0)
-                .build();
-
-        return ResponseEntity.ok()
-                .header("Set-Cookie", cookie.toString())
-                .build();
-    }
-
-    // API: Dăng ký
-    @PostMapping("/signup")
-    @ApiMessage("Đăng ký thành công")
-    public SignupDTO signup(@Valid @RequestBody SignupDTO signup) {
-        return userService.createUser(signup);
-    }
+        // API: Dăng ký
+        @PostMapping("/signup")
+        @ApiMessage("Đăng ký thành công")
+        public SignupDTO signup(@Valid @RequestBody SignupDTO signup) {
+                return userService.createUser(signup);
+        }
 
 }

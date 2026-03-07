@@ -6,7 +6,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -21,10 +20,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.movieapp.backend.util.SecurityUtil;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -38,6 +42,8 @@ public class SecurityConfiguration {
 
     @Value("${movieapp.jwt.secret}")
     private String jwtKey;
+    @Value("${movieapp.frontend-url:http://localhost:3000}")
+    private String frontendUrl;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -53,21 +59,31 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(c -> c.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
+                        // .requestMatchers("/", "/api/v1/auth/**", "/api/v1/public/**").permitAll()
+                        // .requestMatchers("/api/v1/users/**",
+                        // "/api/v1/categories/**").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.POST, "/api/v1/movies/**").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.PUT, "/api/v1/movies/**").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.DELETE,
+                        // "/api/v1/movies/**").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.GET, "/api/v1/movies").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.GET, "/api/v1/movies/*").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.POST,
+                        // "/api/v1/episodes/**").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.PUT, "/api/v1/episodes/**").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.DELETE,
+                        // "/api/v1/episodes/**").hasAuthority("ADMIN")
+
                         .requestMatchers("/", "/api/v1/auth/**", "/api/v1/public/**").permitAll()
-                        .requestMatchers("/api/v1/users/**", "/api/v1/categories/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/movies/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/movies/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/movies/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/movies").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/movies/*").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/episodes/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/episodes/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/episodes/**").hasAuthority("ADMIN")
+
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
                         .decoder(jwtDecoder())
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAuthenticationEntryPoint))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAuthenticationEntryPoint))
@@ -75,6 +91,24 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(
+                Arrays.stream(frontendUrl.split(","))
+                        .map(String::trim)
+                        .filter(origin -> !origin.isEmpty())
+                        .toList());
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean

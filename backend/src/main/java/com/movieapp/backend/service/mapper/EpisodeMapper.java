@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import com.movieapp.backend.domain.Episode;
 import com.movieapp.backend.dto.Movie.EpisodeDTO;
 
-
 @Component
 public class EpisodeMapper {
 

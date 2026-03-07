@@ -119,7 +119,6 @@ public class EpisodeService {
 
         Page<Episode> page = episodeRepository.findByMovieSlugOrderByEpisodeOrderAsc(movieSlug, pageable);
 
-
         ResultPaginationDTO rs = new ResultPaginationDTO();
         Meta mt = new Meta();
 

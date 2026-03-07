@@ -1,4 +1,4 @@
-import { Movie } from '@/app/types/global.type';
+
 import Link from 'next/link';
 
 
@@ -8,7 +8,7 @@ interface MovieCardProps {
 }
 
 export function MovieCard({ movie }: MovieCardProps) {
-    console.log("aaaa", movie)
+    // console.log("aaaa", movie)
     return (
         <Link
             href={`http://localhost:3000/movie/${movie.slug}`}

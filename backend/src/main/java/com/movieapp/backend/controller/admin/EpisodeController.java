@@ -25,7 +25,6 @@ public class EpisodeController {
 
     private final EpisodeService episodeService;
 
-   
     @GetMapping
     @ApiMessage("Lấy danh sách tập phim thành công")
     public ResultPaginationDTO getAllEpisodes(
@@ -35,7 +34,6 @@ public class EpisodeController {
         return episodeService.getAllEpisodes(spec, pageable);
     }
 
-  
     @GetMapping("/{id}")
     @ApiMessage("Lấy thông tin tập phim thành công")
     public EpisodeDTO getEpisodeById(@PathVariable Long id) {
@@ -43,7 +41,6 @@ public class EpisodeController {
         return episodeService.getEpisodeById(id);
     }
 
-   
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -54,7 +51,6 @@ public class EpisodeController {
         return episodeService.createEpisode(request);
     }
 
-    
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ApiMessage("Cập nhật tập phim thành công")
@@ -65,7 +61,6 @@ public class EpisodeController {
         return episodeService.updateEpisode(id, request);
     }
 
- 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ApiMessage("Xóa tập phim thành công")

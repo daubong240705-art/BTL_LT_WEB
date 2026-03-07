@@ -27,7 +27,6 @@ public class UserMapper {
         signup.setEmail(user.getEmail());
         signup.setFullName(user.getFullName());
 
-
         return signup;
     }
 }

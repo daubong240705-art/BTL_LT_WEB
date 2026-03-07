@@ -35,57 +35,57 @@ import org.springframework.web.bind.annotation.PathVariable;
 @CrossOrigin(origins = "*")
 public class UserController {
 
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+  private final UserService userService;
+  private final PasswordEncoder passwordEncoder;
 
-    // API: danh sách người dùng
-    @GetMapping
+  // API: danh sách người dùng
+  @GetMapping
   @PreAuthorize("hasAuthority('ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiMessage("Lấy danh sách người dùng thành công")
-    public ResultPaginationDTO getAllUsers(
-            @Filter Specification<User> spec,
-            Pageable pageable) {
+  @ResponseStatus(HttpStatus.OK)
+  @ApiMessage("Lấy danh sách người dùng thành công")
+  public ResultPaginationDTO getAllUsers(
+      @Filter Specification<User> spec,
+      Pageable pageable) {
 
-        return userService.getAllUsers(spec, pageable);
-    }
+    return userService.getAllUsers(spec, pageable);
+  }
 
-    // API: lấy người dùng theo id
-    @GetMapping("/{id}")
+  // API: lấy người dùng theo id
+  @GetMapping("/{id}")
   @PreAuthorize("hasAuthority('ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiMessage("Lấy thông tin người dùng thành công")
-    public UserDTO getUserById(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
-    }
+  @ResponseStatus(HttpStatus.OK)
+  @ApiMessage("Lấy thông tin người dùng thành công")
+  public UserDTO getUserById(@PathVariable("id") Long id) {
+    return userService.getUserById(id);
+  }
 
-    // API: Theem ngoui dung
-    @PostMapping
+  // API: Theem ngoui dung
+  @PostMapping
   @PreAuthorize("hasAuthority('ADMIN')")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiMessage("Tạo mới người dùng thành công")
-    public UserDTO createUser(@RequestBody @Valid UserRequest request) {
-        String hashPassword = passwordEncoder.encode(request.getPassword());
-        request.setPassword(hashPassword);
-        return userService.createUser(request);
-    }
+  @ResponseStatus(HttpStatus.CREATED)
+  @ApiMessage("Tạo mới người dùng thành công")
+  public UserDTO createUser(@RequestBody @Valid UserRequest request) {
+    String hashPassword = passwordEncoder.encode(request.getPassword());
+    request.setPassword(hashPassword);
+    return userService.createUser(request);
+  }
 
-    // API: Cập nhật người dùng
-    @PutMapping("/{id}")
+  // API: Cập nhật người dùng
+  @PutMapping("/{id}")
   @PreAuthorize("hasAuthority('ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiMessage("Cập nhật người dùng thành công")
-    public UserDTO updatedUser(@PathVariable("id") @Valid Long id, @RequestBody UserRequest request) {
-        return userService.updateUser(id, request);
-    }
+  @ResponseStatus(HttpStatus.OK)
+  @ApiMessage("Cập nhật người dùng thành công")
+  public UserDTO updatedUser(@PathVariable("id") @Valid Long id, @RequestBody UserRequest request) {
+    return userService.updateUser(id, request);
+  }
 
-    // API: Xoá người dùng
-    @DeleteMapping("/{id}")
+  // API: Xoá người dùng
+  @DeleteMapping("/{id}")
   @PreAuthorize("hasAuthority('ADMIN')")
-    @ApiMessage("Xóa người dùng thành công")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
-    }
+  @ApiMessage("Xóa người dùng thành công")
+  public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    userService.deleteUser(id);
+    return ResponseEntity.ok().build();
+  }
 
 }

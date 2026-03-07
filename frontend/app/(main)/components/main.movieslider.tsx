@@ -56,6 +56,8 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
 
     if (!movies || movies.length === 0) return null;
 
+
+
     return (
         <div className="py-8 px-4 md:px-8">
             <h2 className="text-2xl font-bold text-white mb-6 border-l-4 border-red-600 pl-3">

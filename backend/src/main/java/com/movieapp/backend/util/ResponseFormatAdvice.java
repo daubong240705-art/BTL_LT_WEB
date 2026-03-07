@@ -1,6 +1,5 @@
 package com.movieapp.backend.util;
 
-
 import com.movieapp.backend.domain.RestResponse;
 import com.movieapp.backend.util.annotation.ApiMessage;
 

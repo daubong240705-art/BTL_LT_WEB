@@ -1,8 +1,9 @@
 import { getCategories } from "@/lib/api/main.api";
 import Footer from "./components/main.footer";
 import Header from "./components/main.header";
+import CheckAuth from "../login/checkAuth";
 
-export default async function RootLayout({
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,12 +13,11 @@ export default async function RootLayout({
   const categories = res.data?.result ?? [];
 
   return (
-    <html lang="en">
-      <body>
-        <Header categories={categories} />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <>
+      <CheckAuth />
+      <Header categories={categories} />
+      {children}
+      <Footer />
+    </>
   );
 }

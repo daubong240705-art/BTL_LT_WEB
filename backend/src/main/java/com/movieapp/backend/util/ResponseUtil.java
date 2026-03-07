@@ -11,7 +11,8 @@ public class ResponseUtil {
         return success(data, "Success");
     }
 
-    // 2. Dành cho trường hợp muốn custom message (VD: "Lấy danh sách phim thành công")
+    // 2. Dành cho trường hợp muốn custom message (VD: "Lấy danh sách phim thành
+    // công")
     public static <T> ResponseEntity<RestResponse<T>> success(T data, String message) {
         RestResponse<T> response = RestResponse.<T>builder()
                 .statusCode(HttpStatus.OK.value())

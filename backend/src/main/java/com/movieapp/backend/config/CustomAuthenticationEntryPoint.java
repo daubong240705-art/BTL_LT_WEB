@@ -39,6 +39,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
         res.setMessage("Token khong hop le, da het han hoac ban chua dang nhap.");
 
         response.getWriter().write(objectMapper.writeValueAsString(res));
+        response.flushBuffer();
     }
 
     @Override
@@ -55,5 +56,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
         res.setMessage("Ban khong co quyen (Role) de truy cap vao tai nguyen nay.");
 
         response.getWriter().write(objectMapper.writeValueAsString(res));
+        response.flushBuffer();
     }
 }
