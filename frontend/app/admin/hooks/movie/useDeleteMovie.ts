@@ -1,8 +1,8 @@
-"use client";
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { movieApi } from "../../service/api/movie.api";
+
 
 
 export const useDeleteMovie = () => {

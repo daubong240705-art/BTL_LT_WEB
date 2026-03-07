@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button"
 
 import { LoginForm, loginSchema } from "@/lib/schema/auth.schema"
 import { sendRequest } from "@/lib/api/wrapprer"
-import { authStore } from "@/lib/authStore"
 
 export default function LoginPage() {
 
@@ -39,12 +38,7 @@ export default function LoginPage() {
             useCredentials: true
         })
 
-        if (res?.data?.accessToken) {
-
-            const setToken = authStore.getState().setToken
-
-            setToken(res.data.accessToken)
-
+        if (res?.data) {
             router.push("/")
         }
     }

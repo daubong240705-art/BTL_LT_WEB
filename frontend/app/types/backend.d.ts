@@ -11,7 +11,10 @@ declare global {
         useCredentials?: boolean;
         headers?: any;
         nextOption?: any;
-        auth?: boolean
+        auth?: boolean;
+        accessToken?: string | null;
+        cookieHeader?: string;
+        redirectOnAuthFail?: string | false;
     }
 
     interface IBackendRes<T> {

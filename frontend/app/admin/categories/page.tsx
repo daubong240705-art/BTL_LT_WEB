@@ -1,13 +1,12 @@
+import { getAdminCategories } from "@/lib/api/admin.api";
 import CategoriesController from "./components/CategoryController";
 
+
 export default async function AdminCategoriesPage() {
-    const res = await fetch("http://localhost:8080/api/v1/categories", {
-        cache: "no-store",
-    });
 
-    const categories = await res.json();
+    const categoriesRes = await getAdminCategories();
+    const categories = categoriesRes.data?.result ?? [];
 
-    return (
-        <CategoriesController categories={categories} />
-    );
+    return <CategoriesController categories={categories} />;
+
 }

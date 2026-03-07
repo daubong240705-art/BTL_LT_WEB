@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/episodes")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class EpisodeController {
 
     private final EpisodeService episodeService;

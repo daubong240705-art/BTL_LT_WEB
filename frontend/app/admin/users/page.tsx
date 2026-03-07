@@ -1,14 +1,13 @@
 import UsersController from "./components/UserController";
+import { getAdminUsers } from "@/lib/api/admin.api";
+
+
 
 export default async function AdminUsersPage() {
-    const res = await fetch("http://localhost:8080/api/v1/users", {
-        cache: "no-store",
-    });
 
-    const users = await res.json();
+    const usersRes = await getAdminUsers();
+    const users = usersRes.data?.result ?? [];
 
+    return <UsersController users={users} />;
 
-    return (
-        <UsersController users={users} />
-    );
 }

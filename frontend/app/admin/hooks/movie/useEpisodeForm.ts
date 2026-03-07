@@ -1,11 +1,10 @@
 import { Episode } from "@/app/types/global.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { movieApi } from "../../service/api/movie.api";
+import { EpisodePayload, movieApi } from "../../service/api/movie.api";
 // import { episodeApi } from "../../service/api/episode.api";
 
 const episodeSchema = z.object({
@@ -29,12 +28,13 @@ export function useEpisodeForm(
     mode: "add" | "edit",
     initialData?: Episode
 ) {
-    const form = useForm({
+    const form = useForm<EpisodePayload>({
         resolver: zodResolver(episodeSchema),
         defaultValues: {
             name: "",
             videoUrl: "",
-            episodeOrder: "",
+            episodeOrder: 1,
+            movieId: initialData?.movie_id ?? 0,
         },
     });
 
@@ -44,6 +44,7 @@ export function useEpisodeForm(
                 name: initialData.name,
                 videoUrl: initialData.videoUrl,
                 episodeOrder: initialData.episodeOrder,
+                movieId: initialData.movie_id,
             });
         }
     }, [mode, initialData, form]);
@@ -60,7 +61,7 @@ export const useEpisodeMutation = (
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: EpisodeFormValues) =>
+        mutationFn: (data: EpisodePayload) =>
             mode === "add"
                 ? movieApi.createEpisode({ ...data, movieId })
                 : movieApi.updateEpisode(episodeId!, { ...data, movieId }),

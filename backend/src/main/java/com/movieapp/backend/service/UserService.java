@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,10 +91,23 @@ public class UserService {
 
     public UserDTO updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("d" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y ngÆ°á»i dÃ¹ng vá»›i id: " + id));
+
+        if (request.getEmail() != null
+                && !request.getEmail().equalsIgnoreCase(user.getEmail())
+                && userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomValidationException(Map.of("email", "Email Ä‘Ã£ Ä‘Æ°á»£c sá»­ dá»¥ng"));
+        }
+
         user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
         user.setAvatarUrl(request.getAvatarUrl());
         user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+
+        if (StringUtils.hasText(request.getPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
         User updatedUser = userRepository.save(user);
         return userMapper.toDTO(updatedUser);
     }

@@ -1,12 +1,17 @@
 
-import { Movie } from "@/app/types/global.type";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { movieApi } from "../../service/api/movie.api";
+import { MoviePayload, movieApi } from "../../service/api/movie.api";
+
+type ApiFailure = {
+    statusCode?: number | string;
+    error?: unknown;
+};
 
 const movieSchema = z
     .object({
@@ -29,7 +34,7 @@ const movieSchema = z
         }),
 
         status: z.enum(["ONGOING", "COMPLETED"], {
-            message: "Satatus không hợp lệ",
+            message: "Status không hợp lệ",
         }),
 
         posterUrl: z
@@ -64,7 +69,7 @@ export function useMovieForm(
     initialData?: Movie
 ) {
 
-    const form = useForm({
+    const form = useForm<MoviePayload>({
         resolver: zodResolver(movieSchema),
         defaultValues: {
             title: "",
@@ -100,20 +105,52 @@ export function useMovieForm(
 
 export const useMovieMutation = (
     mode: "add" | "edit",
+    form: UseFormReturn<MoviePayload>,
     movieId?: number,
     onClose?: () => void
 ) => {
     const router = useRouter();
 
     return useMutation({
-        mutationFn: (data: MovieFormValues) =>
-            mode === "add"
+        mutationFn: async (data: MoviePayload) => {
+            const res = await (mode === "add"
                 ? movieApi.createMovie(data)
-                : movieApi.updateMovie(movieId!, data),
+                : movieApi.updateMovie(movieId!, data));
+
+            const apiRes = res as ApiFailure;
+            const statusCode = Number(apiRes.statusCode ?? 200);
+            if (statusCode >= 400 || apiRes.error) {
+                throw res;
+            }
+
+            return res;
+        },
 
         onSuccess: () => {
             router.refresh();
             onClose?.();
         },
+        onError: (error: unknown) => {
+            const serverError = (error as ApiFailure)?.error;
+
+            if (serverError && typeof serverError === "object" && !Array.isArray(serverError)) {
+                for (const [key, value] of Object.entries(serverError)) {
+                    if (key === "slug") {
+                        form.setError("slug", { type: "server", message: String(value) });
+                    } else {
+                        form.setError("root", { type: "server", message: String(value) });
+                    }
+                }
+                return;
+            }
+
+            const message = typeof serverError === "string" ? serverError : "Khong the luu phim";
+            if (/slug/i.test(message)) {
+                form.setError("slug", { type: "server", message });
+                return;
+            }
+
+            form.setError("root", { type: "server", message });
+        }
     });
 };

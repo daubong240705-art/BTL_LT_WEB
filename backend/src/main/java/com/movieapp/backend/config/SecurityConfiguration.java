@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -27,6 +29,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.movieapp.backend.util.SecurityUtil;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,20 +65,6 @@ public class SecurityConfiguration {
                 .csrf(c -> c.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
-                        // .requestMatchers("/", "/api/v1/auth/**", "/api/v1/public/**").permitAll()
-                        // .requestMatchers("/api/v1/users/**",
-                        // "/api/v1/categories/**").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.POST, "/api/v1/movies/**").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.PUT, "/api/v1/movies/**").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.DELETE,
-                        // "/api/v1/movies/**").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.GET, "/api/v1/movies").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.GET, "/api/v1/movies/*").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.POST,
-                        // "/api/v1/episodes/**").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.PUT, "/api/v1/episodes/**").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.DELETE,
-                        // "/api/v1/episodes/**").hasAuthority("ADMIN")
 
                         .requestMatchers("/", "/api/v1/auth/**", "/api/v1/public/**").permitAll()
 
@@ -82,6 +72,7 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
                         .decoder(jwtDecoder())
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .bearerTokenResolver(bearerTokenResolver())
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAuthenticationEntryPoint))
                 .exceptionHandling(exceptions -> exceptions
@@ -146,6 +137,32 @@ public class SecurityConfiguration {
                 System.out.println(">>> JWT decode error: " + e.getMessage());
                 throw e;
             }
+        };
+    }
+
+    @Bean
+    public BearerTokenResolver bearerTokenResolver() {
+        DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();
+
+        return (HttpServletRequest request) -> {
+            String headerToken = defaultResolver.resolve(request);
+            if (headerToken != null && !headerToken.isBlank()) {
+                return headerToken;
+            }
+
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null) {
+                return null;
+            }
+
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    String value = cookie.getValue();
+                    return (value == null || value.isBlank()) ? null : value;
+                }
+            }
+
+            return null;
         };
     }
 }

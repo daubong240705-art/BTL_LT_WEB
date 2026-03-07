@@ -38,6 +38,8 @@ public class AuthController {
         private final UserService userService;
         @Value("${movieapp.jwt.refresh-token}")
         private long refreshTokenExpiration;
+        @Value("${movieapp.jwt.access-token}")
+        private long accessTokenExpiration;
 
         // API: Dăng nhập
         @PostMapping("/login")
@@ -74,9 +76,18 @@ public class AuthController {
                                 .sameSite("Strict")
                                 .build();
 
+                ResponseCookie accessCookie = ResponseCookie.from("access_token", access_token)
+                                .httpOnly(true)
+                                .secure(false)
+                                .path("/")
+                                .maxAge(accessTokenExpiration)
+                                .sameSite("Strict")
+                                .build();
+
                 return ResponseEntity
                                 .ok()
                                 .header("Set-Cookie", cookie.toString())
+                                .header("Set-Cookie", accessCookie.toString())
                                 .body(res);
         }
 
@@ -122,20 +133,20 @@ public class AuthController {
                 String access_token = securityUtil.createAccessToken(username, res);
                 res.setAccessToken(access_token);
 
-                String new_refresh_token = this.securityUtil.createRefreshToken(username, res);
-                userService.updateUserToken(new_refresh_token, username);
-
-                ResponseCookie cookie = ResponseCookie.from("refresh_token", new_refresh_token)
+                ResponseCookie accessCookie = ResponseCookie.from("access_token", access_token)
                                 .httpOnly(true)
                                 .secure(false)
                                 .path("/")
-                                .maxAge(refreshTokenExpiration)
+                                .maxAge(accessTokenExpiration)
                                 .sameSite("Strict")
                                 .build();
 
-                return ResponseEntity
-                                .ok()
-                                .header("Set-Cookie", cookie.toString())
+                // NOTE:
+                // Do not rotate refresh token here. With SSR calls from Next.js server,
+                // Set-Cookie from backend refresh response is not propagated to browser.
+                // Rotating token would invalidate browser cookie on every server-side refresh.
+                return ResponseEntity.ok()
+                                .header("Set-Cookie", accessCookie.toString())
                                 .body(res);
         }
 
@@ -154,8 +165,15 @@ public class AuthController {
                                 .maxAge(0)
                                 .build();
 
+                ResponseCookie accessCookie = ResponseCookie.from("access_token", "")
+                                .httpOnly(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build();
+
                 return ResponseEntity.ok()
                                 .header("Set-Cookie", cookie.toString())
+                                .header("Set-Cookie", accessCookie.toString())
                                 .build();
         }
 

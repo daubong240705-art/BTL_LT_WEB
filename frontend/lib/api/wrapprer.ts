@@ -2,55 +2,60 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import queryString from "query-string"
-import { authStore } from "@/lib/authStore"
 
+const BACKEND_BASE_URL =
+    process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1"
 
-let isRefreshing = false
-let refreshSubscribers: any[] = []
+const isBrowser = typeof window !== "undefined"
 
-const subscribeTokenRefresh = (cb: any) => {
-    refreshSubscribers.push(cb)
+let refreshPromise: Promise<string | null> | null = null
+
+type RefreshProps = {
+    cookieHeader?: string
 }
 
-const onRefreshed = (token: string) => {
-    refreshSubscribers.map((cb) => cb(token))
-    refreshSubscribers = []
-}
+const refreshToken = async (props?: RefreshProps): Promise<string | null> => {
 
+    const res = await fetch(`${BACKEND_BASE_URL}/auth/refresh`, {
+        method: "GET",
+        headers: props?.cookieHeader ? { cookie: props.cookieHeader } : undefined,
+        credentials: "include",
+        cache: "no-store"
+    })
 
-const refreshToken = async () => {
-
-    const res = await fetch(
-        "http://localhost:8080/api/v1/auth/refresh",
-        {
-            method: "GET",
-            credentials: "include",
-            cache: "no-store"
-        }
-    )
-
-    if (!res.ok) throw new Error("refresh failed")
+    if (!res.ok) {
+        throw new Error("Refresh token failed")
+    }
 
     const data = await res.json()
 
-    const newToken = data.data.accessToken
+    return data?.data?.accessToken ?? null
+}
 
-    authStore.getState().setToken(newToken)
+const getFreshToken = async (props?: RefreshProps) => {
 
-    return newToken
+    if (!refreshPromise) {
+        refreshPromise = refreshToken(props).finally(() => {
+            refreshPromise = null
+        })
+    }
+
+    return refreshPromise
 }
 
 export const sendRequest = async <T>(props: IRequest): Promise<T> => {
 
     let {
         url,
-        method,
+        method = "GET",
         body,
-        queryParams = {},
-        useCredentials = false,
+        queryParams,
         headers = {},
+        useCredentials = false,
+        auth = false,
+        cookieHeader,
         nextOption = {},
-        auth = false
+        redirectOnAuthFail = "/login"
     } = props
 
     if (queryParams) {
@@ -62,12 +67,11 @@ export const sendRequest = async <T>(props: IRequest): Promise<T> => {
         ...headers
     }
 
-    const currentToken = authStore.getState().accessToken
-    if (auth && currentToken) {
-        finalHeaders["Authorization"] = `Bearer ${currentToken}`
+    if (!isBrowser && useCredentials && cookieHeader) {
+        finalHeaders.cookie = cookieHeader
     }
 
-    const options: any = {
+    const options: RequestInit = {
         method,
         headers: new Headers(finalHeaders),
         body: body ? JSON.stringify(body) : null,
@@ -75,63 +79,60 @@ export const sendRequest = async <T>(props: IRequest): Promise<T> => {
         ...nextOption
     }
 
-    if (useCredentials) options.credentials = "include"
+    if (useCredentials) {
+        options.credentials = "include"
+    }
 
-    const res = await fetch(url, options)
+    let res = await fetch(url, options)
 
     if (res.ok) {
         return res.json()
     }
 
-    // TOKEN EXPIRED
     if (res.status === 401 && auth) {
 
-        if (!isRefreshing) {
+        try {
 
-            isRefreshing = true
+            const newToken = await getFreshToken({ cookieHeader })
 
-            try {
-
-                const newToken = await refreshToken()
-
-                isRefreshing = false
-
-                onRefreshed(newToken)
-
-            } catch (error) {
-
-                isRefreshing = false
-                authStore.getState().clear()
-
-                window.location.href = "/login"
-
-                throw error
+            if (!newToken && !isBrowser) {
+                throw new Error("Refresh failed")
             }
 
+            if (!isBrowser && newToken) {
+                finalHeaders.Authorization = `Bearer ${newToken}`
+            }
+
+            const retryOptions: RequestInit = {
+                ...options,
+                headers: new Headers(finalHeaders)
+            }
+
+            res = await fetch(url, retryOptions)
+
+            if (res.ok) {
+                return res.json()
+            }
+
+        } catch (error) {
+
+            if (isBrowser && redirectOnAuthFail) {
+                window.location.href = redirectOnAuthFail
+            }
+
+            throw error
         }
-
-        return new Promise((resolve) => {
-
-            subscribeTokenRefresh((token: string) => {
-
-                headers["Authorization"] = `Bearer ${token}`
-
-                resolve(sendRequest<T>({
-                    ...props,
-                    headers
-                }))
-
-            })
-
-        })
-
     }
 
-    const json = await res.json()
+    let json: any = {}
+
+    try {
+        json = await res.json()
+    } catch { }
 
     return {
         statusCode: res.status,
-        message: json?.message ?? "",
+        message: json?.message ?? "Request failed",
         error: json?.error ?? ""
     } as T
 }

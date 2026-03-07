@@ -100,7 +100,7 @@ public class MovieService {
 
         setCategories(movie, request);
 
-        return movieMapper.toDTO(movie);
+        return movieMapper.toDTO(movieRepository.save(movie));
     }
 
     public void deleteMovie(Long id) {

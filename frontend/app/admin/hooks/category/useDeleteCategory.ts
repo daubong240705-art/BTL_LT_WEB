@@ -16,7 +16,7 @@ export const useDeleteCategory = () => {
     });
 
     return {
-        deleteMovie: mutation.mutate,
+        deleteCategory: mutation.mutate,
         isDeleting: mutation.isPending,
     };
 };

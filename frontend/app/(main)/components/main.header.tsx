@@ -2,7 +2,7 @@
 
 import { ChevronDown, Film, Heart, LogOut, Search, User } from "lucide-react"
 import Link from "next/link"
-import { useMemo } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -13,59 +13,59 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { authStore } from "@/lib/authStore"
 import { sendRequest } from "@/lib/api/wrapprer"
 
 interface Props {
     categories: Category[]
 }
 
-type JwtUser = {
+type AccountUser = {
     fullName?: string
     username?: string
     email?: string
     avatarUrl?: string
 }
 
-const decodeUserFromToken = (token: string | null): JwtUser | null => {
-  if (!token) return null
-
-  try {
-    const parts = token.split(".")
-    if (parts.length < 2) return null
-
-    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/")
-    const pad = payload + "=".repeat((4 - (payload.length % 4)) % 4)
-    const binary = atob(pad)
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
-    const decoded = new TextDecoder("utf-8").decode(bytes)
-    const json = JSON.parse(decoded)
-
-    return (json?.user ?? null) as JwtUser | null
-  } catch {
-    return null
-  }
-}
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1"
 
 export default function Header({ categories }: Props) {
     const router = useRouter()
+    const [user, setUser] = useState<AccountUser | null>(null)
+    const [authReady, setAuthReady] = useState(false)
 
-    const token = authStore((s) => s.accessToken)
-    const clear = authStore((s) => s.clear)
+    useEffect(() => {
+        const fetchAccount = async () => {
+            try {
+                const accountRes = await sendRequest<IBackendRes<AccountUser>>({
+                    url: `${API_URL}/auth/account`,
+                    method: "GET",
+                    auth: true,
+                    useCredentials: true,
+                    redirectOnAuthFail: false
+                })
 
-    const user = useMemo(() => decodeUserFromToken(token), [token])
+                setUser(accountRes?.data ?? null)
+            } catch {
+                setUser(null)
+            } finally {
+                setAuthReady(true)
+            }
+        }
+
+        fetchAccount()
+    }, [])
 
     const handleLogout = async () => {
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             await sendRequest<IBackendRes<any>>({
-                url: "http://localhost:8080/api/v1/auth/logout",
+                url: `${API_URL}/auth/logout`,
                 method: "POST",
                 auth: true,
                 useCredentials: true,
             })
         } finally {
-            clear()
+            setUser(null)
             router.push("/")
             router.refresh()
         }
@@ -120,7 +120,9 @@ export default function Header({ categories }: Props) {
                         </Button>
                     </Link>
 
-                    {token ? (
+                    {!authReady ? (
+                        <div className="h-9 w-24 rounded bg-slate-800/60 animate-pulse" />
+                    ) : user ? (
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
                                 <button className="h-9 w-9 rounded-full border border-slate-700 overflow-hidden bg-slate-900 flex items-center justify-center hover:border-red-500 transition">

@@ -15,7 +15,7 @@ export type CategoryDialogState =
 export default function CategoriesController({ categories }: { categories: Category[] }) {
     const [dialog, setDialog] = useState<CategoryDialogState>(null);
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-    const { deleteMovie } = useDeleteCategory();
+    const { deleteCategory } = useDeleteCategory();
     return (
         <>
             {/* HEADER */}
@@ -46,7 +46,7 @@ export default function CategoriesController({ categories }: { categories: Categ
                 onClose={() => setCategoryToDelete(null)}
                 onConfirm={() => {
                     if (!categoryToDelete) return;
-                    deleteMovie(categoryToDelete.id, {
+                    deleteCategory(categoryToDelete.id, {
                         onSuccess: () => setCategoryToDelete(null),
                     });
                 }}
