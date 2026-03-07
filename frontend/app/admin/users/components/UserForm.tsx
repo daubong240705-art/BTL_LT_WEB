@@ -1,4 +1,4 @@
-import { User } from "@/app/types/global.type";
+
 import { AppInput } from "@/components/shared/AppInput";
 import { FormError } from "@/components/shared/FormError";
 import { Button } from "@/components/ui/button";
@@ -153,10 +153,6 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                     <Save className="w-4 h-4" />
                     {mutation.isPending ? "Dang luu..." : "Luu"}
                 </Button>
-            </div>
-
-            <div className="px-6 pb-4">
-                <FormError message={form.formState.errors.root?.message} />
             </div>
         </form>
     );

@@ -7,7 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Edit, X } from "lucide-react";
+import { Plus, Edit, Save, X } from "lucide-react";
 import MovieForm from "./MovieForm";
 import { Movie } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,24 @@ export default function MovieDialog({
                     initialData={initialData}
                     onClose={() => onOpenChange(false)}
                 />
+
+                <div className="px-6 py-4 border-t border-gray-800 flex justify-end gap-3">
+                    <Button
+                        type="button"
+                        onClick={() => onOpenChange(false)}
+                        className="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800"
+                    >
+                        Huy bo
+                    </Button>
+                    <Button
+                        type="submit"
+                        form="movie-form"
+                        className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2"
+                    >
+                        <Save className="w-4 h-4" />
+                        Luu
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     );

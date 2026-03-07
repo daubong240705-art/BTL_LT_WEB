@@ -17,6 +17,7 @@ export type MoviePayload = {
 export type EpisodePayload = {
     movieId: number;
     name: string;
+    slug: string;
     videoUrl: string;
     episodeOrder: number;
 };

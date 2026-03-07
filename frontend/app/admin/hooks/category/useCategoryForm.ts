@@ -95,6 +95,10 @@ export const useCategoryMutation = (
                 form.setError("slug", { type: "server", message });
                 return;
             }
+            if (/name|ten|duplicate/i.test(message)) {
+                form.setError("name", { type: "server", message });
+                return;
+            }
 
             form.setError("root", { type: "server", message });
         }

@@ -23,7 +23,8 @@ declare global {
 
     interface Episode {
         id: number;
-        movie_id: number;
+        movieId: number;
+        movie_id?: number;
         name: string;
         slug: string;
         videoUrl: string;

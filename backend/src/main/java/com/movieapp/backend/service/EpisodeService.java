@@ -2,7 +2,6 @@ package com.movieapp.backend.service;
 
 import com.movieapp.backend.domain.Episode;
 import com.movieapp.backend.domain.Movie;
-
 import com.movieapp.backend.dto.Meta;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.dto.Movie.EpisodeDTO;
@@ -10,12 +9,14 @@ import com.movieapp.backend.dto.Movie.EpisodeRequest;
 import com.movieapp.backend.repository.EpisodeRepository;
 import com.movieapp.backend.repository.MovieRepository;
 import com.movieapp.backend.service.mapper.EpisodeMapper;
-import com.movieapp.backend.util.error.BadRequestException;
+import com.movieapp.backend.util.error.CustomValidationException;
 import com.movieapp.backend.util.error.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,19 +54,26 @@ public class EpisodeService {
     public EpisodeDTO getEpisodeById(Long id) {
 
         Episode episode = episodeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy episode id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay episode id = " + id));
 
         return episodeMapper.toDTO(episode);
     }
 
     public EpisodeDTO createEpisode(EpisodeRequest request) {
 
-        if (episodeRepository.existsBySlug(request.getSlug())) {
-            throw new BadRequestException("Slug đã tồn tại");
-        }
-
         Movie movie = movieRepository.findById(request.getMovieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy movie"));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay movie"));
+
+        Map<String, String> errors = new HashMap<>();
+        if (episodeRepository.existsByMovieIdAndSlug(movie.getId(), request.getSlug())) {
+            errors.put("slug", "Slug tap phim da ton tai trong phim nay");
+        }
+        if (episodeRepository.existsByMovieIdAndEpisodeOrder(movie.getId(), request.getEpisodeOrder())) {
+            errors.put("episodeOrder", "Thu tu tap da ton tai trong phim nay");
+        }
+        if (!errors.isEmpty()) {
+            throw new CustomValidationException(errors);
+        }
 
         Episode episode = Episode.builder()
                 .name(request.getName())
@@ -81,18 +89,27 @@ public class EpisodeService {
     public EpisodeDTO updateEpisode(Long id, EpisodeRequest request) {
 
         Episode episode = episodeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy episode id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay episode id = " + id));
 
-        if (!episode.getSlug().equals(request.getSlug())
-                && episodeRepository.existsBySlug(request.getSlug())) {
+        Movie movie = movieRepository.findById(request.getMovieId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay movie"));
 
-            throw new BadRequestException("Slug đã tồn tại");
+        Map<String, String> errors = new HashMap<>();
+        if (episodeRepository.existsByMovieIdAndSlugAndIdNot(movie.getId(), request.getSlug(), id)) {
+            errors.put("slug", "Slug tap phim da ton tai trong phim nay");
+        }
+        if (episodeRepository.existsByMovieIdAndEpisodeOrderAndIdNot(movie.getId(), request.getEpisodeOrder(), id)) {
+            errors.put("episodeOrder", "Thu tu tap da ton tai trong phim nay");
+        }
+        if (!errors.isEmpty()) {
+            throw new CustomValidationException(errors);
         }
 
         episode.setName(request.getName());
         episode.setSlug(request.getSlug());
         episode.setVideoUrl(request.getVideoUrl());
         episode.setEpisodeOrder(request.getEpisodeOrder());
+        episode.setMovie(movie);
 
         return episodeMapper.toDTO(episodeRepository.save(episode));
     }
@@ -100,7 +117,7 @@ public class EpisodeService {
     public void deleteEpisode(Long id) {
 
         Episode episode = episodeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy episode id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay episode id = " + id));
 
         episodeRepository.delete(episode);
     }

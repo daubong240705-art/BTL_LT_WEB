@@ -6,7 +6,7 @@ import com.movieapp.backend.dto.Category.CategoryRequest;
 import com.movieapp.backend.dto.Meta;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.repository.CategoryRepository;
-import com.movieapp.backend.util.error.BadRequestException;
+import com.movieapp.backend.util.error.CustomValidationException;
 import com.movieapp.backend.util.error.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,6 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    // ===============================
-    // GET ALL CATEGORY (pagination)
-    // ===============================
     public ResultPaginationDTO getAllCategories(
             Specification<Category> spec,
             Pageable pageable) {
@@ -43,58 +40,60 @@ public class CategoryService {
         mt.setTotal(pageCategory.getTotalElements());
 
         rs.setMeta(mt);
-
         rs.setResult(pageCategory.map(this::mapToDTO).getContent());
 
         return rs;
     }
 
-    // ===============================
-    // GET CATEGORY BY ID
-    // ===============================
     public CategoryDTO getCategoryById(Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy category id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category id = " + id));
 
         return mapToDTO(category);
     }
 
-    // ===============================
-    // CREATE CATEGORY
-    // ===============================
     public CategoryDTO createCategory(CategoryRequest request) {
 
         Map<String, String> errors = new HashMap<>();
 
+        if (categoryRepository.existsByName(request.getName())) {
+            errors.put("name", "Ten da ton tai");
+        }
+
         if (categoryRepository.existsBySlug(request.getSlug())) {
-            errors.put("slug", "Slug đã tồn tại");
+            errors.put("slug", "Slug da ton tai");
         }
 
         if (!errors.isEmpty()) {
-            throw new BadRequestException(errors.toString());
+            throw new CustomValidationException(errors);
         }
 
         Category category = new Category();
-
         category.setName(request.getName());
         category.setSlug(request.getSlug());
 
         return mapToDTO(categoryRepository.save(category));
     }
 
-    // ===============================
-    // UPDATE CATEGORY
-    // ===============================
     public CategoryDTO updateCategory(Long id, CategoryRequest request) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy category id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category id = " + id));
+
+        Map<String, String> errors = new HashMap<>();
+        if (!category.getName().equalsIgnoreCase(request.getName())
+                && categoryRepository.existsByName(request.getName())) {
+            errors.put("name", "Ten da ton tai");
+        }
 
         if (!category.getSlug().equals(request.getSlug())
                 && categoryRepository.existsBySlug(request.getSlug())) {
+            errors.put("slug", "Slug da ton tai");
+        }
 
-            throw new BadRequestException("Slug đã tồn tại");
+        if (!errors.isEmpty()) {
+            throw new CustomValidationException(errors);
         }
 
         category.setName(request.getName());
@@ -103,20 +102,14 @@ public class CategoryService {
         return mapToDTO(categoryRepository.save(category));
     }
 
-    // ===============================
-    // DELETE CATEGORY
-    // ===============================
     public void deleteCategory(Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy category id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category id = " + id));
 
         categoryRepository.delete(category);
     }
 
-    // ===============================
-    // MAPPER
-    // ===============================
     private CategoryDTO mapToDTO(Category category) {
 
         return CategoryDTO.builder()

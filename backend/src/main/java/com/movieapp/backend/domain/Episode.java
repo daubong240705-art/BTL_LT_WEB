@@ -6,7 +6,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "episodes")
+@Table(name = "episodes", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_episode_movie_slug", columnNames = { "movie_id", "slug" }),
+        @UniqueConstraint(name = "uk_episode_movie_order", columnNames = { "movie_id", "episode_order" })
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +29,7 @@ public class Episode {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String slug;
 
     @Column(name = "video_url", columnDefinition = "TEXT")
