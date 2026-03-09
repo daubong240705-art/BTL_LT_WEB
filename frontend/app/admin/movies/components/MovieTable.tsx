@@ -1,5 +1,4 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Movie } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 

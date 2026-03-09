@@ -60,4 +60,13 @@ declare global {
         updatedAt: string;
         categories: string[];
     }
+
+    interface MovieComment {
+        id: number;
+        movie_id: number;
+        user_id: number;
+        fullName: string;
+        content: string;
+        createdAt?: string;
+    }
 }

@@ -2,7 +2,7 @@
 
 import { ChevronDown, Film, Heart, LogOut, Search, User } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { sendRequest } from "@/lib/api/wrapprer"
+import { buildMovieSearchHref } from "@/lib/filter/MovieQueryBuilder"
 
 interface Props {
     categories: Category[]
+    initialUser?: AccountUser | null
 }
 
 type AccountUser = {
@@ -28,33 +30,14 @@ type AccountUser = {
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1"
 
-export default function Header({ categories }: Props) {
+export default function Header({ categories, initialUser = null }: Props) {
+
+
     const router = useRouter()
-    const [user, setUser] = useState<AccountUser | null>(null)
-    const [authReady, setAuthReady] = useState(false)
+    const [user, setUser] = useState<AccountUser | null>(initialUser)
 
-    useEffect(() => {
-        const fetchAccount = async () => {
-            try {
-                const accountRes = await sendRequest<IBackendRes<AccountUser>>({
-                    url: `${API_URL}/auth/account`,
-                    method: "GET",
-                    auth: true,
-                    useCredentials: true,
-                    redirectOnAuthFail: false
-                })
 
-                setUser(accountRes?.data ?? null)
-            } catch {
-                setUser(null)
-            } finally {
-                setAuthReady(true)
-            }
-        }
-
-        fetchAccount()
-    }, [])
-
+    //logout
     const handleLogout = async () => {
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +54,17 @@ export default function Header({ categories }: Props) {
         }
     }
 
+
+    //serch
+
+    const [keyword, setKeyword] = useState("")
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && keyword.trim()) {
+            router.push(buildMovieSearchHref({ q: keyword.trim(), page: 1 }))
+        }
+    }
+
     return (
         <header className="bg-[#141414] border-b border-gray-800/50 top-0 left-0 w-full z-500000">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -81,8 +75,8 @@ export default function Header({ categories }: Props) {
                     </Link>
 
                     <nav className="flex items-center gap-6">
-                        <Link href="" className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors">Phim bộ</Link>
-                        <Link href="" className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors">Phim lẻ</Link>
+                        <Link href={buildMovieSearchHref({ type: "series", page: 1 })} className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors">Phim bộ</Link>
+                        <Link href={buildMovieSearchHref({ type: "single", page: 1 })} className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors">Phim lẻ</Link>
 
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors focus:outline-none">
@@ -92,10 +86,13 @@ export default function Header({ categories }: Props) {
                                 <div className="grid grid-cols-3 gap-2">
                                     {categories.map((cat) => (
                                         <DropdownMenuItem
+                                            asChild
                                             key={cat.id}
                                             className="cursor-pointer hover:bg-slate-800 hover:text-white"
                                         >
-                                            {cat.name}
+                                            <Link href={buildMovieSearchHref({ category: cat.slug, page: 1 })}>
+                                                {cat.name}
+                                            </Link>
                                         </DropdownMenuItem>
                                     ))}
                                 </div>
@@ -108,8 +105,11 @@ export default function Header({ categories }: Props) {
                     <div className="relative w-64">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
                         <Input
-                            name="q"
-                            placeholder="Tim phim..."
+                            type="text"
+                            placeholder="Tìm phim..."
+                            value={keyword ?? ""}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            onKeyDown={handleKeyDown}
                             className="bg-slate-900 border-slate-800 pl-9 text-white focus-visible:ring-red-600 h-9"
                         />
                     </div>
@@ -120,9 +120,7 @@ export default function Header({ categories }: Props) {
                         </Button>
                     </Link>
 
-                    {!authReady ? (
-                        <div className="h-9 w-24 rounded bg-slate-800/60 animate-pulse" />
-                    ) : user ? (
+                    {user ? (
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
                                 <button className="h-9 w-9 rounded-full border border-slate-700 overflow-hidden bg-slate-900 flex items-center justify-center hover:border-red-500 transition">

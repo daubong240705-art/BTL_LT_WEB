@@ -3,6 +3,9 @@ import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
 import { Calendar, Heart, MessageCircle, Play } from "lucide-react";
 
 import Link from "next/link";
+import Comments from "../components/Comment";
+import { Top5Movies } from "../components/TopMovie";
+
 
 
 type Props = {
@@ -30,8 +33,8 @@ export default async function MovieDetailPage({ params }: Props) {
                     </div>
 
                 </div>
-                <div className="container  mx-auto px-4 -mt-70 pb-20 relative z-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-3">
+                <div className=" mx-auto px-40 -mt-70 pb-20 relative z-10">
+                    <div className="grid  grid-cols-4">
 
                         <div className="lg:col-span-1 bg-gray-900 rounded-4xl p-7">
                             <div className="space-y-5">
@@ -81,12 +84,12 @@ export default async function MovieDetailPage({ params }: Props) {
                                         {movie.description}
                                     </p>
                                 </div>
-
+                                <Top5Movies />
 
                             </div>
                         </div>
 
-                        <div className="lg:col-span-2 pt-10 space-y-10  bg-gray-900 rounded-4xl p-7">
+                        <div className="lg:col-span-3 pt-10 space-y-10  bg-gray-900 rounded-4xl p-7">
                             <div className="flex flex-wrap items-center gap-3">
 
                                 <Link
@@ -119,21 +122,23 @@ export default async function MovieDetailPage({ params }: Props) {
 
                             </div>
                             {/* Episodes */}
-                            <div>
+                            <div className="pb-[30vh]">
                                 <h3 className="text-xl font-bold text-white mb-4 border-l-4 border-red-600 pl-3">Danh sách tập</h3>
-                                <div className="grid grid-cols-5 gap-3">
+                                <div className="grid grid-cols-8 gap-3 p-5">
                                     {episodes.map((ep) => (
                                         <Link
                                             key={ep.id}
                                             href={`/watch/${movie.slug}/${ep.slug}`}
                                             className="group bg-gray-800 hover:bg-red-600 text-white py-3 rounded-lg text-center font-semibold transition-all border border-gray-700 hover:border-red-500"
                                         >
-                                            <span className="text-md text-gray-400 block group-hover:text-white/80">{ep.name}</span>
+                                            <span className="text-md text-white block">{ep.name}</span>
 
                                         </Link>
                                     ))}
                                 </div>
                             </div>
+
+                            <Comments movieId={movie.id} />
                         </div>
                     </div>
                 </div>

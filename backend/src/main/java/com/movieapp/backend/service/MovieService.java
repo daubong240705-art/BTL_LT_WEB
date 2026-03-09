@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +48,24 @@ public class MovieService {
         rs.setMeta(mt);
 
         rs.setResult(pageUser.map(movieMapper::toDTO).getContent());
+
+        return rs;
+    }
+
+    public ResultPaginationDTO searchPublicMovies(String q, Pageable pageable) {
+        String keyword = q == null ? "" : q.trim();
+        Page<Movie> pageMovie = movieRepository.searchPublicMovies(keyword, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(pageMovie.getTotalPages());
+        mt.setTotal(pageMovie.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pageMovie.map(movieMapper::toDTO).getContent());
 
         return rs;
     }
@@ -126,4 +145,6 @@ public class MovieService {
 
         movie.setCategories(new HashSet<>(categories));
     }
+
+
 }
