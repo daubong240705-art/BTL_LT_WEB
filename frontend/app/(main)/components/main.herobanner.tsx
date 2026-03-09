@@ -1,11 +1,15 @@
 import { Button } from "@/components/ui/button"
+import { getFirstEpisode } from "@/lib/api/main.api"
 import { Heart, Info, Play } from "lucide-react"
+import Link from "next/link"
 
 
 type Props = {
     MovieBanner: Movie
 }
-export default function HeroBanner({ MovieBanner }: Props) {
+export default async function HeroBanner({ MovieBanner }: Props) {
+    const firstEpisodeRes = await getFirstEpisode(MovieBanner.slug);
+    const firstEpisode = firstEpisodeRes.data!;
     return (
         <div className="relative min-h-screen w-full overflow-hidden">
             <div className="absolute bg-cover inset-0 bg-center"
@@ -31,14 +35,11 @@ export default function HeroBanner({ MovieBanner }: Props) {
                         <div className="flex items-center gap-6">
 
 
-                            <Button
-                                className="w-16 h-16 rounded-full
-                                bg-red-400 hover:bg-red-200
-                                flex items-center justify-center
-                                shadow-lg shadow-yellow-500/30
-                                transition-transform hover:scale-105">
-                                <Play className="w-6! h-6! fill-black text-black ml-1" />
-                            </Button>
+                            <Link href={`/watch/${MovieBanner.slug}/${firstEpisode.slug}`}>
+                                <Button className="w-16 h-16 rounded-full bg-red-400 hover:bg-red-200 flex items-center justify-center shadow-lg shadow-yellow-500/30 transition-transform hover:scale-105">
+                                    <Play className="w-6 h-6 fill-black text-black ml-1" />
+                                </Button>
+                            </Link>
 
 
                             <div className="
@@ -57,13 +58,15 @@ export default function HeroBanner({ MovieBanner }: Props) {
                                 <div className="w-px h-8 bg-white/20" />
 
 
-                                <Button className="
+                                <Link
+                                    href={`/movie/${MovieBanner.slug}`}
+                                    className="
                                 px-5! py-6 hover:bg-white/10
                                 transition-colors
                                 flex items-center justify-center
                                 ">
                                     <Info className="w-5! h-5! text-white" />
-                                </Button>
+                                </Link>
 
                             </div>
 

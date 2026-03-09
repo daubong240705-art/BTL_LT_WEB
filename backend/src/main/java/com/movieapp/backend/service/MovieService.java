@@ -20,11 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +50,14 @@ public class MovieService {
         rs.setResult(pageUser.map(movieMapper::toDTO).getContent());
 
         return rs;
+    }
+
+    public List<MovieDTO> getTop5ViewCountMovie() {
+        return movieRepository
+                .findTop5ByOrderByViewCountDesc()
+                .stream()
+                .map(movieMapper::toDTO)
+                .toList();
     }
 
     public ResultPaginationDTO searchPublicMovies(String q, Pageable pageable) {
@@ -145,6 +153,5 @@ public class MovieService {
 
         movie.setCategories(new HashSet<>(categories));
     }
-
 
 }

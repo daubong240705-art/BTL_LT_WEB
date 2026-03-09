@@ -2,15 +2,15 @@ package com.movieapp.backend.controller.client;
 
 import com.movieapp.backend.dto.Movie.CommentDTO;
 import com.movieapp.backend.dto.Movie.CommentRequest;
+import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.service.CommentService;
 import com.movieapp.backend.util.annotation.ApiMessage;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/comments")
@@ -23,8 +23,10 @@ public class CommentController {
     @GetMapping("/movie/{movieId}")
     @ResponseStatus(HttpStatus.OK)
     @ApiMessage("Lay danh sach binh luan thanh cong")
-    public List<CommentDTO> getCommentsByMovieId(@PathVariable("movieId") Long movieId) {
-        return commentService.getCommentsByMovieId(movieId);
+    public ResultPaginationDTO getCommentsByMovieId(
+            @PathVariable("movieId") Long movieId,
+            Pageable pageable) {
+        return commentService.getCommentsByMovieId(movieId, pageable);
     }
 
     @PostMapping

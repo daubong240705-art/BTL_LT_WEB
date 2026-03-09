@@ -1,116 +1,83 @@
 "use client";
 
-import { MessageCircle, Send, Trash2, User } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { MessageCircle, MessageCircleMore, Send, Trash2, User } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
-import { createComment, deleteComment, getAccount, getCommentsByMovieId } from "@/lib/api/main.api";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious
+} from "@/components/ui/pagination";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createComment, deleteComment, getCommentsByMovieId } from "@/lib/api/main.api";
 
 type Props = {
     movieId: number;
+    initialUser?: CommentCurrentUser | null;
 };
+
+type CommentCurrentUser = Pick<User, "id" | "role" | "username" | "email" | "fullName" | "avatarUrl">;
 
 const formatDateTime = (value?: string) => {
     if (!value) return "";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
     return new Intl.DateTimeFormat("vi-VN", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit"
-    }).format(date);
+    }).format(new Date(value));
 };
 
-export default function Comments({ movieId }: Props) {
+export default function Comments({ movieId, initialUser = null }: Props) {
     const [comments, setComments] = useState<MovieComment[]>([]);
     const [content, setContent] = useState("");
+    const [currentUser] = useState<CommentCurrentUser | null>(initialUser);
     const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    const [deletingId, setDeletingId] = useState<number | null>(null);
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [error, setError] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalComments, setTotalComments] = useState(0);
 
-    const canComment = useMemo(() => Boolean(currentUser?.id), [currentUser?.id]);
+    const fetchComments = useCallback(async (p = 1) => {
+        setLoading(true);
+        const res = await getCommentsByMovieId(movieId, p, 5);
 
-    const fetchComments = async () => {
-        const res = await getCommentsByMovieId(movieId);
-        setComments(res.data ?? []);
-    };
-
-    useEffect(() => {
-        let active = true;
-
-        const bootstrap = async () => {
-            setLoading(true);
-            setError("");
-
-            try {
-                const [commentRes, accountRes] = await Promise.all([
-                    getCommentsByMovieId(movieId),
-                    getAccount()
-                ]);
-
-                if (!active) return;
-
-                setComments(commentRes.data ?? []);
-                setCurrentUser(accountRes.data ?? null);
-            } catch {
-                if (!active) return;
-                setError("Khong tai duoc binh luan");
-            } finally {
-                if (active) setLoading(false);
-            }
-        };
-
-        bootstrap();
-        return () => {
-            active = false;
-        };
+        setComments(res.data?.result ?? []);
+        setTotalPages(res.data?.meta.pages ?? 1);
+        setTotalComments(res.data?.meta.total ?? 0);
+        setPage(res.data?.meta.current ?? p);
+        setLoading(false);
     }, [movieId]);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            void fetchComments(1);
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchComments]);
+
     const handleSubmit = async () => {
-        const trimmed = content.trim();
-        if (!trimmed || submitting) return;
+        const text = content.trim();
+        if (!text || !currentUser) return;
 
-        setSubmitting(true);
-        setError("");
-
-        try {
-            const res = await createComment(movieId, trimmed);
-            if (res.data) {
-                setComments((prev) => [res.data as MovieComment, ...prev]);
-                setContent("");
-                return;
-            }
-
-            setError(typeof res.error === "string" ? res.error : "Khong the them binh luan");
-        } catch {
-            setError("Vui long dang nhap de binh luan");
-        } finally {
-            setSubmitting(false);
+        const res = await createComment(movieId, text);
+        if (res.data) {
+            setContent("");
+            await fetchComments(1);
         }
     };
 
-    const handleDelete = async (comment: MovieComment) => {
-        if (!currentUser) return;
-        if (!window.confirm("Ban chac chan muon xoa binh luan nay?")) return;
+    const handleDelete = async (id: number) => {
+        if (!confirm("Ban chac chan muon xoa binh luan?")) return;
 
-        setDeletingId(comment.id);
-        setError("");
-
-        try {
-            const res = await deleteComment(comment.id);
-            if (Number(res.statusCode) >= 400) {
-                setError(typeof res.error === "string" ? res.error : "Khong the xoa binh luan");
-                return;
-            }
-
-            await fetchComments();
-        } catch {
-            setError("Khong the xoa binh luan");
-        } finally {
-            setDeletingId(null);
+        const res = await deleteComment(id);
+        if (Number(res.statusCode) < 400) {
+            const nextPage = comments.length === 1 && page > 1 ? page - 1 : page;
+            await fetchComments(nextPage);
         }
     };
 
@@ -119,7 +86,7 @@ export default function Comments({ movieId }: Props) {
             <div className="flex items-center gap-2 mb-6 border-b border-gray-700 pb-4">
                 <MessageCircle className="w-6 h-6 text-red-500" />
                 <h2 className="text-xl font-semibold text-white">
-                    Binh luan <span className="text-gray-500 text-base">({comments.length})</span>
+                    Binh luan ({totalComments})
                 </h2>
             </div>
 
@@ -127,70 +94,129 @@ export default function Comments({ movieId }: Props) {
                 <div className="w-10 h-10 rounded-full border border-gray-600 flex items-center justify-center bg-gray-900">
                     <User className="w-5 h-5 text-gray-300" />
                 </div>
+
                 <div className="flex-1 relative">
-                    <input
-                        type="text"
+                    <Textarea
                         value={content}
-                        disabled={!canComment}
+                        disabled={!currentUser}
+                        rows={2}
                         onChange={(e) => setContent(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === "Enter") {
+                            if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSubmit();
                             }
                         }}
-                        placeholder={canComment ? "Viet binh luan..." : "Dang nhap de binh luan"}
-                        className="w-full bg-gray-900 text-white pl-4 pr-12 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 disabled:opacity-50"
+                        placeholder={currentUser ? "Viet binh luan..." : "Dang nhap de binh luan"}
+                        className="w-full bg-gray-900 text-white pl-4 pr-12 py-3 rounded-lg border border-gray-700 resize-none break-all"
                     />
+
                     <button
                         onClick={handleSubmit}
-                        disabled={!canComment || submitting}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 disabled:opacity-40"
+                        disabled={!currentUser}
+                        className="absolute right-3 bottom-3 text-gray-400 hover:text-red-500 disabled:opacity-40"
                     >
                         <Send className="w-5 h-5" />
                     </button>
                 </div>
             </div>
 
-            {error ? <p className="text-sm text-red-400 mb-4">{error}</p> : null}
-
-            {loading ? (
-                <p className="text-gray-400 text-sm">Dang tai binh luan...</p>
-            ) : comments.length === 0 ? (
-                <p className="text-gray-400 text-sm">Chua co binh luan nao</p>
+            {comments.length === 0 ? (
+                <div className="h-50 flex flex-col items-center justify-center bg-gray-800 rounded-2xl border border-gray-700 text-gray-400">
+                    <MessageCircleMore className="h-10 w-10" />
+                    <p>Chưa có bình luận</p>
+                </div>
             ) : (
                 <div className="space-y-6">
-                    {comments.map((comment) => {
-                        const canDelete = currentUser?.role === "ADMIN" || currentUser?.id === comment.user_id;
+                    {comments.map((c) => {
+                        const canDelete = currentUser?.role === "ADMIN" || currentUser?.id === c.user_id;
 
                         return (
-                            <div key={comment.id} className="flex gap-4">
+                            <div key={c.id} className="flex gap-4">
                                 <div className="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center bg-gray-900">
-                                    <User className="w-5 h-5 text-gray-300" />
+                                    <Avatar>
+                                        <AvatarImage src={c.avatarUrl} />
+                                        <AvatarFallback>
+                                            <User className="w-5 h-5 text-gray-300" />
+                                        </AvatarFallback>
+                                    </Avatar>
                                 </div>
+
                                 <div className="flex-1">
-                                    <div className="flex items-center justify-between gap-4 mb-1">
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="font-bold text-white text-sm">{comment.fullName}</span>
-                                            <span className="text-gray-500 text-xs">{formatDateTime(comment.createdAt)}</span>
+                                    <div className="flex justify-between mb-1">
+                                        <div className="flex gap-2 text-sm">
+                                            <span className="font-bold text-white">{c.fullName}</span>
+                                            <span className="text-gray-500">{formatDateTime(c.createdAt)}</span>
                                         </div>
+
                                         {canDelete ? (
                                             <button
-                                                onClick={() => handleDelete(comment)}
-                                                disabled={deletingId === comment.id}
-                                                className="text-gray-400 hover:text-red-500 disabled:opacity-40"
+                                                onClick={() => handleDelete(c.id)}
+                                                className="text-gray-400 hover:text-red-500"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
                                         ) : null}
                                     </div>
-                                    <p className="text-gray-300 text-sm">{comment.content}</p>
+
+                                    <p className="text-gray-300 text-sm break-all whitespace-pre-line">{c.content}</p>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
             )}
+
+            {totalPages > 1 ? (
+                <Pagination className="mt-6">
+                    <PaginationContent>
+                        {page > 1 ? (
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        void fetchComments(page - 1);
+                                    }}
+                                    className="border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800"
+                                />
+                            </PaginationItem>
+                        ) : null}
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                            <PaginationItem key={p}>
+                                <PaginationLink
+                                    href="#"
+                                    isActive={p === page}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        void fetchComments(p);
+                                    }}
+                                    className={`border-gray-700 ${p === page
+                                        ? "bg-red-600 text-white hover:bg-red-600"
+                                        : "text-gray-400 hover:text-white hover:bg-gray-800"
+                                        }`}
+                                >
+                                    {p}
+                                </PaginationLink>
+                            </PaginationItem>
+                        ))}
+
+                        {page < totalPages ? (
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        void fetchComments(page + 1);
+                                    }}
+                                    className="border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800"
+                                />
+                            </PaginationItem>
+                        ) : null}
+                    </PaginationContent>
+                </Pagination>
+            ) : null}
         </div>
     );
 }

@@ -57,6 +57,19 @@ export const getMovieEpisode = (slug: string) => {
     })
 };
 
+export const getFirstEpisode = (slug: string) => {
+    return sendRequest<IBackendRes<Episode>>({
+        url: `${api_url}/movies/first/${slug}`,
+        method: "GET",
+    })
+}
+
+export const getTop5Movie = () => {
+    return sendRequest<IBackendRes<Movie[]>>({
+        url: `${api_url}/movies/top/5`,
+        method: "GET",
+    })
+}
 
 export const getCategories = () => {
     return sendRequest<IBackendRes<IModelPaginate<Category>>>({
@@ -65,10 +78,11 @@ export const getCategories = () => {
     })
 }
 
-export const getCommentsByMovieId = (movieId: number) => {
-    return sendRequest<IBackendRes<MovieComment[]>>({
+export const getCommentsByMovieId = (movieId: number, page = 1, size = 5) => {
+    return sendRequest<IBackendRes<IModelPaginate<MovieComment>>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/comments/movie/${movieId}`,
         method: "GET",
+        queryParams: { page, size },
         useCredentials: true
     });
 };

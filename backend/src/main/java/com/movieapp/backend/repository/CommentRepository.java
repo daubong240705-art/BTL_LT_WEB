@@ -4,11 +4,11 @@ import org.springframework.stereotype.Repository;
 
 import com.movieapp.backend.domain.Comment;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByMovieIdOrderByCreatedAtDesc(Long movieId);
+    Page<Comment> findByMovieIdOrderByCreatedAtDesc(Long movieId, Pageable pageable);
 }

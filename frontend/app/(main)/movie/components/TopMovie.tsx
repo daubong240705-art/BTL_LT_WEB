@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { getMovies } from '@/lib/api/main.api';
+import { getMovies, getTop5Movie } from '@/lib/api/main.api';
 
 import Link from 'next/link';
 
@@ -8,8 +8,8 @@ import Link from 'next/link';
 
 
 export async function Top5Movies() {
-    const moviesRes = await getMovies(undefined, 1, 5);
-    const topMovies = moviesRes.data?.result ?? [];
+    const moviesRes = await getTop5Movie();
+    const topMovies = moviesRes.data!;
 
 
     return (
@@ -21,7 +21,9 @@ export async function Top5Movies() {
                 {topMovies.map((movie, index) => (
                     <Link
                         key={movie.id}
-                        href=""
+                        href={`/movie/${movie.slug}`}
+                        // <Link
+
                         className="flex gap-3 group hover:bg-gray-700 rounded-lg p-2 transition-all"
                     >
                         {/* Rank Badge */}

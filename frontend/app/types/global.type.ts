@@ -66,6 +66,7 @@ declare global {
         movie_id: number;
         user_id: number;
         fullName: string;
+        avatarUrl: string;
         content: string;
         createdAt?: string;
     }

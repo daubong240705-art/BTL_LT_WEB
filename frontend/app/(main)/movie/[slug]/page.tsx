@@ -1,6 +1,8 @@
 
 import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
 import { Calendar, Heart, MessageCircle, Play } from "lucide-react";
+import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
 
 import Link from "next/link";
 import Comments from "../components/Comment";
@@ -12,13 +14,30 @@ type Props = {
     params: Promise<{ slug: string }>;
 
 }
+
+type CommentUser = Pick<User, "id" | "role" | "username" | "email" | "fullName" | "avatarUrl">;
+
+const parseUserFromAccessToken = (token?: string): CommentUser | null => {
+    if (!token) return null;
+    try {
+        const parsed = jwtDecode<{ user?: CommentUser }>(token);
+        return parsed?.user ?? null;
+    } catch {
+        return null;
+    }
+};
+
 export default async function MovieDetailPage({ params }: Props) {
     const resolvedParams = await params;
     const movieSlug = resolvedParams.slug;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("access_token")?.value;
+    const initialUser = parseUserFromAccessToken(accessToken);
     const movieRes = await getMovieBySlug(movieSlug);
     const movie = movieRes.data!;
     const episodesRes = await getMovieEpisode(movie.slug);
     const episodes = episodesRes.data?.result ?? [];
+    const firstep = episodes[0];
 
     return (
         <>
@@ -93,7 +112,7 @@ export default async function MovieDetailPage({ params }: Props) {
                             <div className="flex flex-wrap items-center gap-3">
 
                                 <Link
-                                    href={`http://localhost:3000/watch/${movie.slug}`}
+                                    href={`http://localhost:3000/watch/${movie.slug}/${firstep.slug}`}
                                     className="group relative flex items-center gap-3 bg-linear-to-r
                                     from-green-400 to-green-500
                                     text-black px-8 py-3
@@ -113,11 +132,14 @@ export default async function MovieDetailPage({ params }: Props) {
                                 </button>
 
 
-                                {/* Comments */}
-                                <button className="flex-col flex items-center hover:bg-gray-700/20 text-gray-300 px-6 py-3 rounded-lg font-semibold transition-all">
+
+                                <a
+                                    href="#comments"
+                                    className="flex-col flex items-center hover:bg-gray-700/20 text-gray-300 px-6 py-3 rounded-lg font-semibold transition-all"
+                                >
                                     <MessageCircle className="w-5 h-5" />
                                     <span className="hidden sm:inline">Bình luận</span>
-                                </button>
+                                </a>
 
 
                             </div>
@@ -138,7 +160,9 @@ export default async function MovieDetailPage({ params }: Props) {
                                 </div>
                             </div>
 
-                            <Comments movieId={movie.id} />
+                            <div id="comments">
+                                <Comments movieId={movie.id} initialUser={initialUser} />
+                            </div>
                         </div>
                     </div>
                 </div>

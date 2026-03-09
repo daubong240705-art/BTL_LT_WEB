@@ -16,6 +16,7 @@ public class CommentDTO {
     private Long movie_id;
     private Long user_id;
     private String fullName;
+    private String avatarUrl;
     private String content;
     private LocalDateTime createdAt;
 }

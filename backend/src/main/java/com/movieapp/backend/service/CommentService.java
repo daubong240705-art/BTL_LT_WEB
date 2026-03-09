@@ -4,20 +4,21 @@ import com.movieapp.backend.domain.Comment;
 import com.movieapp.backend.domain.Movie;
 import com.movieapp.backend.domain.User;
 import com.movieapp.backend.domain.enums.Role;
+import com.movieapp.backend.dto.Meta;
 import com.movieapp.backend.dto.Movie.CommentDTO;
 import com.movieapp.backend.dto.Movie.CommentRequest;
+import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.repository.CommentRepository;
 import com.movieapp.backend.repository.MovieRepository;
 import com.movieapp.backend.repository.UserRepository;
 import com.movieapp.backend.util.error.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,8 @@ public class CommentService {
             throw new ResourceNotFoundException("Khong tim thay nguoi dung dang nhap");
         }
         Movie movie = movieRepository.findById(request.getMovie_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay phim voi ID: " + request.getMovie_id()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Khong tim thay phim voi ID: " + request.getMovie_id()));
 
         Comment comment = Comment.builder()
                 .movie(movie)
@@ -46,9 +48,21 @@ public class CommentService {
         return toDTO(commentRepository.save(comment));
     }
 
-    public List<CommentDTO> getCommentsByMovieId(Long movieId) {
-        List<Comment> comments = commentRepository.findByMovieIdOrderByCreatedAtDesc(movieId);
-        return comments.stream().map(this::toDTO).collect(Collectors.toList());
+    public ResultPaginationDTO getCommentsByMovieId(Long movieId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findByMovieIdOrderByCreatedAtDesc(movieId, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(comments.getTotalPages());
+        mt.setTotal(comments.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(comments.map(this::toDTO).getContent());
+
+        return rs;
     }
 
     public void deleteComment(Long id) {
@@ -79,6 +93,7 @@ public class CommentService {
                 .user_id(comment.getUser().getId())
                 .fullName(comment.getUser().getFullName())
                 .content(comment.getContent())
+                .avatarUrl(comment.getUser().getAvatarUrl())
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

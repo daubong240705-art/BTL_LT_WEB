@@ -149,4 +149,12 @@ public class EpisodeService {
 
         return rs;
     }
+
+    public EpisodeDTO getFirstEpisode(String movieSlug) {
+
+        Episode episode = episodeRepository.findFirstByMovieSlugOrderByEpisodeOrderAsc(movieSlug)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay episode"));
+
+        return episodeMapper.toDTO(episode);
+    }
 }

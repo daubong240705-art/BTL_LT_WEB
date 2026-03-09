@@ -14,12 +14,18 @@ public interface EpisodeRepository
         extends JpaRepository<Episode, Long>, JpaSpecificationExecutor<Episode> {
 
     boolean existsBySlug(String slug);
+
     boolean existsByMovieIdAndSlug(Long movieId, String slug);
+
     boolean existsByMovieIdAndSlugAndIdNot(Long movieId, String slug, Long id);
+
     boolean existsByMovieIdAndEpisodeOrder(Long movieId, Integer episodeOrder);
+
     boolean existsByMovieIdAndEpisodeOrderAndIdNot(Long movieId, Integer episodeOrder, Long id);
 
     Optional<Episode> findBySlug(String slug);
+
+    Optional<Episode> findFirstByMovieSlugOrderByEpisodeOrderAsc(String slug);
 
     List<Episode> findByMovieIdOrderByEpisodeOrderAsc(Long movieId);
 

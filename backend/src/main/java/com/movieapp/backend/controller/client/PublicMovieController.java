@@ -3,12 +3,15 @@ package com.movieapp.backend.controller.client;
 import com.movieapp.backend.domain.Movie;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.service.EpisodeService;
+import com.movieapp.backend.dto.Movie.EpisodeDTO;
 import com.movieapp.backend.dto.Movie.MovieDTO;
 import com.movieapp.backend.service.MovieService;
 import com.movieapp.backend.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
 import lombok.AllArgsConstructor;
+
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -42,6 +45,12 @@ public class PublicMovieController {
         return movieService.searchPublicMovies(q, pageable);
     }
 
+    @GetMapping("/top/5")
+    @ApiMessage("Lay danh sach phim thanh cong")
+    public List<MovieDTO> getTopMovie() {
+        return movieService.getTop5ViewCountMovie();
+    }
+
     @GetMapping("/{slug}")
     @ApiMessage("Lay thong tin phim thanh cong")
     public MovieDTO getMovieBySlug(@PathVariable("slug") String slug) {
@@ -56,4 +65,11 @@ public class PublicMovieController {
 
         return episodeService.getEpisodesByMovieSlug(movieSlug, pageable);
     }
+
+    @GetMapping("/first/{slug}")
+    @ApiMessage("Lay tap thanh cong")
+    public EpisodeDTO getFirstEpisode(@PathVariable("slug") String slug) {
+        return episodeService.getFirstEpisode(slug);
+    }
+
 }
