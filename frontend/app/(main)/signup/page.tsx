@@ -5,15 +5,13 @@ import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Film } from "lucide-react"
-
 import { Label } from "@/components/ui/label"
-
 import { Button } from "@/components/ui/button"
 import { sendRequest } from "@/lib/api/wrapprer"
 import { SignupForm, signupSchema } from "@/lib/schema/auth.schema"
 import { AppInput } from "@/components/shared/AppInput"
 import { toast } from "sonner"
-import { FormError } from "@/components/shared/FormError"
+
 
 type SignupPayload = Omit<SignupForm, "confirmPassword">
 

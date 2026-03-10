@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 import Episodedialog from "./EpisodeDialog";
 import { movieApi } from "../../service/api/movie.api";
-import { useDeleteEpisode } from "../../hooks/movie/useEpisodeForm";
+import { useDeleteEpisode } from "../../../hooks/movie/useEpisodeForm";
 
 
 export type EpisodeDialogState =
@@ -111,7 +111,7 @@ export default function EpisodeList({ movieId }: Props) {
                         onSuccess: () => setEpisodeToDelete(null),
                     });
                 }}
-                title="Xoá tập phim?" 
+                title="Xoá tập phim?"
                 message="Hành động này không thể hoàn tác."
             />
 

@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Controller } from "react-hook-form";
 import { Lock, Mail, Save, User2 } from "lucide-react";
+import { useUserForm, useUserMutation } from "@/app/hooks/user/useUserForm";
+import { UserFormValues, UserPayload } from "@/app/types/form.type";
 
-import { UserFormValues, useUserForm, useUserMutation } from "../../hooks/user/useUserForm";
-import { UserPayload } from "../../service/api/user.api";
+
 
 type Props = {
     mode: "add" | "edit";

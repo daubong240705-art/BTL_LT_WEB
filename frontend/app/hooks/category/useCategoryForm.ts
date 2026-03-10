@@ -4,10 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { assertApiSuccess, handleFormError } from "../_shared/mutation.utils";
-import { categoryApi } from "../../service/api/category.api";
 import { CategoryPayload, categorySchema } from "@/app/types/form.type";
 import { toast } from "sonner";
+import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
+import { categoryApi } from "@/app/admin/service/api/category.api";
 
 
 
@@ -57,4 +57,13 @@ export const useCategoryMutation = (
             handleFormError(err, form.setError);
         }
     });
+};
+
+export const useDeleteCategory = () => {
+    const mutation = useDeleteWithRefresh(categoryApi.deleteCategory, "Xoa the loai thanh cong");
+
+    return {
+        deleteCategory: mutation.mutate,
+        isDeleting: mutation.isPending,
+    };
 };

@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { movieApi } from "../../service/api/movie.api";
+import { movieApi } from "../../admin/service/api/movie.api";
 import { EpisodePayload, episodeSchema } from "@/app/types/form.type";
 import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
 
@@ -47,9 +47,16 @@ export const useEpisodeMutation = (
 
     return useMutation<IBackendRes<Episode>, IBackendRes<null>, EpisodePayload>({
         mutationFn: async (data: EpisodePayload) => {
+            if (mode === "edit" && !episodeId) {
+                throw {
+                    statusCode: 400,
+                    message: "Khong tim thay id tap phim de cap nhat",
+                } as IBackendRes<null>;
+            }
+
             const response = await (mode === "add"
                 ? movieApi.createEpisode(data)
-                : movieApi.updateEpisode(movieId!, data));
+                : movieApi.updateEpisode(episodeId!, data));
             return assertApiSuccess(response);
         },
         onSuccess: () => {

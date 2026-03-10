@@ -15,10 +15,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { sendRequest } from "@/lib/api/wrapprer"
 import { buildMovieSearchHref } from "@/lib/filter/MovieQueryBuilder"
+import { AuthUser } from "@/lib/getCurrentUser"
 
 interface Props {
     categories: Category[]
-    initialUser?: AccountUser | null
+    initialUser?: AuthUser | null
 }
 
 type AccountUser = {

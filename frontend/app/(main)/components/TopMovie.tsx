@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 
-import { getMovies, getTop5Movie } from '@/lib/api/main.api';
+import {  getTop5Movie } from '@/lib/api/main.api';
+import Image from 'next/image';
 
 import Link from 'next/link';
 
@@ -34,9 +34,10 @@ export async function Top5Movies() {
                             {/* Poster */}
                             <div className="w-20 h-28 rounded-md overflow-hidden">
 
-                                <img
+                                <Image
                                     src={movie.posterUrl}
                                     alt={movie.title}
+                                    fill
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                 />
                                 {/* Play Overlay */}

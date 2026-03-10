@@ -1,44 +1,35 @@
 
-import Comments from "@/app/(main)/movie/components/Comment";
-import { Top5Movies } from "@/app/(main)/movie/components/TopMovie";
+import Comments from "@/app/(main)/components/Comment";
+import { Top5Movies } from "@/app/(main)/components/TopMovie";
 import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { jwtDecode } from "jwt-decode";
 import VideoPlayer from "@/app/(main)/components/video.player";
+import { getCurrentUser } from "@/lib/getCurrentUser";
 
 
 
 
 type Props = {
-    params: Promise<{ slug: string }>;
+    params: Promise<{ slug: string; episodeSlug: string }>;
 
 }
 
-type CommentUser = Pick<User, "id" | "role" | "username" | "email" | "fullName" | "avatarUrl">;
 
-const parseUserFromAccessToken = (token?: string): CommentUser | null => {
-    if (!token) return null;
-    try {
-        const parsed = jwtDecode<{ user?: CommentUser }>(token);
-        return parsed?.user ?? null;
-    } catch {
-        return null;
-    }
-};
 
 export default async function MovieDetailPage({ params }: Props) {
-    const resolvedParams = await params;
-    const movieSlug = resolvedParams.slug;
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
-    const initialUser = parseUserFromAccessToken(accessToken);
-    const movieRes = await getMovieBySlug(movieSlug);
+    const { slug: movieSlug, episodeSlug } = await params;
+
+    const [initialUser, movieRes, episodesRes] = await Promise.all([
+        getCurrentUser(),
+        getMovieBySlug(movieSlug),
+        getMovieEpisode(movieSlug),
+    ]);
+
     const movie = movieRes.data!;
-    const episodesRes = await getMovieEpisode(movie.slug);
     const episodes = episodesRes.data?.result ?? [];
 
+    const currentEpisode = episodes.find(ep => ep.slug === episodeSlug);
     return (
         <>
             <div className="min-h-screen bg-gray-900 pb-20">
@@ -46,7 +37,7 @@ export default async function MovieDetailPage({ params }: Props) {
 
                     {/* Nút Quay Lại */}
                     <Link
-                        href={`http://localhost:3000/movie/${movie.slug}`}
+                        href={`/movie/${movie.slug}`}
                         className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6 group"
                     >
                         <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -69,7 +60,11 @@ export default async function MovieDetailPage({ params }: Props) {
                                         <div className="aspect-video relative">
 
                                             {/* Video */}
-                                            <VideoPlayer src="http://192.168.10.207/movies/Media/Phim/single/tieu-yeu/tieu-yeu.m3u8" />
+                                            {currentEpisode?.videoUrl ? (
+                                                <VideoPlayer src={currentEpisode.videoUrl} />
+                                            ) : (
+                                                <div className="text-gray-400">Tập phim chưa có video</div>
+                                            )}
 
                                             {/* Overlay gradient */}
 
@@ -80,7 +75,7 @@ export default async function MovieDetailPage({ params }: Props) {
 
                                 <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
                                     <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
-                                        <span className="text-red-500">{movie.title}</span>
+                                        <span className="text-red-500">{currentEpisode?.name}</span>
 
                                     </h1>
                                     <p className="text-gray-400 text-lg mb-4">

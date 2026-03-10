@@ -1,4 +1,5 @@
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 
@@ -11,18 +12,17 @@ export function MovieCard({ movie }: MovieCardProps) {
     // console.log("aaaa", movie)
     return (
         <Link
-            href={`http://localhost:3000/movie/${movie.slug}`}
+            href={`/movie/${movie.slug}`}
             className="group cursor-pointer" >
 
             <div className="relative overflow-hidden rounded-lg aspect-2/3">
                 {/* Poster */}
-
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                     src={movie.posterUrl}
                     alt={movie.title}
-
                     className="object-cover transition-transform duration-300 group-hover:scale-110"
+                    fill
+                    sizes='100'
                 />
 
                 {/* Overlay */}

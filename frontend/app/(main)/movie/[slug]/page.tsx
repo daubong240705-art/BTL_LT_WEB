@@ -1,43 +1,31 @@
 
 import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
 import { Calendar, Heart, MessageCircle, Play } from "lucide-react";
-import { cookies } from "next/headers";
-import { jwtDecode } from "jwt-decode";
+
 
 import Link from "next/link";
-import Comments from "../components/Comment";
-import { Top5Movies } from "../components/TopMovie";
-
+import Comments from "../../components/Comment";
+import { Top5Movies } from "../../components/TopMovie";
+import Image from "next/image";
+import { getCurrentUser } from "@/lib/getCurrentUser";
 
 
 type Props = {
     params: Promise<{ slug: string }>;
-
 }
 
-type CommentUser = Pick<User, "id" | "role" | "username" | "email" | "fullName" | "avatarUrl">;
-
-const parseUserFromAccessToken = (token?: string): CommentUser | null => {
-    if (!token) return null;
-    try {
-        const parsed = jwtDecode<{ user?: CommentUser }>(token);
-        return parsed?.user ?? null;
-    } catch {
-        return null;
-    }
-};
-
 export default async function MovieDetailPage({ params }: Props) {
-    const resolvedParams = await params;
-    const movieSlug = resolvedParams.slug;
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
-    const initialUser = parseUserFromAccessToken(accessToken);
-    const movieRes = await getMovieBySlug(movieSlug);
+    const { slug: movieSlug } = await params;
+
+    const [initialUser, movieRes, episodesRes] = await Promise.all([
+        getCurrentUser(),
+        getMovieBySlug(movieSlug),
+        getMovieEpisode(movieSlug),
+    ]);
+
     const movie = movieRes.data!;
-    const episodesRes = await getMovieEpisode(movie.slug);
     const episodes = episodesRes.data?.result ?? [];
-    const firstep = episodes[0];
+    const firstep = episodes.at(0) ?? null;
 
     return (
         <>
@@ -57,12 +45,15 @@ export default async function MovieDetailPage({ params }: Props) {
 
                         <div className="lg:col-span-1 bg-gray-900 rounded-4xl p-7">
                             <div className="space-y-5">
-                                <div className=" overflow-hidden ">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                <div className="relative overflow-hidden w-30 aspect-2/3">
+
+                                    <Image
                                         src={movie.posterUrl}
                                         alt={movie.title}
-                                        className="w-40 object-cover rounded-lg"
+                                        className="object-cover rounded-lg"
+                                        sizes="120px"
+                                        fill
+                                        quality={90}
                                     />
                                 </div>
 
@@ -111,9 +102,11 @@ export default async function MovieDetailPage({ params }: Props) {
                         <div className="lg:col-span-3 pt-10 space-y-10  bg-gray-900 rounded-4xl p-7">
                             <div className="flex flex-wrap items-center gap-3">
 
-                                <Link
-                                    href={`http://localhost:3000/watch/${movie.slug}/${firstep.slug}`}
-                                    className="group relative flex items-center gap-3 bg-linear-to-r
+
+                                {firstep
+                                    ? (<Link
+                                        href={`/watch/${movie.slug}/${firstep.slug}`}
+                                        className="group relative flex items-center gap-3 bg-linear-to-r
                                     from-green-400 to-green-500
                                     text-black px-8 py-3
                                     rounded-full font-bold
@@ -121,10 +114,17 @@ export default async function MovieDetailPage({ params }: Props) {
                                     shadow-[0_0_20px_rgba(0,0,0,0.6)]
                                     shadow-green-500/50
                                     hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] ">
-                                    <Play className="w-5 h-5 fill-current" />
-                                    <span>Xem Ngay</span>
-                                </Link>
-
+                                        <Play className="w-5 h-5 fill-current" />
+                                        <span>Xem Ngay</span>
+                                    </Link>)
+                                    : (<button
+                                        disabled
+                                        className="flex items-center gap-3 bg-gray-700 text-gray-400 px-8 py-3 rounded-full font-bold cursor-not-allowed"
+                                    >
+                                        <Play className="w-5 h-5" />
+                                        <span>Chưa có tập</span>
+                                    </button>)
+                                }
 
                                 <button className="flex-col flex items-center  hover:bg-gray-700/20 text-gray-300 px-6 py-3 rounded-lg font-semibold transition-all">
                                     <Heart className="w-5 h-5" />

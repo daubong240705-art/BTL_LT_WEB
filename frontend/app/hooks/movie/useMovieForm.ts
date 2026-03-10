@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { assertApiSuccess, handleFormError } from "../_shared/mutation.utils";
-import { movieApi } from "../../service/api/movie.api";
+import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
+import { movieApi } from "../../admin/service/api/movie.api";
 import { toast } from "sonner";
 import { MoviePayload, movieSchema } from "@/app/types/form.type";
 
@@ -74,4 +74,13 @@ export const useMovieMutation = (
             handleFormError(err, form.setError);
         }
     });
+};
+
+export const useDeleteMovie = () => {
+    const mutation = useDeleteWithRefresh(movieApi.deleteMovie, "Xoa thanh cong");
+
+    return {
+        deleteMovie: mutation.mutate,
+        isDeleting: mutation.isPending,
+    };
 };

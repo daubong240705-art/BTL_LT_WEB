@@ -4,7 +4,8 @@ import MoviesTable from "./MovieTable";
 import MovieDialog from "./MovieDialog";
 import PageHeader from "../../components/admin.header";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { useDeleteMovie } from "../../hooks/movie/useDeleteMovie";
+import { useDeleteMovie } from "@/app/hooks/movie/useMovieForm";
+
 
 
 type MovieDialogState =

@@ -33,7 +33,6 @@ public class CategoryController {
     public ResultPaginationDTO getAllCategories(
             @Filter Specification<Category> spec,
             Pageable pageable) {
-
         return categoryService.getAllCategories(spec, pageable);
     }
 

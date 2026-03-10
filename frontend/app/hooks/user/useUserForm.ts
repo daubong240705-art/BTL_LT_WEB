@@ -5,10 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { assertApiSuccess, handleFormError } from "../_shared/mutation.utils";
-import { userApi } from "../../service/api/user.api";
+
 import { UserPayload, userSchema, UserSubmitValues } from "@/app/types/form.type";
 import { toast } from "sonner";
+import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
+import { userApi } from "@/app/admin/service/api/user.api";
 
 
 export function useUserForm(
@@ -65,4 +66,13 @@ export const useUserMutation = (
             handleFormError(err, form.setError);
         }
     });
+};
+
+export const useDeleteUser = () => {
+    const mutation = useDeleteWithRefresh(userApi.deleteUser, "Xoa nguoi dung thanh cong");
+
+    return {
+        deleteUser: mutation.mutate,
+        isDeleting: mutation.isPending,
+    };
 };

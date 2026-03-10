@@ -102,7 +102,6 @@ export const episodeSchema = z.object({
         .regex(/^[a-z0-9-]+$/, "Slug chi gom chu thuong, so va dau -"),
     videoUrl: z.string(),
     episodeOrder: z.coerce.number<number>().int("Thu tu phai la so nguyen").min(1, "Thu tu phai >= 1"),
-    movieId: z.number().optional()
 });
 
 export type MovieFormValues = z.infer<typeof movieSchema>;

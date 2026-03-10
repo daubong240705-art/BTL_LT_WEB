@@ -11,7 +11,7 @@ import { FormError } from "@/components/shared/FormError";
 
 import EpisodeList from "./EpisodeList";
 import { categoryApi } from "../../service/api/category.api";
-import { useMovieForm, useMovieMutation } from "../../hooks/movie/useMovieForm";
+import { useMovieForm, useMovieMutation } from "../../../hooks/movie/useMovieForm";
 import { MovieFormValues } from "@/app/types/form.type";
 
 type Props = {

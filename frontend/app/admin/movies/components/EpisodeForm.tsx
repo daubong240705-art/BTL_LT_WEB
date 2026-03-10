@@ -1,10 +1,11 @@
-import { Episode } from "@/app/types/global.type";
+
 import { AppInput } from "@/components/shared/AppInput";
 import { FormError } from "@/components/shared/FormError";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 
-import { EpisodeFormValues, useEpisodeForm, useEpisodeMutation } from "../../hooks/movie/useEpisodeForm";
+import { useEpisodeForm, useEpisodeMutation } from "../../../hooks/movie/useEpisodeForm";
+import { EpisodeFormValues } from "@/app/types/form.type";
 
 type Props = {
     mode: "add" | "edit";

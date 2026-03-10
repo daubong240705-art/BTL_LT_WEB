@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Edit, Save, X } from "lucide-react";
 import MovieForm from "./MovieForm";
-import { Movie } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 
 type Props = {

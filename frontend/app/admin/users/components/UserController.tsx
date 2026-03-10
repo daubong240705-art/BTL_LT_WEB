@@ -4,8 +4,8 @@ import PageHeader from "../../components/admin.header";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import UserTable from "./UserTable";
 import UserDialog from "./UserDialog";
-import { User } from "@/app/types/global.type";
-import { useDeleteUser } from "../../hooks/user/useDeleteUser";
+import { useDeleteUser } from "@/app/hooks/user/useUserForm";
+
 
 
 export type UserDialogState =

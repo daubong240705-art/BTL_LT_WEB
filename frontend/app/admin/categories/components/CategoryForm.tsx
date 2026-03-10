@@ -1,9 +1,11 @@
-import { Category } from "@/app/types/global.type";
+
 import { FormError } from "@/components/shared/FormError";
 import { AppInput } from "@/components/shared/AppInput";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
-import { CategoryFormValues, useCategoryForm, useCategoryMutation } from "../../hooks/category/useCategoryForm";
+import { useCategoryForm, useCategoryMutation } from "@/app/hooks/category/useCategoryForm";
+import { CategoryFormValues } from "@/app/types/form.type";
+
 
 type Props = {
     mode: "add" | "edit";

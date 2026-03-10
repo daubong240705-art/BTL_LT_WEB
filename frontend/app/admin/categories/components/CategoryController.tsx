@@ -1,11 +1,11 @@
 "use client";
-import { Category } from "@/app/types/global.type";
 import { useState } from "react";
 import PageHeader from "../../components/admin.header";
 import CategoryTable from "./CategoryTable";
 import CategoryDialog from "./CategoryDialog";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { useDeleteCategory } from "../../hooks/category/useDeleteCategory";
+import { useDeleteCategory } from "@/app/hooks/category/useCategoryForm";
+
 
 export type CategoryDialogState =
     | { type: "add" }
