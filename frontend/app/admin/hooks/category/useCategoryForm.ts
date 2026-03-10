@@ -1,28 +1,15 @@
 "use client";
 
-import { Category } from "@/app/types/global.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
-import z from "zod";
-import { applyFormMutationError, assertApiSuccess } from "../_shared/mutation.utils";
-import { CategoryPayload, categoryApi } from "../../service/api/category.api";
+import { assertApiSuccess, handleFormError } from "../_shared/mutation.utils";
+import { categoryApi } from "../../service/api/category.api";
+import { CategoryPayload, categorySchema } from "@/app/types/form.type";
+import { toast } from "sonner";
 
-const categorySchema = z.object({
-    name: z
-        .string()
-        .min(1, "Tên không được để trống")
-        .max(255, "Tên quá dài"),
 
-    slug: z
-        .string()
-        .min(1, "Slug không được để trống")
-        .regex(/^[a-z0-9-]+$/, "Slug chỉ gồm chữ thường, số và dấu -"),
-})
-
-export type CategoryFormValues = z.infer<typeof categorySchema>;
 
 export function useCategoryForm(
     mode: "add" | "edit",
@@ -30,20 +17,16 @@ export function useCategoryForm(
 ) {
     const form = useForm<CategoryPayload>({
         resolver: zodResolver(categorySchema),
-        defaultValues: {
-            name: "",
-            slug: "",
-        },
-    });
-
-    useEffect(() => {
-        if (mode === "edit" && initialData) {
-            form.reset({
+        values: mode === "edit" && initialData
+            ? {
                 name: initialData.name,
                 slug: initialData.slug,
-            });
-        }
-    }, [mode, initialData, form]);
+            }
+            : {
+                name: "",
+                slug: "",
+            }
+    });
     return form;
 }
 
@@ -55,29 +38,23 @@ export const useCategoryMutation = (
 ) => {
     const router = useRouter();
 
-    return useMutation({
+    return useMutation<IBackendRes<Category>, IBackendRes<null>, CategoryPayload>({
         mutationFn: async (data: CategoryPayload) => {
             const response = await (mode === "add"
                 ? categoryApi.createCategory(data)
                 : categoryApi.updateCategory(categoryId!, data));
             return assertApiSuccess(response);
         },
-        onSuccess: () => {
+        onSuccess: (res) => {
             router.refresh();
+            const categoryName = res.data?.name || "thể loại";
+            toast.success(
+                mode === "add" ? `Tạo ${categoryName} thành công!` : `Cập nhật ${categoryName} thành công!`
+            );
             onClose?.();
         },
-        onError: (error: unknown) => {
-            applyFormMutationError(form, error, {
-                fallbackMessage: "Khong the luu the loai",
-                fieldMap: {
-                    slug: "slug",
-                    name: "name",
-                },
-                messageRules: [
-                    { pattern: /slug/i, field: "slug" },
-                    { pattern: /name|ten|duplicate/i, field: "name" },
-                ],
-            });
+        onError: (err) => {
+            handleFormError(err, form.setError);
         }
     });
 };

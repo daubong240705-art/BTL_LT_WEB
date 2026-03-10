@@ -1,14 +1,8 @@
 
+import { UserPayload } from '@/app/types/form.type';
 import { sendRequest } from '@/lib/api/wrapprer';
 
-export type UserPayload = {
-  fullName: string;
-  username: string;
-  email: string;
-  role: Role;
-  password?: string;
-  avatarUrl?: string;
-};
+
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1";
 
@@ -25,7 +19,7 @@ export const userApi = {
   },
 
   async createUser(data: UserPayload) {
-    return sendRequest({
+    return sendRequest<IBackendRes<User>>({
       url: `${API_URL}/users`,
       method: "POST",
       body: data,
@@ -35,7 +29,7 @@ export const userApi = {
   },
 
   async updateUser(id: number, data: UserPayload) {
-    return sendRequest({
+    return sendRequest<IBackendRes<User>>({
       url: `${API_URL}/users/${id}`,
       method: "PUT",
       body: data,

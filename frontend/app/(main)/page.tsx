@@ -5,9 +5,6 @@ import { MovieSlider } from "./components/main.movieslider";
 
 
 
-
-
-
 export default async function HomePage() {
 
 

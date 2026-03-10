@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import { toast } from "sonner";
 
 export type ApiFailure = {
@@ -11,18 +12,6 @@ export type ApiFailure = {
     message?: string;
 };
 
-type FormField<T extends FieldValues> = Path<T> | "root";
-
-type ErrorRule<T extends FieldValues> = {
-    pattern: RegExp;
-    field: FormField<T>;
-};
-
-type FormErrorOptions<T extends FieldValues> = {
-    fallbackMessage: string;
-    fieldMap?: Record<string, FormField<T>>;
-    messageRules?: ErrorRule<T>[];
-};
 
 export const assertApiSuccess = <T>(response: T): T => {
     const apiError = response as ApiFailure;
@@ -35,68 +24,62 @@ export const assertApiSuccess = <T>(response: T): T => {
     return response;
 };
 
-export const getApiErrorMessage = (error: unknown, fallbackMessage: string) => {
-    const apiError = error as ApiFailure;
-
-    if (typeof apiError?.error === "string" && apiError.error.trim()) {
-        return apiError.error;
-    }
-
-    if (typeof apiError?.message === "string" && apiError.message.trim()) {
-        return apiError.message;
-    }
-
-    return fallbackMessage;
-};
-
-export const applyFormMutationError = <T extends FieldValues>(
-    form: UseFormReturn<T>,
-    error: unknown,
-    options: FormErrorOptions<T>
+export const handleFormError = <T extends FieldValues>(
+    err: IBackendRes<any>,
+    setError: UseFormSetError<T>
 ) => {
-    const { fallbackMessage, fieldMap = {}, messageRules = [] } = options;
-    const apiError = (error as ApiFailure)?.error;
+    const serverErrors = err.error;
 
-    if (apiError && typeof apiError === "object" && !Array.isArray(apiError)) {
-        for (const [key, value] of Object.entries(apiError)) {
-            const targetField = fieldMap[key] ?? "root";
-            form.setError(targetField as FormField<T>, {
+    if (serverErrors && typeof serverErrors === 'object' && !Array.isArray(serverErrors)) {
+        Object.keys(serverErrors).forEach((field) => {
+            setError(field as Path<T>, {
                 type: "server",
-                message: String(value),
+                message: serverErrors[field],
             });
-        }
-        return;
+        });
+
+        toast.error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại!");
     }
+    else {
+        const errorMessage = Array.isArray(serverErrors)
+            ? serverErrors[0]
+            : typeof serverErrors === 'string'
+                ? serverErrors
+                : err.message;
 
-    const message = getApiErrorMessage(error, fallbackMessage);
-    const matchedRule = messageRules.find((rule) => rule.pattern.test(message));
-    const targetField = matchedRule?.field ?? "root";
-
-    form.setError(targetField as FormField<T>, {
-        type: "server",
-        message,
-    });
+        toast.error(errorMessage || "Có lỗi xảy ra trong quá trình lưu dữ liệu!");
+    }
 };
+
+
 
 export const useDeleteWithRefresh = <TId>(
-    mutationFn: (id: TId) => Promise<unknown>,
-    successMessage?: string
+    mutationFn: (id: TId) => Promise<any>,
+    successMessage: string = "Xóa dữ liệu thành công!"
 ) => {
     const router = useRouter();
 
-    return useMutation({
+    return useMutation<IBackendRes<any>, IBackendRes<null>, TId>({
         mutationFn: async (id: TId) => {
             const response = await mutationFn(id);
             return assertApiSuccess(response);
         },
+
         onSuccess: () => {
             router.refresh();
-            if (successMessage) {
-                toast.success(successMessage);
-            }
+            toast.success(successMessage);
         },
-        onError: (error) => {
-            toast.error(getApiErrorMessage(error, "Thao tac that bai"));
+
+        onError: (err) => {
+            const serverErrors = err.error;
+
+            const errorMessage = Array.isArray(serverErrors)
+                ? serverErrors[0]
+                : typeof serverErrors === 'string'
+                    ? serverErrors
+                    : err.message;
+
+            toast.error(errorMessage || "Có lỗi xảy ra trong quá trình xóa dữ liệu!");
         },
     });
 };

@@ -4,13 +4,13 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Edit, Film, Plus, Trash2 } from "lucide-react";
 
-import { Episode } from "@/app/types/global.type";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 
 import Episodedialog from "./EpisodeDialog";
 import { movieApi } from "../../service/api/movie.api";
-import { useDeleteEpisodeMutation } from "../../hooks/movie/useEpisodeForm";
+import { useDeleteEpisode } from "../../hooks/movie/useEpisodeForm";
+
 
 export type EpisodeDialogState =
     | { type: "add" }
@@ -31,7 +31,7 @@ export default function EpisodeList({ movieId }: Props) {
     const [dialog, setDialog] = useState<EpisodeDialogState>(null);
     const [episodeToDelete, setEpisodeToDelete] = useState<Episode | null>(null);
 
-    const deleteMutation = useDeleteEpisodeMutation(movieId);
+    const { deleteEpisode } = useDeleteEpisode(movieId);
 
     return (
         <>
@@ -106,13 +106,15 @@ export default function EpisodeList({ movieId }: Props) {
                 onClose={() => setEpisodeToDelete(null)}
                 onConfirm={() => {
                     if (!episodeToDelete) return;
-                    deleteMutation.mutate(episodeToDelete.id, {
+                    // Gọi delete và đóng dialog khi xong
+                    deleteEpisode(episodeToDelete.id, {
                         onSuccess: () => setEpisodeToDelete(null),
                     });
                 }}
-                title="Xoa tap phim?"
-                message="Hanh dong nay khong the hoan tac."
+                title="Xoá tập phim?" 
+                message="Hành động này không thể hoàn tác."
             />
+
         </>
     );
 }

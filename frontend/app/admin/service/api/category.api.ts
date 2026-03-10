@@ -1,10 +1,7 @@
 
+import { CategoryPayload } from '@/app/types/form.type';
 import { sendRequest } from '@/lib/api/wrapprer';
 
-export type CategoryPayload = {
-    name: string;
-    slug: string;
-};
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1";
 
@@ -22,7 +19,7 @@ export const categoryApi = {
     },
 
     async createCategory(data: CategoryPayload) {
-        return sendRequest({
+        return sendRequest<IBackendRes<Category>>({
             url: `${API_URL}/categories`,
             method: "POST",
             body: data,
@@ -32,7 +29,7 @@ export const categoryApi = {
     },
 
     async updateCategory(id: number, data: CategoryPayload) {
-        return sendRequest({
+        return sendRequest<IBackendRes<Category>>({
             url: `${API_URL}/categories/${id}`,
             method: "PUT",
             body: data,

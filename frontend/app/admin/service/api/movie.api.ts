@@ -1,26 +1,9 @@
+import { EpisodePayload, MoviePayload } from "@/app/types/form.type";
 import { sendRequest } from "@/lib/api/wrapprer";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1";
 
-export type MoviePayload = {
-    title: string;
-    slug: string;
-    description: string;
-    type: MovieType;
-    status: MovieStatus;
-    posterUrl?: string;
-    thumbUrl?: string;
-    publishYear: number;
-    categoryIds: number[];
-};
 
-export type EpisodePayload = {
-    movieId: number;
-    name: string;
-    slug: string;
-    videoUrl: string;
-    episodeOrder: number;
-};
 
 export const movieApi = {
     async getAllAdminMovies(): Promise<Movie[]> {

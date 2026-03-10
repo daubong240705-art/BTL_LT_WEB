@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { Movie } from "@/app/types/global.type";
 import MoviesTable from "./MovieTable";
 import MovieDialog from "./MovieDialog";
 import PageHeader from "../../components/admin.header";
