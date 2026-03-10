@@ -59,7 +59,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img src={posterUrl} alt="Poster preview" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="h-full flex items-center justify-center text-gray-500 text-xs">Chua co poster</div>
+                                    <div className="h-full flex items-center justify-center text-gray-500 text-xs">Chưa có poster</div>
                                 )}
                             </div>
                         </div>
@@ -80,7 +80,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img src={thumbUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="h-full flex items-center justify-center text-gray-500 text-xs">Chua co thumbnail</div>
+                                    <div className="h-full flex items-center justify-center text-gray-500 text-xs">Chưaa có thumbnail</div>
                                 )}
                             </div>
                         </div>
@@ -89,9 +89,9 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                     <div className="col-span-9 space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Ten phim</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Tên phim</label>
                                 <AppInput
-                                    placeholder="Nhap ten phim..."
+                                    placeholder="Nhập tên phim..."
                                     type="text"
                                     color="red"
                                     className="text-white px-4 py-5"
@@ -101,7 +101,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Duong dan</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Dường dẫn</label>
                                 <AppInput
                                     placeholder="Nhap duong dan phim..."
                                     type="text"
@@ -115,7 +115,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Nam</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Năm</label>
                                 <AppInput
                                     placeholder="Nam san xuat"
                                     type="text"
@@ -127,7 +127,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Trang thai</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Trạng thái</label>
                                 <Controller
                                     control={form.control}
                                     name="status"
@@ -147,7 +147,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Loai phim</label>
+                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Loại phim</label>
                                 <Controller
                                     control={form.control}
                                     name="type"
@@ -157,8 +157,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                                 <SelectValue placeholder="Chon loai phim" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-gray-800 border border-gray-700 text-white">
-                                                <SelectItem value="SERIES" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Phim bo</SelectItem>
-                                                <SelectItem value="SINGLE" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Phim le</SelectItem>
+                                                <SelectItem value="SERIES" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Phim bộ</SelectItem>
+                                                <SelectItem value="SINGLE" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Phim lẻ</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     )}
@@ -168,7 +168,7 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-2 block">The loai</label>
+                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Thể loại</label>
                             <div className="grid gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700 grid-cols-[repeat(auto-fill,minmax(110px,1fr))]">
                                 {isLoading && <span className="text-sm text-gray-500">Dang tai the loai...</span>}
                                 {isError && <span className="text-sm text-red-500">Khong tai duoc the loai</span>}
@@ -187,8 +187,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                                                 form.setValue("categoryIds", next, { shouldDirty: true, shouldValidate: true });
                                             }}
                                             className={`px-3 py-1 rounded text-sm border transition ${isSelected
-                                                    ? "bg-red-600 text-white border-red-600"
-                                                    : "bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
+                                                ? "bg-red-600 text-white border-red-600"
+                                                : "bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
                                                 }`}
                                         >
                                             {cat.name}
@@ -200,10 +200,10 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Mo ta noi dung</label>
+                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Mô tả nội dung</label>
                             <Textarea
                                 {...form.register("description")}
-                                placeholder="Nhap tom tat noi dung phim..."
+                                placeholder="Nhập mô tả nội dung phim..."
                                 className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20 transition-all"
                             />
                             <FormError message={form.formState.errors.description?.message} />

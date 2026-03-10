@@ -1,20 +1,10 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useDeleteWithRefresh } from "../_shared/mutation.utils";
 import { userApi } from "../../service/api/user.api";
 
-
 export const useDeleteUser = () => {
-    const router = useRouter();
-
-    const mutation = useMutation({
-        mutationFn: (id: number) => userApi.deleteUser(id),
-
-        onSuccess: () => {
-            router.refresh();
-        },
-    });
+    const mutation = useDeleteWithRefresh(userApi.deleteUser, "Xoa nguoi dung thanh cong");
 
     return {
         deleteUser: mutation.mutate,

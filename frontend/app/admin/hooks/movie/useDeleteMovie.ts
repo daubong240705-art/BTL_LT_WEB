@@ -1,20 +1,10 @@
+"use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useDeleteWithRefresh } from "../_shared/mutation.utils";
 import { movieApi } from "../../service/api/movie.api";
 
-
-
 export const useDeleteMovie = () => {
-    const router = useRouter();
-
-    const mutation = useMutation({
-        mutationFn: (id: number) => movieApi.deleteMovie(id),
-
-        onSuccess: () => {
-            router.refresh();
-        },
-    });
+    const mutation = useDeleteWithRefresh(movieApi.deleteMovie, "Xoa thanh cong");
 
     return {
         deleteMovie: mutation.mutate,

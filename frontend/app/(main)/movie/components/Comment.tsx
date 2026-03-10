@@ -92,7 +92,12 @@ export default function Comments({ movieId, initialUser = null }: Props) {
 
             <div className="flex gap-4 mb-8">
                 <div className="w-10 h-10 rounded-full border border-gray-600 flex items-center justify-center bg-gray-900">
-                    <User className="w-5 h-5 text-gray-300" />
+                    <Avatar>
+                        <AvatarImage src={currentUser?.avatarUrl} />
+                        <AvatarFallback>
+                            <User className="w-5 h-5 text-gray-300" />
+                        </AvatarFallback>
+                    </Avatar>
                 </div>
 
                 <div className="flex-1 relative">

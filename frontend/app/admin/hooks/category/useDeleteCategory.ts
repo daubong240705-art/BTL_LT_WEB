@@ -1,19 +1,10 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useDeleteWithRefresh } from "../_shared/mutation.utils";
 import { categoryApi } from "../../service/api/category.api";
 
-
-
 export const useDeleteCategory = () => {
-    const router = useRouter();
-    const mutation = useMutation({
-        mutationFn: (id: number) => categoryApi.deleteCategory(id),
-        onSuccess: () => {
-            router.refresh();
-        },
-    });
+    const mutation = useDeleteWithRefresh(categoryApi.deleteCategory, "Xoa the loai thanh cong");
 
     return {
         deleteCategory: mutation.mutate,

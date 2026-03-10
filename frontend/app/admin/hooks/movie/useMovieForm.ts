@@ -1,4 +1,6 @@
 
+"use client";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -6,12 +8,9 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import { applyFormMutationError, assertApiSuccess } from "../_shared/mutation.utils";
 import { MoviePayload, movieApi } from "../../service/api/movie.api";
-
-type ApiFailure = {
-    statusCode?: number | string;
-    error?: unknown;
-};
+import { toast } from "sonner";
 
 const movieSchema = z
     .object({
@@ -113,44 +112,29 @@ export const useMovieMutation = (
 
     return useMutation({
         mutationFn: async (data: MoviePayload) => {
-            const res = await (mode === "add"
+            const response = await (mode === "add"
                 ? movieApi.createMovie(data)
                 : movieApi.updateMovie(movieId!, data));
-
-            const apiRes = res as ApiFailure;
-            const statusCode = Number(apiRes.statusCode ?? 200);
-            if (statusCode >= 400 || apiRes.error) {
-                throw res;
-            }
-
-            return res;
+            return assertApiSuccess(response);
         },
 
         onSuccess: () => {
             router.refresh();
+            const isAddMode = mode === "add";
+            toast.success(
+                isAddMode ? "Tạo phim mới thành công" : "Cập nhật thành công"
+            );
+
             onClose?.();
         },
         onError: (error: unknown) => {
-            const serverError = (error as ApiFailure)?.error;
-
-            if (serverError && typeof serverError === "object" && !Array.isArray(serverError)) {
-                for (const [key, value] of Object.entries(serverError)) {
-                    if (key === "slug") {
-                        form.setError("slug", { type: "server", message: String(value) });
-                    } else {
-                        form.setError("root", { type: "server", message: String(value) });
-                    }
-                }
-                return;
-            }
-
-            const message = typeof serverError === "string" ? serverError : "Khong the luu phim";
-            if (/slug/i.test(message)) {
-                form.setError("slug", { type: "server", message });
-                return;
-            }
-
-            form.setError("root", { type: "server", message });
+            applyFormMutationError(form, error, {
+                fallbackMessage: "Khong the luu phim",
+                fieldMap: {
+                    slug: "slug",
+                },
+                messageRules: [{ pattern: /slug/i, field: "slug" }],
+            });
         }
     });
 };

@@ -2,10 +2,12 @@
 import Comments from "@/app/(main)/movie/components/Comment";
 import { Top5Movies } from "@/app/(main)/movie/components/TopMovie";
 import { getMovieBySlug, getMovieEpisode } from "@/lib/api/main.api";
-import { ChevronLeft, Play } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
+import VideoPlayer from "@/app/(main)/components/video.player";
+
 
 
 
@@ -51,9 +53,7 @@ export default async function MovieDetailPage({ params }: Props) {
                         <span>Quay lại chi tiết phim</span>
                     </Link>
 
-                    {/* --- KHỐI CHÍNH CĂN GIỮA (Thay đổi ở đây) --- */}
-                    {/* max-w-5xl: Giới hạn chiều rộng để không bị bè ra quá to */}
-                    {/* mx-auto: Căn giữa khối này trong màn hình */}
+
                     <div className="w-full max-w-8xl mx-auto space-y-8">
 
 
@@ -63,31 +63,21 @@ export default async function MovieDetailPage({ params }: Props) {
                             {/* Cột trái: Thông tin tập phim */}
                             <div className="lg:col-span-2 space-y-6">
                                 {/* 1. MÀN HÌNH VIDEO (PLAYER) */}
-                                <div className="bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
-                                    <div className="aspect-video bg-gray-900 flex items-center justify-center relative group cursor-pointer">
-                                        {/* Ảnh nền mờ */}
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={movie.thumbUrl}
-                                            alt={movie.title}
-                                            className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
-                                        />
+                                <div className="max-w-5xl mx-auto">
+                                    <div className="bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
 
-                                        {/* Nút Play */}
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="bg-red-600/90 group-hover:bg-red-600 p-6 rounded-full transition-all transform group-hover:scale-110 shadow-lg shadow-red-900/50">
-                                                <Play className="w-10 h-10 text-white fill-current ml-1" />
-                                            </div>
+                                        <div className="aspect-video relative">
+
+                                            {/* Video */}
+                                            <VideoPlayer src="http://192.168.10.207/movies/Media/Phim/single/tieu-yeu/tieu-yeu.m3u8" />
+
+                                            {/* Overlay gradient */}
+
                                         </div>
 
-                                        {/* Thanh timeline giả */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-800">
-                                            <div className="w-1/3 h-full bg-red-600 relative">
-                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-red-500 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
+
                                 <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
                                     <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
                                         <span className="text-red-500">{movie.title}</span>

@@ -1,3 +1,5 @@
+"use client";
+
 import { User } from "@/app/types/global.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -5,12 +7,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import { applyFormMutationError, assertApiSuccess } from "../_shared/mutation.utils";
 import { UserPayload, userApi } from "../../service/api/user.api";
-
-type ApiFailure = {
-    statusCode?: number | string;
-    error?: unknown;
-};
 
 
 const userSchema = z
@@ -88,48 +86,27 @@ export const useUserMutation = (
 
     return useMutation({
         mutationFn: async (data: UserPayload) => {
-            const res = await (mode === "add"
+            const response = await (mode === "add"
                 ? userApi.createUser(data)
                 : userApi.updateUser(userId!, data));
-
-            const apiRes = res as ApiFailure;
-            const statusCode = Number(apiRes.statusCode ?? 200);
-            if (statusCode >= 400 || apiRes.error) {
-                throw res;
-            }
-            return res;
+            return assertApiSuccess(response);
         },
         onSuccess: () => {
             router.refresh();
             onClose?.();
         },
         onError: (error: unknown) => {
-            const serverError = (error as ApiFailure)?.error;
-
-            if (serverError && typeof serverError === "object" && !Array.isArray(serverError)) {
-                for (const [key, value] of Object.entries(serverError)) {
-                    if (key === "email") {
-                        form.setError("email", { type: "server", message: String(value) });
-                    } else if (key === "username") {
-                        form.setError("username", { type: "server", message: String(value) });
-                    } else {
-                        form.setError("root", { type: "server", message: String(value) });
-                    }
-                }
-                return;
-            }
-
-            const message = typeof serverError === "string" ? serverError : "Khong the luu nguoi dung";
-            if (/email/i.test(message)) {
-                form.setError("email", { type: "server", message });
-                return;
-            }
-            if (/username/i.test(message)) {
-                form.setError("username", { type: "server", message });
-                return;
-            }
-
-            form.setError("root", { type: "server", message });
+            applyFormMutationError(form, error, {
+                fallbackMessage: "Khong the luu nguoi dung",
+                fieldMap: {
+                    email: "email",
+                    username: "username",
+                },
+                messageRules: [
+                    { pattern: /email/i, field: "email" },
+                    { pattern: /username/i, field: "username" },
+                ],
+            });
         }
     });
 };

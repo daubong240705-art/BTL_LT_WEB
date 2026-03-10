@@ -1,3 +1,5 @@
+"use client";
+
 import { Category } from "@/app/types/global.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -5,12 +7,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import z from "zod";
+import { applyFormMutationError, assertApiSuccess } from "../_shared/mutation.utils";
 import { CategoryPayload, categoryApi } from "../../service/api/category.api";
-
-type ApiFailure = {
-    statusCode?: number | string;
-    error?: unknown;
-};
 
 const categorySchema = z.object({
     name: z
@@ -59,48 +57,27 @@ export const useCategoryMutation = (
 
     return useMutation({
         mutationFn: async (data: CategoryPayload) => {
-            const res = await (mode === "add"
+            const response = await (mode === "add"
                 ? categoryApi.createCategory(data)
                 : categoryApi.updateCategory(categoryId!, data));
-
-            const apiRes = res as ApiFailure;
-            const statusCode = Number(apiRes.statusCode ?? 200);
-            if (statusCode >= 400 || apiRes.error) {
-                throw res;
-            }
-            return res;
+            return assertApiSuccess(response);
         },
         onSuccess: () => {
             router.refresh();
             onClose?.();
         },
         onError: (error: unknown) => {
-            const serverError = (error as ApiFailure)?.error;
-
-            if (serverError && typeof serverError === "object" && !Array.isArray(serverError)) {
-                for (const [key, value] of Object.entries(serverError)) {
-                    if (key === "slug") {
-                        form.setError("slug", { type: "server", message: String(value) });
-                    } else if (key === "name") {
-                        form.setError("name", { type: "server", message: String(value) });
-                    } else {
-                        form.setError("root", { type: "server", message: String(value) });
-                    }
-                }
-                return;
-            }
-
-            const message = typeof serverError === "string" ? serverError : "Khong the luu the loai";
-            if (/slug/i.test(message)) {
-                form.setError("slug", { type: "server", message });
-                return;
-            }
-            if (/name|ten|duplicate/i.test(message)) {
-                form.setError("name", { type: "server", message });
-                return;
-            }
-
-            form.setError("root", { type: "server", message });
+            applyFormMutationError(form, error, {
+                fallbackMessage: "Khong the luu the loai",
+                fieldMap: {
+                    slug: "slug",
+                    name: "name",
+                },
+                messageRules: [
+                    { pattern: /slug/i, field: "slug" },
+                    { pattern: /name|ten|duplicate/i, field: "name" },
+                ],
+            });
         }
     });
 };

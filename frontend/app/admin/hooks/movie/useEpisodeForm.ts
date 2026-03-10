@@ -1,16 +1,14 @@
+"use client";
+
 import { Episode } from "@/app/types/global.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import z from "zod";
+import { applyFormMutationError, assertApiSuccess } from "../_shared/mutation.utils";
 
 import { EpisodePayload, movieApi } from "../../service/api/movie.api";
-
-type ApiFailure = {
-    statusCode?: number | string;
-    error?: unknown;
-};
 
 const episodeSchema = z.object({
     name: z.string().min(1, "Tieu de khong duoc de trong").max(255, "Tieu de qua dai"),
@@ -62,18 +60,11 @@ export const useEpisodeMutation = (
 
     return useMutation({
         mutationFn: async (data: EpisodePayload) => {
-            const res =
+            const response =
                 mode === "add"
                     ? await movieApi.createEpisode({ ...data, movieId })
                     : await movieApi.updateEpisode(episodeId!, { ...data, movieId });
-
-            const apiRes = res as ApiFailure;
-            const statusCode = Number(apiRes.statusCode ?? 200);
-            if (statusCode >= 400 || apiRes.error) {
-                throw res;
-            }
-
-            return res;
+            return assertApiSuccess(response);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["episodes", movieId] });
@@ -81,34 +72,18 @@ export const useEpisodeMutation = (
             onClose?.();
         },
         onError: (error: unknown) => {
-            const serverError = (error as ApiFailure)?.error;
-
-            if (serverError && typeof serverError === "object" && !Array.isArray(serverError)) {
-                for (const [key, value] of Object.entries(serverError)) {
-                    if (key === "name") {
-                        form.setError("name", { type: "server", message: String(value) });
-                    } else if (key === "slug") {
-                        form.setError("slug", { type: "server", message: String(value) });
-                    } else if (key === "episodeOrder") {
-                        form.setError("episodeOrder", { type: "server", message: String(value) });
-                    } else {
-                        form.setError("root", { type: "server", message: String(value) });
-                    }
-                }
-                return;
-            }
-
-            const message = typeof serverError === "string" ? serverError : "Khong the luu tap phim";
-            if (/slug/i.test(message)) {
-                form.setError("slug", { type: "server", message });
-                return;
-            }
-            if (/thu tu|episodeorder|order/i.test(message)) {
-                form.setError("episodeOrder", { type: "server", message });
-                return;
-            }
-
-            form.setError("root", { type: "server", message });
+            applyFormMutationError(form, error, {
+                fallbackMessage: "Khong the luu tap phim",
+                fieldMap: {
+                    name: "name",
+                    slug: "slug",
+                    episodeOrder: "episodeOrder",
+                },
+                messageRules: [
+                    { pattern: /slug/i, field: "slug" },
+                    { pattern: /thu tu|episodeorder|order/i, field: "episodeOrder" },
+                ],
+            });
         },
     });
 };
@@ -118,13 +93,8 @@ export const useDeleteEpisodeMutation = (movieId: number) => {
 
     return useMutation({
         mutationFn: async (episodeId: number) => {
-            const res = await movieApi.deleteEpisode(episodeId);
-            const apiRes = res as ApiFailure;
-            const statusCode = Number(apiRes.statusCode ?? 200);
-            if (statusCode >= 400 || apiRes.error) {
-                throw res;
-            }
-            return res;
+            const response = await movieApi.deleteEpisode(episodeId);
+            return assertApiSuccess(response);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["episodes", movieId] });
