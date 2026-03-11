@@ -1,8 +1,6 @@
 import { MoviePayload } from "@/app/types/form.type";
 import { adminRequest } from "./adminRequest";
 
-
-
 const api_url = `${process.env.NEXT_PUBLIC_BACKEND_URL}`;
 
 type AdminRequestOptions = {
@@ -60,5 +58,17 @@ export const getAdminUsers = () => {
     return adminRequest<IBackendRes<IModelPaginate<User>>>({
         url: `${api_url}/users`,
         method: "GET"
+    })
+}
+
+export const getDashboardSummary = (options?: AdminRequestOptions) => {
+    return adminRequest<IBackendRes<{
+        totalMovies: number
+        totalUsers: number
+        totalViews: number
+    }>>({
+        url: `${api_url}/dashboard/summary`,
+        method: "GET",
+        cookieHeader: options?.cookieHeader
     })
 }

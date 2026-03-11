@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Camera, Check, Loader2, LogOut, User } from "lucide-react";
+import {  Check, Loader2, LogOut, User } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -27,14 +27,16 @@ type AvatarOption = {
 };
 
 const AVATAR_OPTIONS: AvatarOption[] = [
-    { id: "hero-red", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Crimson" },
-    { id: "hero-blue", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Azure" },
-    { id: "hero-gold", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Golden" },
-    { id: "hero-neo", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Neo" },
-    { id: "hero-luna", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Luna" },
-    { id: "hero-storm", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Storm" },
-    { id: "hero-mint", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Mint" },
-    { id: "hero-sunset", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Sunset" },
+    { id: "Giang", url: "http://192.168.10.207/movies/Media/avatar/1.jpg" },
+    { id: "Giang2", url: "http://192.168.10.207/movies/Media/avatar/2.jpg" },
+    { id: "Hau", url: "http://192.168.10.207/movies/Media/avatar/3.jpg" },
+    { id: "NA", url: "http://192.168.10.207/movies/Media/avatar/4.png" },
+    { id: "Cuong", url: "http://192.168.10.207/movies/Media/avatar/5.png" },
+    { id: "Hieu", url: "http://192.168.10.207/movies/Media/avatar/6.jpg" },
+    { id: "meme-1", url: "http://192.168.10.207/movies/Media/avatar/7.jpg" },
+    { id: "meme-2", url: "http://192.168.10.207/movies/Media/avatar/8.jpg" },
+    { id: "meme-3", url: "http://192.168.10.207/movies/Media/avatar/9.jpg" },
+    { id: "meme-4", url: "http://192.168.10.207/movies/Media/avatar/10.jpg" },
 ];
 
 export default function AccountSettingsPage() {
@@ -118,7 +120,7 @@ export default function AccountSettingsPage() {
         setFullName(updatedUser.fullName ?? "");
         setAvatarUrl(updatedUser.avatarUrl || AVATAR_OPTIONS[0].url);
 
-        // ⭐ update global auth state
+
         setUser(updatedUser);
 
         toast.success("Cập nhật hồ sơ thành công");
@@ -129,7 +131,6 @@ export default function AccountSettingsPage() {
 
         await authApi.logout();
 
-        // ⭐ update global auth state
         setUser(null);
 
         setIsLoggingOut(false);
@@ -222,7 +223,7 @@ export default function AccountSettingsPage() {
                                             </div>
 
                                             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-all group-hover:opacity-100">
-                                                <Camera className="h-7 w-7 text-white" />
+                                                <User className="h-7 w-7 text-white" />
                                             </div>
                                         </button>
                                     </PopoverTrigger>

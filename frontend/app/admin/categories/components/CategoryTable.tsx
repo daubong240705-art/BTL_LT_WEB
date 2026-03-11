@@ -8,19 +8,7 @@ interface Props {
     onDelete: (category: Category) => void;
 }
 export default function CategoryTable({ categories, onEdit, onDelete }: Props) {
-    // const queryClient = useQueryClient();
-    // const deleteMutation = useMutation({
-    //     mutationFn: (id: number) => categoryApi.deleteCategory(id),
-    //     onSuccess: () => {
-    //         // toast.success("Xoá phim thành công");
-    //         queryClient.invalidateQueries({
-    //             queryKey: ["categories"],
-    //         });
-    //     },
-    //     // onError: () => {
-    //     //     toast.error("Xoá thất bại");
-    //     // },
-    // });
+
     return (
         <div className="grid grid-cols-4 gap-6">
             {categories?.map((cat) => (

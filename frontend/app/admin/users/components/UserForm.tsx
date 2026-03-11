@@ -44,24 +44,24 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 <User2 className="w-12 h-12 text-gray-500 group-hover:text-blue-400 transition-colors" />
                             </div>
                         </div>
-                        <span className="text-gray-400 text-sm mt-3">Anh dai dien</span>
+                        <span className="text-gray-400 text-sm mt-3">Ảnh đại diện</span>
                     </div>
 
                     <div className="flex-1 space-y-4">
                         <div>
-                            <label className="block text-sm font-semibold mb-2 text-gray-400">Ho va ten</label>
+                            <label className="block text-sm font-semibold mb-2 text-gray-400">Họ và tên</label>
                             <AppInput
                                 {...form.register("fullName")}
                                 type="text"
                                 color="blue"
-                                placeholder="Nhap ho va ten"
+                                placeholder="Nhập họ và tên"
                                 className="text-white px-4 py-5"
                             />
                             <FormError message={form.formState.errors.fullName?.message} />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold mb-2 text-gray-400">Ten dang nhap</label>
+                            <label className="block text-sm font-semibold mb-2 text-gray-400">Tên đăng nhập</label>
                             <AppInput
                                 {...form.register("username")}
                                 type="text"
@@ -92,18 +92,18 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold mb-2 text-gray-400">Vai tro</label>
+                        <label className="block text-sm font-semibold mb-2 text-gray-400">Vai trò</label>
                         <Controller
                             control={form.control}
                             name="role"
                             render={({ field }) => (
                                 <Select key={field.value} value={field.value} onValueChange={field.onChange}>
                                     <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white px-4 py-5 rounded-lg focus:border-blue-500 hover:border-blue-500/50 transition-all data-placeholder:text-gray-400 data-placeholder:font-sm">
-                                        <SelectValue placeholder="Vai tro" />
+                                        <SelectValue placeholder="Vai trò" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-gray-800 border border-gray-700 text-white">
-                                        <SelectItem value="ADMIN" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Quan tri vien</SelectItem>
-                                        <SelectItem value="USER" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Nguoi dung</SelectItem>
+                                        <SelectItem value="ADMIN" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Quản trị viên</SelectItem>
+                                        <SelectItem value="USER" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Người dùng</SelectItem>
                                     </SelectContent>
                                 </Select>
                             )}
@@ -112,9 +112,9 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                     </div>
                 </div>
 
-                <div className="pt-6 border-t border-gray-800 space-y-6">
+                <div className=" space-y-6">
                     <h3 className="text-sm font-semibold text-gray-300 flex items-center gap-2">
-                        <Lock className="w-4 h-4" /> Thiet lap mat khau
+                        <Lock className="w-4 h-4" /> Thiết lập mật khẩu
                     </h3>
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
@@ -122,7 +122,7 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 {...form.register("password")}
                                 type="password"
                                 color="blue"
-                                placeholder="Mat khau"
+                                placeholder="Mật khẩu"
                                 className="text-white px-4 py-5"
                             />
                             <FormError message={form.formState.errors.password?.message} />
@@ -132,7 +132,7 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 {...form.register("confirmPassword")}
                                 type="password"
                                 color="blue"
-                                placeholder="Xac nhan mat khau"
+                                placeholder="Xác nhận mật khẩu"
                                 className="text-white px-4 py-5"
                             />
                             <FormError message={form.formState.errors.confirmPassword?.message} />

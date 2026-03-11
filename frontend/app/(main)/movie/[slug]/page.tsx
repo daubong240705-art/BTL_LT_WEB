@@ -58,13 +58,12 @@ export default async function MovieDetailPage({ params }: Props) {
                                 </div>
 
                                 <div
-                                    className={`flex items-center rounded-md px-3 py-1 text-sm font-bold ${
-                                        movie.status === "ONGOING"
-                                            ? "border border-green-600/30 bg-green-600/20 text-green-400"
-                                            : "border border-blue-600/30 bg-blue-600/20 text-blue-400"
-                                    }`}
+                                    className={`flex items-center rounded-md px-3 py-1 text-sm font-bold ${movie.status === "ONGOING"
+                                        ? "border border-green-600/30 bg-green-600/20 text-green-400"
+                                        : "border border-blue-600/30 bg-blue-600/20 text-blue-400"
+                                        }`}
                                 >
-                                    {movie.status === "ONGOING" ? "Dang phat" : "Hoan thanh"}
+                                    {movie.status === "ONGOING" ? "Đang phát" : "Hoàn thành"}
                                 </div>
                             </div>
 
@@ -82,7 +81,7 @@ export default async function MovieDetailPage({ params }: Props) {
                             </div>
 
                             <div className="mb-10">
-                                <h3 className="text-xl font-bold text-white">Noi dung phim</h3>
+                                <h3 className="text-xl font-bold text-white">Nội dung phim</h3>
                                 <p className="text-lg leading-relaxed text-gray-500">{movie.description}</p>
                             </div>
 
@@ -105,7 +104,7 @@ export default async function MovieDetailPage({ params }: Props) {
                                     disabled
                                     className="cursor-not-allowed rounded-full bg-gray-700 px-8 py-3 font-bold text-gray-400"
                                 >
-                                    <span>Chua co tap</span>
+                                    <span>Chưa có tập</span>
                                 </button>
                             )}
 
@@ -120,7 +119,7 @@ export default async function MovieDetailPage({ params }: Props) {
                                 className="flex-col flex items-center rounded-lg px-6 py-3 font-semibold text-gray-300 transition-all hover:bg-gray-700/20"
                             >
                                 <MessageCircle className="h-5 w-5" />
-                                <span className="hidden sm:inline">Binh luan</span>
+                                <span className="hidden sm:inline pt-2">Bình luận</span>
                             </a>
                         </div>
 

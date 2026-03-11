@@ -22,7 +22,7 @@ export function FavoriteToggle({
     className,
     iconClassName,
     label,
-    activeLabel = "Đã yêu thích",
+    activeLabel = "Yêu thích",
     inactiveLabel = "Yêu thích",
     showLabel = true,
 }: Props) {

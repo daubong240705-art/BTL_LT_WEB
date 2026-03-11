@@ -66,7 +66,7 @@ export default function Comments({ movieId }: Props) {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Ban chac chan muon xoa binh luan?")) return;
+        if (!confirm("Bạn có chắc muốn xoá bình luận?")) return;
 
         const res = await deleteComment(id);
         if (Number(res.statusCode) < 400) {
@@ -80,19 +80,22 @@ export default function Comments({ movieId }: Props) {
             <div className="flex items-center gap-2 mb-6 border-b border-gray-700 pb-4">
                 <MessageCircle className="w-6 h-6 text-red-500" />
                 <h2 className="text-xl font-semibold text-white">
-                    Binh luan ({totalComments})
+                    Bình luận ({totalComments})
                 </h2>
             </div>
 
             <div className="flex gap-4 mb-8">
-                <div className="w-10 h-10 rounded-full border border-gray-600 flex items-center justify-center bg-gray-900">
-                    <Avatar>
-                        <AvatarImage src={currentUser?.avatarUrl} />
-                        <AvatarFallback>
-                            <User className="w-5 h-5 text-gray-300" />
-                        </AvatarFallback>
-                    </Avatar>
-                </div>
+
+                <Avatar className="w-10 h-10">
+                    <AvatarImage
+                        src={currentUser?.avatarUrl}
+                        className="object-cover"
+                    />
+                    <AvatarFallback>
+                        <User className="w-5 h-5 text-gray-300" />
+                    </AvatarFallback>
+                </Avatar>
+
 
                 <div className="flex-1 relative">
                     <Textarea
@@ -106,7 +109,7 @@ export default function Comments({ movieId }: Props) {
                                 void handleSubmit();
                             }
                         }}
-                        placeholder={currentUser ? "Viet binh luan..." : "Dang nhap de binh luan"}
+                        placeholder={currentUser ? "Viết bình luận..." : "Đăng nhập để bình luận"}
                         className="w-full bg-gray-900 text-white pl-4 pr-12 py-3 rounded-lg border border-gray-700 resize-none break-all"
                     />
 
@@ -132,14 +135,15 @@ export default function Comments({ movieId }: Props) {
 
                         return (
                             <div key={c.id} className="flex gap-4">
-                                <div className="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center bg-gray-900">
-                                    <Avatar>
-                                        <AvatarImage src={c.avatarUrl} />
-                                        <AvatarFallback>
-                                            <User className="w-5 h-5 text-gray-300" />
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </div>
+                                <Avatar className="w-10 h-10">
+                                    <AvatarImage
+                                        src={c.avatarUrl}
+                                        className="object-cover"
+                                    />
+                                    <AvatarFallback>
+                                        <User className="w-5 h-5 text-gray-300" />
+                                    </AvatarFallback>
+                                </Avatar>
 
                                 <div className="flex-1">
                                     <div className="flex justify-between mb-1">

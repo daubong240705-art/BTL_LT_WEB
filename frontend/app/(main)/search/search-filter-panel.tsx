@@ -15,19 +15,19 @@ type SearchFilterPanelProps = {
 };
 
 const typeOptions = [
-    { label: "Tat ca", value: "" },
-    { label: "Phim le", value: "single" },
-    { label: "Phim bo", value: "series" },
+    { label: "Tất cả", value: "" },
+    { label: "Phim lẻ", value: "single" },
+    { label: "Phim bộ", value: "series" },
 ];
 
 const statusOptions = [
-    { label: "Tat ca", value: "" },
-    { label: "Dang chieu", value: "ongoing" },
-    { label: "Hoan thanh", value: "completed" },
+    { label: "Tất cả", value: "" },
+    { label: "Đang chiếu", value: "ongoing" },
+    { label: "Hoàn thành", value: "completed" },
 ];
 
 const yearOptions = [
-    { label: "Tat ca", value: 0 },
+    { label: "Tất cả", value: 0 },
     ...Array.from({ length: 8 }, (_, index) => {
         const year = new Date().getFullYear() - index;
         return { label: String(year), value: year };
@@ -109,7 +109,7 @@ export default function SearchFilterPanel({
             {isOpen ? (
                 <div className="mt-5 space-y-6">
                     <div className="space-y-2">
-                        <Label className="text-gray-200">Tu khoa</Label>
+                        <Label className="text-gray-200">Từ khoá</Label>
                         <Input
                             value={draft.q}
                             onChange={(e) => updateDraft({ q: e.target.value })}
@@ -119,28 +119,23 @@ export default function SearchFilterPanel({
                     </div>
 
                     <div className="space-y-3">
-                        <Label className="text-gray-200">Loai phim</Label>
+                        <Label className="text-gray-200">Loại phim</Label>
                         {renderButtons(typeOptions, draft.type, (value) => updateDraft({ type: value }))}
                     </div>
 
                     <div className="space-y-3">
-                        <Label className="text-gray-200">Trang thai</Label>
+                        <Label className="text-gray-200">Trạng thái</Label>
                         {renderButtons(statusOptions, draft.status, (value) => updateDraft({ status: value }))}
                     </div>
 
                     <div className="space-y-3">
-                        <Label className="text-gray-200">Nam phat hanh</Label>
+                        <Label className="text-gray-200">Năm phát hành</Label>
                         {renderButtons(yearOptions, draft.year, (value) => updateDraft({ year: value }))}
                     </div>
 
                     <div className="space-y-3">
                         <div className="flex items-center justify-between gap-3">
-                            <Label className="text-gray-200">The loai</Label>
-                            {draft.category.length > 0 ? (
-                                <span className="text-xs text-gray-400">
-                                    Da chon {draft.category.length} the loai
-                                </span>
-                            ) : null}
+                            <Label className="text-gray-200">Thể loại</Label>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
@@ -149,7 +144,7 @@ export default function SearchFilterPanel({
                                 className={chipClass(draft.category.length === 0)}
                                 onClick={() => updateDraft({ category: [] })}
                             >
-                                Tat ca
+                                Tất cả
                             </button>
 
                             {categories.map((category) => (

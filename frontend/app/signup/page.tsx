@@ -25,8 +25,8 @@ export default function RegisterPage() {
             <div className="bg-red-600 p-3 rounded-full mb-4">
               <Film className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Dang ky</h1>
-            <p className="text-zinc-400 text-sm">Tao tai khoan moi</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Đăng ký</h1>
+            <p className="text-zinc-400 text-sm">Tạo tài khoản mới</p>
           </div>
 
           <form
@@ -34,11 +34,11 @@ export default function RegisterPage() {
             onSubmit={handleSubmit((data) => signupMutation.mutate(data))}
           >
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-zinc-200">Ho va ten</Label>
+              <Label htmlFor="fullName" className="text-zinc-200">Họ và tên</Label>
               <AppInput
                 id="fullName"
                 type="text"
-                placeholder="Nhap ho va ten"
+                placeholder="Nhập họ và tên"
                 color="red"
                 className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 "
                 {...register("fullName")}
@@ -59,11 +59,11 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-zinc-200">Ten dang nhap</Label>
+              <Label htmlFor="username" className="text-zinc-200">Tên đăng nhập</Label>
               <AppInput
                 id="username"
                 type="text"
-                placeholder="Nhap ten dang nhap"
+                placeholder="Nhập tên đăng nhập"
                 className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 "
                 {...register("username")}
               />
@@ -71,11 +71,11 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-200">Mat khau</Label>
+              <Label htmlFor="password" className="text-zinc-200">Mật khẩu</Label>
               <AppInput
                 id="password"
                 type="password"
-                placeholder="Nhap mat khau"
+                placeholder="Nhập mật khẩu"
                 className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 "
                 {...register("password")}
               />
@@ -83,11 +83,11 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-zinc-200">Xac nhan mat khau</Label>
+              <Label htmlFor="confirmPassword" className="text-zinc-200">Xác nhận mật khẩu</Label>
               <AppInput
                 id="confirmPassword"
                 type="password"
-                placeholder="Nhap lai mat khau"
+                placeholder="Nhập lại mật khẩu"
                 className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 "
                 {...register("confirmPassword")}
               />
@@ -101,21 +101,21 @@ export default function RegisterPage() {
               disabled={signupMutation.isPending}
               className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-6 rounded-lg transition-all duration-200 shadow-lg shadow-red-600/20"
             >
-              {signupMutation.isPending ? "Dang xu ly..." : "Tao tai khoan"}
+              {signupMutation.isPending ? "Dang xu ly..." : "Tạo tài khoản"}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-zinc-400 text-sm">
-              Da co tai khoan?{" "}
+              Đã có tài khoản?{" "}
               <Link href="/login" className="text-red-600 hover:text-red-500 font-semibold transition-colors">
-                Dang nhap
+                Đăng nhập
               </Link>
             </p>
           </div>
 
           <div className="w-full h-4 mt-6 flex items-center justify-center border-zinc-700 bg-transparent border text-zinc-300 hover:bg-zinc-800 hover:text-white py-6 rounded-lg transition-all">
-            <Link href="/">Tiep tuc voi tu cach khach</Link>
+            <Link href="/">Tiếp tục với tư cách khách</Link>
           </div>
         </div>
       </div>

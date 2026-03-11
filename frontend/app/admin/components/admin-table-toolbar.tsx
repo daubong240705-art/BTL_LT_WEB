@@ -3,7 +3,8 @@
 import { ReactNode } from "react";
 import { Search } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
+
+import { AppInput } from "@/components/shared/AppInput";
 
 type AdminTableToolbarProps = {
     searchValue: string;
@@ -25,7 +26,8 @@ export default function AdminTableToolbar({
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="relative w-full lg:max-w-md">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                    <Input
+                    <AppInput
+                        color="red"
                         value={searchValue}
                         onChange={(e) => onSearchChange(e.target.value)}
                         placeholder={searchPlaceholder}

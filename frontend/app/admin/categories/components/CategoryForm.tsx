@@ -27,12 +27,12 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
             <div className="flex flex-col">
                 <div className="flex-1 px-6 pb-6 space-y-2">
                     <div>
-                        <label className="block text-sm font-semibold mb-2 text-gray-400">Ten the loai</label>
+                        <label className="block text-sm font-semibold mb-2 text-gray-400">Tên thể loại</label>
                         <AppInput
                             {...form.register("name")}
                             type="text"
                             color="green"
-                            placeholder="Nhap ten the loai"
+                            placeholder="Nhập tên thể loại"
                             className="px-4 py-5"
                         />
                         <FormError message={form.formState.errors.name?.message} />
@@ -44,7 +44,7 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                             {...form.register("slug")}
                             type="text"
                             color="green"
-                            placeholder="Nhap duong dan"
+                            placeholder="Nhập đường dẫn"
                             className="px-4 py-5"
                         />
                         <FormError message={form.formState.errors.slug?.message} />
@@ -66,9 +66,6 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                 </Button>
             </div>
 
-            <div className="px-6 pb-4">
-                <FormError message={form.formState.errors.root?.message} />
-            </div>
         </form>
     );
 }

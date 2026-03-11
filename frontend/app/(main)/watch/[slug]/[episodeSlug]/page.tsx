@@ -27,7 +27,7 @@ export default async function MovieDetailPage({ params }: Props) {
                     className="group mb-6 inline-flex items-center gap-2 text-gray-400 transition-colors hover:text-white"
                 >
                     <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
-                    <span>Quay lai chi tiet phim</span>
+                    <span>Quay lại chi tiết phim</span>
                 </Link>
 
                 <div className="mx-auto w-full max-w-8xl space-y-8">
@@ -39,7 +39,7 @@ export default async function MovieDetailPage({ params }: Props) {
                                         {currentEpisode?.videoUrl ? (
                                             <VideoPlayer src={currentEpisode.videoUrl} />
                                         ) : (
-                                            <div className="text-gray-400">Tap phim chua co video</div>
+                                            <div className="text-gray-400">Tập phim chưa có video</div>
                                         )}
                                     </div>
                                 </div>
@@ -62,7 +62,7 @@ export default async function MovieDetailPage({ params }: Props) {
                             <Top5Movies />
                             <div className="sticky top-6 rounded-xl border border-gray-700 bg-gray-800/50 p-6">
                                 <h2 className="mb-4 border-l-4 border-red-600 pl-3 text-lg font-bold text-white">
-                                    Danh sach tap
+                                    Danh sách tập
                                 </h2>
                                 <div className="custom-scrollbar grid max-h-100 grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-5 lg:grid-cols-3">
                                     {episodes.map((ep) => (

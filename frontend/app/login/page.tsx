@@ -27,7 +27,7 @@ export default function LoginPage() {
                         <div className="bg-red-600 p-3 rounded-full mb-4">
                             <Film className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-bold text-white mb-2">Dang nhap</h1>
+                        <h1 className="text-3xl font-bold text-white mb-2">Đăng nhập</h1>
                     </div>
 
                     <form
@@ -35,9 +35,9 @@ export default function LoginPage() {
                         onSubmit={handleSubmit((data) => loginMutation.mutate(data))}
                     >
                         <div className="space-y-2">
-                            <Label className="text-zinc-200">Ten dang nhap</Label>
+                            <Label className="text-zinc-200">Tên đăng nhập</Label>
                             <Input
-                                placeholder="Nhap ten dang nhap"
+                                placeholder="Nhập tên đang nhập"
                                 className="bg-zinc-800 border-zinc-700 text-white"
                                 {...register("username")}
                             />
@@ -47,7 +47,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-zinc-200">Mat khau</Label>
+                            <Label className="text-zinc-200">Mật khẩu</Label>
                             <Input
                                 type="password"
                                 placeholder="Nhap mat khau"
@@ -64,23 +64,23 @@ export default function LoginPage() {
                             disabled={loginMutation.isPending}
                             className="w-full bg-red-600 hover:bg-red-700 text-white py-6"
                         >
-                            {loginMutation.isPending ? "Dang dang nhap..." : "Dang nhap"}
+                            {loginMutation.isPending ? "Dang dang nhap..." : "Đăng nhập"}
                         </Button>
 
                         <div className="text-center">
                             <p className="text-zinc-400 text-sm">
-                                Chua co tai khoan?{" "}
+                                Chưa có tài khoản?{" "}
                                 <Link
                                     href="/signup"
                                     className="text-red-600 hover:text-red-500 font-semibold transition-colors"
                                 >
-                                    Dang ky ngay
+                                    Đang ký ngay
                                 </Link>
                             </p>
                         </div>
 
                         <div className="w-full h-4 flex items-center justify-center border-zinc-700 bg-transparent border text-zinc-300 hover:bg-zinc-800 hover:text-white py-6 rounded-lg transition-all">
-                            <Link href="/">Tiep tuc voi tu cach khach</Link>
+                            <Link href="/">Tiếp tục với tư cách khách</Link>
                         </div>
                     </form>
                 </div>

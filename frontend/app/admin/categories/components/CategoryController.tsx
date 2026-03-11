@@ -43,7 +43,7 @@ export default function CategoriesController({ categories }: { categories: Categ
     return (
         <>
             <PageHeader
-                title="the loai"
+                title="thể loại"
                 count={filteredCategories.length}
                 onAdd={() => setDialog({ type: "add" })}
             />
@@ -86,7 +86,7 @@ export default function CategoriesController({ categories }: { categories: Categ
                         onSuccess: () => setCategoryToDelete(null),
                     });
                 }}
-                title="Xoa the loai?"
+                title="Xoá thể loại?"
                 message="Hanh dong nay khong the hoan tac."
             />
         </>

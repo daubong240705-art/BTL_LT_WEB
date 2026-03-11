@@ -66,11 +66,11 @@ export default function SearchPageClient({ initialState, categories }: SearchPag
                 <div className="flex flex-col gap-4 pb-6">
                     <h1 className="flex items-center gap-2 text-3xl font-bold text-white">
                         <TextSearch className="h-7 w-7" />
-                        Ket qua tim kiem
+                        Kết quả tìm kiếm
                     </h1>
 
                     <p className="text-sm text-gray-400">
-                        Tim thay <span className="font-semibold text-white">{totalItems}</span> ket qua
+                        Tìm thấy <span className="font-semibold text-white">{totalItems}</span> kết quả
                     </p>
                 </div>
                 <SearchFilterPanel
@@ -79,7 +79,7 @@ export default function SearchPageClient({ initialState, categories }: SearchPag
                     onApply={updateSearchState}
                 />
                 {isLoading ? (
-                    <div className="py-20 text-center text-gray-400">Dang tai du lieu...</div>
+                    <div className="py-20 text-center text-gray-400">Đang tải dư liệu...</div>
                 ) : movies.length > 0 ? (
                     <>
                         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
