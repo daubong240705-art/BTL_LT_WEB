@@ -1,144 +1,315 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { User, Lock, Camera, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Camera, Check, Loader2, LogOut, User } from "lucide-react";
+import { toast } from "sonner";
 
-type SettingsTab = 'general' | 'password' | 'history';
+import { Button } from "@/components/ui/button";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+import { authApi, type AccountPayload } from "@/app/services/auth.service";
+import { useAuth } from "@/app/context/auth-provider";
+
+
+type SettingsTab = "general";
+
+type AvatarOption = {
+    id: string;
+    url: string;
+};
+
+const AVATAR_OPTIONS: AvatarOption[] = [
+    { id: "hero-red", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Crimson" },
+    { id: "hero-blue", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Azure" },
+    { id: "hero-gold", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Golden" },
+    { id: "hero-neo", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Neo" },
+    { id: "hero-luna", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Luna" },
+    { id: "hero-storm", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Storm" },
+    { id: "hero-mint", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Mint" },
+    { id: "hero-sunset", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Sunset" },
+];
 
 export default function AccountSettingsPage() {
-    const [activeTab, setActiveTab] = useState<SettingsTab>('general');
-    const [fullName, setFullName] = useState('Minh Đức Ngô');
-    const [avatarUrl, setAvatarUrl] = useState('');
+    const router = useRouter();
 
-    const handleSaveChanges = (e: React.FormEvent) => {
-        e.preventDefault();
-        alert('Đã lưu thay đổi!');
+    const { setUser } = useAuth();
+
+    const [activeTab, setActiveTab] = useState<SettingsTab>("general");
+    const [account, setAccount] = useState<AccountPayload | null>(null);
+
+    const [fullName, setFullName] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState(AVATAR_OPTIONS[0].url);
+
+    const [avatarOpen, setAvatarOpen] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    useEffect(() => {
+        const loadAccount = async () => {
+            const res = await authApi.getAccount();
+
+            if (+res.statusCode === 401 || +res.statusCode === 403 || !res.data) {
+                toast.error("Vui lòng đăng nhập để xem trang tài khoản.");
+                router.push("/login");
+                return;
+            }
+
+            setAccount(res.data);
+            setFullName(res.data.fullName ?? "");
+            setAvatarUrl(res.data.avatarUrl || AVATAR_OPTIONS[0].url);
+            setIsLoading(false);
+        };
+
+        void loadAccount();
+    }, [router]);
+
+    const hasChanges = useMemo(() => {
+        if (!account) return false;
+
+        return (
+            fullName.trim() !== (account.fullName ?? "") ||
+            avatarUrl !== (account.avatarUrl ?? "")
+        );
+    }, [account, avatarUrl, fullName]);
+
+    const handleSaveChanges = async () => {
+        if (!account) return;
+
+        const trimmedName = fullName.trim();
+
+        if (!trimmedName) {
+            toast.error("Tên hiển thị không được để trống.");
+            return;
+        }
+
+        setIsSaving(true);
+
+        const res = await authApi.updateProfile({
+            fullName: trimmedName,
+            avatarUrl,
+        });
+
+        setIsSaving(false);
+
+        if (+res.statusCode === 401 || +res.statusCode === 403) {
+            toast.error("Phiên đăng nhập đã hết hạn.");
+            router.push("/login");
+            return;
+        }
+
+        if (+res.statusCode >= 400 || !res.data?.user) {
+            toast.error(res.message || "Không thể cập nhật.");
+            return;
+        }
+
+        const updatedUser = res.data.user;
+
+        setAccount(updatedUser);
+        setFullName(updatedUser.fullName ?? "");
+        setAvatarUrl(updatedUser.avatarUrl || AVATAR_OPTIONS[0].url);
+
+        // ⭐ update global auth state
+        setUser(updatedUser);
+
+        toast.success("Cập nhật hồ sơ thành công");
     };
 
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+
+        await authApi.logout();
+
+        // ⭐ update global auth state
+        setUser(null);
+
+        setIsLoggingOut(false);
+
+        toast.success("Đã đăng xuất");
+
+        router.push("/");
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-white">
+                <div className="flex items-center gap-3 rounded-2xl border border-gray-800 bg-[#111] px-6 py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-red-500" />
+                    Đang tải thông tin tài khoản...
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-[#0a0a0a] pt-24 pb-12">
-            <div className="container mx-auto px-4 max-w-6xl">
-                <h1 className="text-3xl font-bold text-white mb-8">Tài khoản của tôi</h1>
+        <div className="min-h-screen bg-[#0a0a0a] pb-12 pt-24">
+            <div className="container mx-auto max-w-6xl px-4">
+                <h1 className="mb-8 text-3xl font-bold text-white">
+                    Tài khoản của tôi
+                </h1>
 
-                <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex flex-col gap-8 lg:flex-row">
 
-                    {/* --- LEFT SIDEBAR (Menu) --- */}
+                    {/* Sidebar */}
                     <aside className="lg:w-1/4">
-                        <div className="bg-[#111] rounded-xl p-4 sticky top-24 border border-gray-800">
+                        <div className="sticky top-24 rounded-xl border border-gray-800 bg-[#111] p-4">
                             <nav className="space-y-1">
-                                {[
-                                    { id: 'general', icon: User, label: 'Thông tin chung' },
-                                    { id: 'password', icon: Lock, label: 'Đổi mật khẩu' },
-                                ].map((item) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => setActiveTab(item.id as SettingsTab)}
-                                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-medium text-sm ${activeTab === item.id
-                                            ? 'bg-red-600/10 text-red-500'
-                                            : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                            }`}
-                                    >
-                                        <item.icon className="w-4 h-4" />
-                                        {item.label}
-                                    </button>
-                                ))}
+                                <button
+                                    onClick={() => setActiveTab("general")}
+                                    className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all ${activeTab === "general"
+                                        ? "bg-red-600/10 text-red-500"
+                                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                        }`}
+                                >
+                                    <User className="h-4 w-4" />
+                                    Thông tin chung
+                                </button>
                             </nav>
 
-                            <div className="mt-6 pt-6 border-t border-gray-800 space-y-2">
-                                <Link href="/favorites" className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                            <div className="mt-6 space-y-2 border-t border-gray-800 pt-6">
+                                <Link
+                                    href="/favorites"
+                                    className="block rounded-lg px-4 py-2 text-sm text-gray-400 hover:bg-white/5 hover:text-white"
+                                >
                                     Tủ phim của tôi
                                 </Link>
-                                <button className="w-full text-left px-4 py-2 text-sm text-gray-400 hover:text-red-500 hover:bg-red-600/10 rounded-lg transition-colors flex items-center gap-2">
-                                    <LogOut className="w-4 h-4" /> Đăng xuất
+
+                                <button
+                                    onClick={handleLogout}
+                                    disabled={isLoggingOut}
+                                    className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-400 hover:bg-red-600/10 hover:text-red-500"
+                                >
+                                    {isLoggingOut ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <LogOut className="h-4 w-4" />
+                                    )}
+                                    Đăng xuất
                                 </button>
                             </div>
                         </div>
                     </aside>
 
-                    {/* --- RIGHT CONTENT AREA --- */}
+                    {/* Main */}
                     <main className="lg:w-3/4">
-                        <div className="bg-[#111] rounded-xl p-6 md:p-8 border border-gray-800 ">
+                        <div className="rounded-xl border border-gray-800 bg-[#111] p-8">
 
-                            {/* TAB 1: GENERAL INFO */}
-                            {activeTab === 'general' && (
-                                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                    <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Hồ sơ cá nhân</h2>
+                            <h2 className="mb-6 border-b border-gray-800 pb-4 text-xl font-bold text-white">
+                                Hồ sơ cá nhân
+                            </h2>
 
-                                    <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
-                                        {/* Avatar */}
-                                        <div className="relative group mx-auto md:mx-0">
-                                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden ring-4 ring-gray-800">
-                                                {avatarUrl ? (
-                                                    // eslint-disable-next-line @next/next/no-img-element
-                                                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <User className="w-12 h-12 text-gray-500" />
-                                                )}
-                                            </div>
-                                            <button className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                                <Camera className="w-8 h-8 text-white" />
-                                            </button>
-                                        </div>
+                            {/* Avatar */}
+                            <div className="mb-8 flex flex-col items-start gap-8 md:flex-row">
 
-                                        {/* Info Form */}
-                                        <div className="flex-1 w-full space-y-4">
-                                            <div>
-                                                <label className="text-sm text-gray-400 block mb-1.5">Tên hiển thị</label>
-                                                <input
-                                                    type="text"
-                                                    value={fullName}
-                                                    onChange={(e) => setFullName(e.target.value)}
-                                                    className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600"
+                                <Popover open={avatarOpen} onOpenChange={setAvatarOpen}>
+                                    <PopoverTrigger asChild>
+                                        <button className="group relative mx-auto md:mx-0">
+                                            <div className="flex h-32 w-32 overflow-hidden rounded-full ring-4 ring-gray-800 transition-all group-hover:ring-red-500">
+                                                <img
+                                                    src={avatarUrl}
+                                                    alt="Avatar"
+                                                    className="h-full w-full object-cover"
                                                 />
                                             </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="text-sm text-gray-400 block mb-1.5">Tên đăng nhập</label>
-                                                    <input type="text" value="minhduc" disabled className="w-full bg-[#1a1a1a] border border-gray-800 rounded-lg px-4 py-2.5 text-gray-500 cursor-not-allowed" />
-                                                </div>
-                                                <div>
-                                                    <label className="text-sm text-gray-400 block mb-1.5">Email</label>
-                                                    <input type="email" value="minhduc@email.com" disabled className="w-full bg-[#1a1a1a] border border-gray-800 rounded-lg px-4 py-2.5 text-gray-500 cursor-not-allowed" />
-                                                </div>
+
+                                            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-all group-hover:opacity-100">
+                                                <Camera className="h-7 w-7 text-white" />
                                             </div>
-                                        </div>
-                                    </div>
+                                        </button>
+                                    </PopoverTrigger>
 
-                                    <div className="flex justify-end gap-3 pt-6 border-t border-gray-800">
-                                        <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800">Hủy</Button>
-                                        <Button onClick={handleSaveChanges} className="bg-red-600 hover:bg-red-700 text-white px-6">Lưu thay đổi</Button>
+                                    <PopoverContent className="w-105 border-gray-800 bg-[#0d0d0d] p-4">
+                                        <div className="mb-4 text-sm text-gray-400">
+                                            Chọn avatar
+                                        </div>
+
+                                        <ScrollArea className="h-50">
+                                            <div className="grid grid-cols-4 gap-3">
+
+                                                {AVATAR_OPTIONS.map((avatar) => {
+                                                    const isSelected = avatar.url === avatarUrl;
+
+                                                    return (
+                                                        <button
+                                                            key={avatar.id}
+                                                            onClick={() => {
+                                                                setAvatarUrl(avatar.url);
+                                                                setAvatarOpen(false);
+                                                            }}
+                                                            className={`relative rounded-xl border p-2 ${isSelected
+                                                                ? "border-red-500 bg-red-500/10"
+                                                                : "border-gray-800 hover:border-gray-700"
+                                                                }`}
+                                                        >
+                                                            <div className="h-14 w-14 overflow-hidden rounded-full">
+                                                                <img
+                                                                    src={avatar.url}
+                                                                    alt={avatar.id}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+
+                                                            {isSelected && (
+                                                                <div className="absolute -right-1 -top-1 rounded-full bg-red-500 p-1">
+                                                                    <Check className="h-3 w-3 text-white" />
+                                                                </div>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+
+                                {/* Info */}
+                                <div className="w-full flex-1 space-y-4">
+                                    <input
+                                        type="text"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        className="w-full rounded-lg border border-gray-800 bg-[#0a0a0a] px-4 py-2 text-white"
+                                    />
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <input
+                                            value={account?.username}
+                                            disabled
+                                            className="rounded-lg border border-gray-800 bg-[#1a1a1a] px-4 py-2 text-gray-500"
+                                        />
+
+                                        <input
+                                            value={account?.email}
+                                            disabled
+                                            className="rounded-lg border border-gray-800 bg-[#1a1a1a] px-4 py-2 text-gray-500"
+                                        />
                                     </div>
                                 </div>
-                            )}
 
-                            {/* TAB 2: PASSWORD */}
-                            {activeTab === 'password' && (
-                                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-lg">
-                                    <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Đổi mật khẩu</h2>
-                                    <form className="space-y-4">
-                                        <div>
-                                            <label className="text-sm text-gray-400 block mb-1.5">Mật khẩu hiện tại</label>
-                                            <input type="password" className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:border-red-600 focus:outline-none" />
-                                        </div>
-                                        <div>
-                                            <label className="text-sm text-gray-400 block mb-1.5">Mật khẩu mới</label>
-                                            <input type="password" className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:border-red-600 focus:outline-none" />
-                                        </div>
-                                        <div>
-                                            <label className="text-sm text-gray-400 block mb-1.5">Xác nhận mật khẩu</label>
-                                            <input type="password" className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:border-red-600 focus:outline-none" />
-                                        </div>
-                                        <div className="pt-4">
-                                            <Button className="w-full bg-red-600 hover:bg-red-700">Cập nhật mật khẩu</Button>
-                                        </div>
-                                    </form>
-                                </div>
-                            )}
+                            </div>
 
-
-
+                            <div className="flex justify-end gap-3 border-t border-gray-800 pt-6">
+                                <Button
+                                    onClick={handleSaveChanges}
+                                    disabled={!hasChanges || isSaving}
+                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                    {isSaving && (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    )}
+                                    Lưu thay đổi
+                                </Button>
+                            </div>
 
                         </div>
                     </main>

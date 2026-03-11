@@ -28,6 +28,13 @@ export const getMovieBySlug = (slug: string) => {
 
 };
 
+export const increaseMovieView = (slug: string) => {
+    return sendRequest<IBackendRes<Movie>>({
+        url: `${api_url}/movies/${slug}/view`,
+        method: "POST"
+    });
+};
+
 export const getMovieEpisode = (slug: string) => {
     return sendRequest<IBackendRes<IModelPaginate<Episode>>>({
         url: `${api_url}/movies/${slug}/episodes`,
@@ -87,5 +94,35 @@ export const getAccount = () => {
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/account`,
         method: "GET",
         useCredentials: true
+    });
+};
+
+export const getFavoriteMovies = () => {
+    return sendRequest<IBackendRes<Movie[]>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites`,
+        method: "GET",
+        useCredentials: true,
+        auth: true,
+        redirectOnAuthFail: false
+    });
+};
+
+export const addFavoriteMovie = (movieId: number) => {
+    return sendRequest<IBackendRes<Movie>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites/${movieId}`,
+        method: "POST",
+        useCredentials: true,
+        auth: true,
+        redirectOnAuthFail: false
+    });
+};
+
+export const removeFavoriteMovie = (movieId: number) => {
+    return sendRequest<IBackendRes<null>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites/${movieId}`,
+        method: "DELETE",
+        useCredentials: true,
+        auth: true,
+        redirectOnAuthFail: false
     });
 };

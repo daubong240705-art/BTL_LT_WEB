@@ -21,7 +21,7 @@ export default function CategoriesController({ categories }: { categories: Categ
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const { deleteCategory } = useDeleteCategory();
-    const pageSize = 10;
+    const pageSize = 12;
 
     const filteredCategories = useMemo(() => {
         const keyword = search.trim().toLowerCase();
@@ -54,7 +54,7 @@ export default function CategoriesController({ categories }: { categories: Categ
                     setSearch(value);
                     setCurrentPage(1);
                 }}
-                searchPlaceholder="Tim theo ten the loai hoac slug..."
+                searchPlaceholder="Tìm theo tên thể loại hoặc slug..."
                 totalItems={categories.length}
                 filteredItems={filteredCategories.length}
             />

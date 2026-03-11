@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import {
     Select,
@@ -55,7 +54,7 @@ export default function UsersController({ users }: { users: User[] }) {
     return (
         <>
             <PageHeader
-                title="nguoi dung"
+                title="người dùng"
                 count={filteredUsers.length}
                 onAdd={() => setDialog({ type: "add" })}
             />
@@ -66,7 +65,7 @@ export default function UsersController({ users }: { users: User[] }) {
                     setSearch(value);
                     setCurrentPage(1);
                 }}
-                searchPlaceholder="Tim theo ten, username hoac email..."
+                searchPlaceholder="Tìm theo tên, username hoặc email..."
                 totalItems={users.length}
                 filteredItems={filteredUsers.length}
             >
@@ -77,11 +76,11 @@ export default function UsersController({ users }: { users: User[] }) {
                         setCurrentPage(1);
                     }}
                 >
-                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-[180px]">
+                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-45">
                         <SelectValue placeholder="Vai tro" />
                     </SelectTrigger>
                     <SelectContent className="border-gray-700 bg-gray-900 text-gray-100">
-                        <SelectItem value="ALL">Tat ca vai tro</SelectItem>
+                        <SelectItem value="ALL">Tất cả vai trò</SelectItem>
                         <SelectItem value="ADMIN">Admin</SelectItem>
                         <SelectItem value="USER">User</SelectItem>
                     </SelectContent>

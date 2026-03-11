@@ -17,6 +17,7 @@ public interface MovieMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "episodes", ignore = true)
+    @Mapping(target = "favoritedByUsers", ignore = true)
     Movie toEntity(MovieRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -26,5 +27,6 @@ public interface MovieMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "episodes", ignore = true)
+    @Mapping(target = "favoritedByUsers", ignore = true)
     void updateMovieFromRequest(MovieRequest request, @MappingTarget Movie movie);
 }

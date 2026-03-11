@@ -1,4 +1,3 @@
-import { Category } from "@/app/types/global.type";
 import { Button } from "@/components/ui/button";
 import { Edit, Film, Trash } from "lucide-react";
 

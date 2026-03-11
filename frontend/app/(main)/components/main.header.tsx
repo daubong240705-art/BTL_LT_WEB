@@ -15,27 +15,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { sendRequest } from "@/lib/api/wrapprer"
 import { buildMovieSearchHref } from "@/lib/filter/MovieQueryBuilder"
-import { AuthUser } from "@/lib/getCurrentUser"
+import { useAuth } from "@/app/context/auth-provider"
 
 interface Props {
     categories: Category[]
-    initialUser?: AuthUser | null
 }
 
-type AccountUser = {
-    fullName?: string
-    username?: string
-    email?: string
-    avatarUrl?: string
-}
+
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1"
 
-export default function Header({ categories, initialUser = null }: Props) {
+export default function Header({ categories }: Props) {
 
 
     const router = useRouter()
-    const [user, setUser] = useState<AccountUser | null>(initialUser)
+    const { user, setUser } = useAuth()
 
 
     //logout

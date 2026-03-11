@@ -76,6 +76,16 @@ public class MovieService {
         return movieMapper.toDTO(movie);
     }
 
+    public MovieDTO increaseMovieView(String slug) {
+        Movie movie = movieRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phim slug = " + slug));
+
+        long currentViewCount = movie.getViewCount() == null ? 0L : movie.getViewCount();
+        movie.setViewCount(currentViewCount + 1);
+
+        return movieMapper.toDTO(movieRepository.save(movie));
+    }
+
     public MovieDTO createMovie(MovieRequest request) {
         Map<String, String> errors = new HashMap<>();
         if (movieRepository.existsBySlug(request.getSlug())) {

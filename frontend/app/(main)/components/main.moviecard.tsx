@@ -1,56 +1,58 @@
+import Image from "next/image";
+import Link from "next/link";
 
-import Image from 'next/image';
-import Link from 'next/link';
-
-
+import { FavoriteToggle } from "./favorite-toggle";
 
 interface MovieCardProps {
     movie: Movie;
 }
 
 export function MovieCard({ movie }: MovieCardProps) {
-    // console.log("aaaa", movie)
     return (
-        <Link
-            href={`/movie/${movie.slug}`}
-            className="group cursor-pointer" >
+        <div className="group relative">
+            <Link href={`/movie/${movie.slug}`} className="block cursor-pointer">
+                <div className="relative aspect-2/3 overflow-hidden rounded-lg">
+                    <Image
+                        src={movie.posterUrl}
+                        alt={movie.title}
+                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                        fill
+                        sizes="100"
+                    />
 
-            <div className="relative overflow-hidden rounded-lg aspect-2/3">
-                {/* Poster */}
-                <Image
-                    src={movie.posterUrl}
-                    alt={movie.title}
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
-                    fill
-                    sizes='100'
-                />
+                    <div className="absolute inset-0 z-10 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 transition duration-300 group-hover:opacity-100">
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <p className="line-clamp-2 text-sm text-gray-200">{movie.description}</p>
+                        </div>
+                    </div>
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent
-        opacity-0 group-hover:opacity-100 transition duration-300 z-10">
-
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <p className="text-sm text-gray-200 line-clamp-2">
-                            {movie.description}
-                        </p>
+                    <div className="absolute top-2 left-2 z-20 rounded bg-red-600/90 px-2 py-1 text-xs font-bold text-white">
+                        {movie.status === "ONGOING" ? "Đang phát" : "Hoàn thành"}
                     </div>
                 </div>
 
-                {/* Badge */}
-                <div className="absolute top-2 left-2 bg-red-600/90 text-white px-2 py-1 rounded text-xs font-bold z-20">
-                    {movie.status === 'ONGOING' ? 'Đang phát' : 'Hoàn thành'}
-
+                <div className="mt-3">
+                    <h3 className="line-clamp-1 font-semibold text-white transition group-hover:text-red-600">
+                        {movie.title}
+                    </h3>
+                    <p className="mt-1 text-xs text-gray-500">{movie.publishYear}</p>
                 </div>
-            </div>
+            </Link>
 
-            {/* Title */}
-            <div className="mt-3">
-                <h3 className="text-white font-semibold group-hover:text-red-600 transition line-clamp-1">
-                    {movie.title}
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">{movie.publishYear}</p>
+            <div
+                className="absolute right-2 top-2 z-30"
+                onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }}
+            >
+                <FavoriteToggle
+                    movie={movie}
+                    showLabel={false}
+                    className="h-10 w-10 rounded-full border border-white/10 bg-black/65 backdrop-blur-sm hover:bg-black/85"
+                    iconClassName="h-4 w-4"
+                />
             </div>
-
-        </Link >
+        </div>
     );
 }

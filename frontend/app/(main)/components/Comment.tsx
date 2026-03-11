@@ -14,13 +14,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createComment, deleteComment, getCommentsByMovieId } from "@/lib/api/main.api";
+import { useAuth } from "@/app/context/auth-provider";
 
 type Props = {
     movieId: number;
-    initialUser?: CommentCurrentUser | null;
 };
-
-type CommentCurrentUser = Pick<User, "id" | "role" | "username" | "email" | "fullName" | "avatarUrl">;
 
 const formatDateTime = (value?: string) => {
     if (!value) return "";
@@ -33,10 +31,10 @@ const formatDateTime = (value?: string) => {
     }).format(new Date(value));
 };
 
-export default function Comments({ movieId, initialUser = null }: Props) {
+export default function Comments({ movieId }: Props) {
+    const { user: currentUser } = useAuth();
     const [comments, setComments] = useState<MovieComment[]>([]);
     const [content, setContent] = useState("");
-    const [currentUser] = useState<CommentCurrentUser | null>(initialUser);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalComments, setTotalComments] = useState(0);
@@ -47,7 +45,6 @@ export default function Comments({ movieId, initialUser = null }: Props) {
         setTotalPages(res.data?.meta.pages ?? 1);
         setTotalComments(res.data?.meta.total ?? 0);
         setPage(res.data?.meta.current ?? p);
-
     }, [movieId]);
 
     useEffect(() => {
@@ -106,7 +103,7 @@ export default function Comments({ movieId, initialUser = null }: Props) {
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
-                                handleSubmit();
+                                void handleSubmit();
                             }
                         }}
                         placeholder={currentUser ? "Viet binh luan..." : "Dang nhap de binh luan"}
@@ -114,7 +111,7 @@ export default function Comments({ movieId, initialUser = null }: Props) {
                     />
 
                     <button
-                        onClick={handleSubmit}
+                        onClick={() => void handleSubmit()}
                         disabled={!currentUser}
                         className="absolute right-3 bottom-3 text-gray-400 hover:text-red-500 disabled:opacity-40"
                     >
@@ -126,7 +123,7 @@ export default function Comments({ movieId, initialUser = null }: Props) {
             {comments.length === 0 ? (
                 <div className="h-50 flex flex-col items-center justify-center bg-gray-800 rounded-2xl border border-gray-700 text-gray-400">
                     <MessageCircleMore className="h-10 w-10" />
-                    <p>Chưa có bình luận</p>
+                    <p>Chua co binh luan</p>
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -153,7 +150,7 @@ export default function Comments({ movieId, initialUser = null }: Props) {
 
                                         {canDelete ? (
                                             <button
-                                                onClick={() => handleDelete(c.id)}
+                                                onClick={() => void handleDelete(c.id)}
                                                 className="text-gray-400 hover:text-red-500"
                                             >
                                                 <Trash2 className="w-4 h-4" />

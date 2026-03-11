@@ -71,4 +71,7 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Episode> episodes = new HashSet<>();
+
+    @ManyToMany(mappedBy = "favoriteMovies", fetch = FetchType.LAZY)
+    private Set<User> favoritedByUsers = new HashSet<>();
 }

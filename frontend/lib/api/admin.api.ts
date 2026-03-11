@@ -1,4 +1,4 @@
-import { MoviePayload } from "@/app/admin/service/api/movie.api";
+import { MoviePayload } from "@/app/types/form.type";
 import { adminRequest } from "./adminRequest";
 
 

@@ -6,6 +6,7 @@ import com.movieapp.backend.dto.Meta;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
+import com.movieapp.backend.dto.auth.UpdateProfileDTO;
 import com.movieapp.backend.dto.auth.SignupDTO;
 import com.movieapp.backend.repository.UserRepository;
 import com.movieapp.backend.service.mapper.UserMapper;
@@ -120,6 +121,19 @@ public class UserService {
 
     public User hadGetUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public UserDTO updateCurrentUserProfile(String username, UpdateProfileDTO request) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResourceNotFoundException("Khong tim thay nguoi dung dang nhap");
+        }
+
+        user.setFullName(request.getFullName().trim());
+        user.setAvatarUrl(request.getAvatarUrl().trim());
+
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDTO(updatedUser);
     }
 
     public void updateUserToken(String token, String username) {

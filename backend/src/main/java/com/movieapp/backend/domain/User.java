@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.movieapp.backend.domain.enums.Role;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -56,5 +58,10 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_favorite_movie", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    @Builder.Default
+    private Set<Movie> favoriteMovies = new HashSet<>();
 
 }

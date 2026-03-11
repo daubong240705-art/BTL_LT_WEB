@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { getFirstEpisode } from "@/lib/api/main.api"
-import { Heart, Info, Play } from "lucide-react"
+import { Info, Play } from "lucide-react"
 import Link from "next/link"
+import { FavoriteToggle } from "./favorite-toggle"
 
 
 type Props = {
@@ -48,12 +49,15 @@ export default async function HeroBanner({ MovieBanner }: Props) {
                                 bg-white/5 backdrop-blur">
 
 
-                                <Button className="
+                                <FavoriteToggle
+                                    movie={MovieBanner}
+                                    showLabel={false}
+                                    className="
                                 px-5! py-6 hover:bg-white/10
                                 transition-colors
-                                flex items-center justify-center">
-                                    <Heart className="w-5! h-5! text-white" />
-                                </Button>
+                                flex items-center justify-center bg-transparent"
+                                    iconClassName="w-5! h-5! text-white"
+                                />
 
                                 <div className="w-px h-8 bg-white/20" />
 

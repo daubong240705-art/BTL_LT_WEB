@@ -41,9 +41,8 @@ public class AuthController {
         @Value("${movieapp.jwt.access-token}")
         private long accessTokenExpiration;
 
-        // API: Dăng nhập
         @PostMapping("/login")
-        @ApiMessage("Đăng nhập thành công")
+        @ApiMessage("Dang nhap thanh cong")
         public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO login) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                                 login.getUsername(),
@@ -91,9 +90,8 @@ public class AuthController {
                                 .body(res);
         }
 
-        // API: láy thông tin tài khoản đăng nhập
         @GetMapping("/account")
-        @ApiMessage("Lấy thông tin tài khoản")
+        @ApiMessage("Lay thong tin tai khoan")
         public ResLoginDTO.UserLogin getAccount() {
 
                 String username = SecurityUtil.getCurrentUserLogin();
@@ -108,9 +106,8 @@ public class AuthController {
                                 user.getRole().name());
         }
 
-        // API: Tạo refresh token mới
         @GetMapping("/refresh")
-        @ApiMessage("Refresh Token thành công")
+        @ApiMessage("Refresh token thanh cong")
         public ResponseEntity<ResLoginDTO> getRefreshToken(
                         @CookieValue(name = "refresh_token") String refresh_token) {
                 Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
@@ -118,7 +115,7 @@ public class AuthController {
 
                 User currentUser = userService.getUserByRefreshTokenAndUsername(refresh_token, username);
                 if (currentUser == null) {
-                        throw new BadRequestException("Refresh Token không hợp lệ");
+                        throw new BadRequestException("Refresh token khong hop le");
                 }
                 ResLoginDTO res = new ResLoginDTO();
                 User currentUserDB = userService.hadGetUserByUsername(username);
@@ -141,18 +138,13 @@ public class AuthController {
                                 .sameSite("Strict")
                                 .build();
 
-                // NOTE:
-                // Do not rotate refresh token here. With SSR calls from Next.js server,
-                // Set-Cookie from backend refresh response is not propagated to browser.
-                // Rotating token would invalidate browser cookie on every server-side refresh.
                 return ResponseEntity.ok()
                                 .header("Set-Cookie", accessCookie.toString())
                                 .body(res);
         }
 
-        // API: Dăng xuất
         @PostMapping("/logout")
-        @ApiMessage("Đăng xuất thành công")
+        @ApiMessage("Dang xuat thanh cong")
         public ResponseEntity<Void> logout() {
 
                 String username = SecurityUtil.getCurrentUserLogin();
@@ -177,9 +169,8 @@ public class AuthController {
                                 .build();
         }
 
-        // API: Dăng ký
         @PostMapping("/signup")
-        @ApiMessage("Đăng ký thành công")
+        @ApiMessage("Dang ky thanh cong")
         public SignupDTO signup(@Valid @RequestBody SignupDTO signup) {
                 return userService.createUser(signup);
         }

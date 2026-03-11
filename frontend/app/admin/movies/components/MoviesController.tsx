@@ -30,7 +30,7 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [currentPage, setCurrentPage] = useState(1);
     const { deleteMovie } = useDeleteMovie();
-    const pageSize = 10;
+    const pageSize = 8;
 
     const filteredMovies = useMemo(() => {
         const keyword = search.trim().toLowerCase();
@@ -67,7 +67,7 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
                     setSearch(value);
                     setCurrentPage(1);
                 }}
-                searchPlaceholder="Tim theo ten phim hoac slug..."
+                searchPlaceholder="Tìm theo tên phim hoạc slug..."
                 totalItems={movies.length}
                 filteredItems={filteredMovies.length}
             >
@@ -78,13 +78,13 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
                         setCurrentPage(1);
                     }}
                 >
-                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-[180px]">
+                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-45">
                         <SelectValue placeholder="Loai phim" />
                     </SelectTrigger>
                     <SelectContent className="border-gray-700 bg-gray-900 text-gray-100">
-                        <SelectItem value="ALL">Tat ca loai</SelectItem>
-                        <SelectItem value="SINGLE">Phim le</SelectItem>
-                        <SelectItem value="SERIES">Phim bo</SelectItem>
+                        <SelectItem value="ALL">Tất cả loại</SelectItem>
+                        <SelectItem value="SINGLE">Phim lẻ</SelectItem>
+                        <SelectItem value="SERIES">Phim bộ</SelectItem>
                     </SelectContent>
                 </Select>
 
@@ -95,13 +95,13 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
                         setCurrentPage(1);
                     }}
                 >
-                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-[180px]">
+                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-45">
                         <SelectValue placeholder="Trang thai" />
                     </SelectTrigger>
                     <SelectContent className="border-gray-700 bg-gray-900 text-gray-100">
-                        <SelectItem value="ALL">Tat ca trang thai</SelectItem>
-                        <SelectItem value="ONGOING">Dang phat</SelectItem>
-                        <SelectItem value="COMPLETED">Hoan thanh</SelectItem>
+                        <SelectItem value="ALL">Tất cả trạng thái</SelectItem>
+                        <SelectItem value="ONGOING">Đang phát</SelectItem>
+                        <SelectItem value="COMPLETED">Hoàn thành</SelectItem>
                     </SelectContent>
                 </Select>
             </AdminTableToolbar>

@@ -18,8 +18,6 @@ export default function AdminTableToolbar({
     searchValue,
     onSearchChange,
     searchPlaceholder,
-    totalItems,
-    filteredItems,
     children,
 }: AdminTableToolbarProps) {
     return (
@@ -37,9 +35,6 @@ export default function AdminTableToolbar({
 
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
                     {children}
-                    <p className="text-sm text-gray-400">
-                        Hien {filteredItems}/{totalItems} ban ghi
-                    </p>
                 </div>
             </div>
         </div>

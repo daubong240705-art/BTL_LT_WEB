@@ -48,6 +48,12 @@ public class PublicMovieController {
         return movieService.getMovieBySlug(slug);
     }
 
+    @PostMapping("/{slug}/view")
+    @ApiMessage("Tang luot xem phim thanh cong")
+    public MovieDTO increaseMovieView(@PathVariable("slug") String slug) {
+        return movieService.increaseMovieView(slug);
+    }
+
     @GetMapping("/{movieSlug}/episodes")
     @ApiMessage("Lay danh sach tap phim thanh cong")
     public ResultPaginationDTO getEpisodesByMovie(
