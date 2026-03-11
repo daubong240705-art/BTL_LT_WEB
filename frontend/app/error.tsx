@@ -18,7 +18,7 @@ export default function GlobalError({
             <AlertTriangle className="h-7 w-7" />
           </div>
 
-          <h1 className="text-2xl font-bold text-white">Đã xảy ra lỗi</h1>
+          <h1 className="text-2xl font-bold text-white">Không ổn rồi đại vương ơi</h1>
           <p className="mt-2 text-sm text-gray-400">
             Hệ thống gặp sự cố khi tải dữ liệu. Vui lòng thử lại.
           </p>

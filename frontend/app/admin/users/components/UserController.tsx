@@ -1,12 +1,21 @@
 "use client";
-import { useState } from "react";
-import PageHeader from "../../components/admin.header";
+
+import { useMemo, useState } from "react";
+
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import UserTable from "./UserTable";
-import UserDialog from "./UserDialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { useDeleteUser } from "@/app/hooks/user/useUserForm";
-
-
+import AdminTablePagination from "../../components/admin-table-pagination";
+import AdminTableToolbar from "../../components/admin-table-toolbar";
+import PageHeader from "../../components/admin.header";
+import UserDialog from "./UserDialog";
+import UserTable from "./UserTable";
 
 export type UserDialogState =
     | { type: "add" }
@@ -16,24 +25,80 @@ export type UserDialogState =
 export default function UsersController({ users }: { users: User[] }) {
     const [dialog, setDialog] = useState<UserDialogState>(null);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [search, setSearch] = useState("");
+    const [roleFilter, setRoleFilter] = useState("ALL");
+    const [currentPage, setCurrentPage] = useState(1);
     const { deleteUser } = useDeleteUser();
+    const pageSize = 10;
+
+    const filteredUsers = useMemo(() => {
+        const keyword = search.trim().toLowerCase();
+
+        return users.filter((user) => {
+            const matchesSearch = !keyword
+                || user.fullName.toLowerCase().includes(keyword)
+                || user.username.toLowerCase().includes(keyword)
+                || user.email.toLowerCase().includes(keyword);
+            const matchesRole = roleFilter === "ALL" || user.role === roleFilter;
+
+            return matchesSearch && matchesRole;
+        });
+    }, [roleFilter, search, users]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const paginatedUsers = filteredUsers.slice(
+        (safeCurrentPage - 1) * pageSize,
+        safeCurrentPage * pageSize
+    );
+
     return (
         <>
-            {/* HEADER */}
             <PageHeader
-                title="người dùng"
-                count={users.length}
+                title="nguoi dung"
+                count={filteredUsers.length}
                 onAdd={() => setDialog({ type: "add" })}
             />
 
-            {/* TABLE */}
+            <AdminTableToolbar
+                searchValue={search}
+                onSearchChange={(value) => {
+                    setSearch(value);
+                    setCurrentPage(1);
+                }}
+                searchPlaceholder="Tim theo ten, username hoac email..."
+                totalItems={users.length}
+                filteredItems={filteredUsers.length}
+            >
+                <Select
+                    value={roleFilter}
+                    onValueChange={(value) => {
+                        setRoleFilter(value);
+                        setCurrentPage(1);
+                    }}
+                >
+                    <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-[180px]">
+                        <SelectValue placeholder="Vai tro" />
+                    </SelectTrigger>
+                    <SelectContent className="border-gray-700 bg-gray-900 text-gray-100">
+                        <SelectItem value="ALL">Tat ca vai tro</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                        <SelectItem value="USER">User</SelectItem>
+                    </SelectContent>
+                </Select>
+            </AdminTableToolbar>
+
             <UserTable
-                users={users}
-                onEdit={(m) => setDialog({ type: "edit", user: m })}
-                onDelete={(m) => setUserToDelete(m)}
+                users={paginatedUsers}
+                onEdit={(user) => setDialog({ type: "edit", user })}
+                onDelete={(user) => setUserToDelete(user)}
+            />
+            <AdminTablePagination
+                currentPage={safeCurrentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
             />
 
-            {/* UserDialog */}
             <UserDialog
                 open={dialog !== null}
                 onOpenChange={() => setDialog(null)}
@@ -41,7 +106,6 @@ export default function UsersController({ users }: { users: User[] }) {
                 initialData={dialog?.type === "edit" ? dialog.user : undefined}
             />
 
-            {/* ConfirmDialog  */}
             <ConfirmDialog
                 Open={!!userToDelete}
                 onClose={() => setUserToDelete(null)}
@@ -51,8 +115,8 @@ export default function UsersController({ users }: { users: User[] }) {
                         onSuccess: () => setUserToDelete(null),
                     });
                 }}
-                title="Xoá người dùng?"
-                message="Hành động này không thể hoàn tác."
+                title="Xoa nguoi dung?"
+                message="Hanh dong nay khong the hoan tac."
             />
         </>
     );

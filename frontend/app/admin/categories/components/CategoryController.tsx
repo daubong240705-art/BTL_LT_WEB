@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
-import PageHeader from "../../components/admin.header";
-import CategoryTable from "./CategoryTable";
-import CategoryDialog from "./CategoryDialog";
+
+import { useMemo, useState } from "react";
+
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useDeleteCategory } from "@/app/hooks/category/useCategoryForm";
-
+import AdminTablePagination from "../../components/admin-table-pagination";
+import AdminTableToolbar from "../../components/admin-table-toolbar";
+import PageHeader from "../../components/admin.header";
+import CategoryDialog from "./CategoryDialog";
+import CategoryTable from "./CategoryTable";
 
 export type CategoryDialogState =
     | { type: "add" }
@@ -15,24 +18,58 @@ export type CategoryDialogState =
 export default function CategoriesController({ categories }: { categories: Category[] }) {
     const [dialog, setDialog] = useState<CategoryDialogState>(null);
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+    const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
     const { deleteCategory } = useDeleteCategory();
+    const pageSize = 10;
+
+    const filteredCategories = useMemo(() => {
+        const keyword = search.trim().toLowerCase();
+
+        return categories.filter((category) =>
+            !keyword
+            || category.name.toLowerCase().includes(keyword)
+            || category.slug.toLowerCase().includes(keyword)
+        );
+    }, [categories, search]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredCategories.length / pageSize));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const paginatedCategories = filteredCategories.slice(
+        (safeCurrentPage - 1) * pageSize,
+        safeCurrentPage * pageSize
+    );
+
     return (
         <>
-            {/* HEADER */}
             <PageHeader
-                title="thể loại"
-                count={categories.length}
+                title="the loai"
+                count={filteredCategories.length}
                 onAdd={() => setDialog({ type: "add" })}
             />
 
-            {/* TABLE */}
-            <CategoryTable
-                categories={categories}
-                onEdit={(m) => setDialog({ type: "edit", category: m })}
-                onDelete={(m) => setCategoryToDelete(m)}
+            <AdminTableToolbar
+                searchValue={search}
+                onSearchChange={(value) => {
+                    setSearch(value);
+                    setCurrentPage(1);
+                }}
+                searchPlaceholder="Tim theo ten the loai hoac slug..."
+                totalItems={categories.length}
+                filteredItems={filteredCategories.length}
             />
 
-            {/* MovieDialog */}
+            <CategoryTable
+                categories={paginatedCategories}
+                onEdit={(category) => setDialog({ type: "edit", category })}
+                onDelete={(category) => setCategoryToDelete(category)}
+            />
+            <AdminTablePagination
+                currentPage={safeCurrentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+            />
+
             <CategoryDialog
                 open={dialog !== null}
                 onOpenChange={() => setDialog(null)}
@@ -40,7 +77,6 @@ export default function CategoriesController({ categories }: { categories: Categ
                 initialData={dialog?.type === "edit" ? dialog.category : undefined}
             />
 
-            {/* ConfirmDialog  */}
             <ConfirmDialog
                 Open={!!categoryToDelete}
                 onClose={() => setCategoryToDelete(null)}
@@ -50,8 +86,8 @@ export default function CategoriesController({ categories }: { categories: Categ
                         onSuccess: () => setCategoryToDelete(null),
                     });
                 }}
-                title="Xoá thể loại?"
-                message="Hành động này không thể hoàn tác."
+                title="Xoa the loai?"
+                message="Hanh dong nay khong the hoan tac."
             />
         </>
     );

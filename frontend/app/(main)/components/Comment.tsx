@@ -37,20 +37,17 @@ export default function Comments({ movieId, initialUser = null }: Props) {
     const [comments, setComments] = useState<MovieComment[]>([]);
     const [content, setContent] = useState("");
     const [currentUser] = useState<CommentCurrentUser | null>(initialUser);
-    const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalComments, setTotalComments] = useState(0);
 
     const fetchComments = useCallback(async (p = 1) => {
-        setLoading(true);
         const res = await getCommentsByMovieId(movieId, p, 5);
-
         setComments(res.data?.result ?? []);
         setTotalPages(res.data?.meta.pages ?? 1);
         setTotalComments(res.data?.meta.total ?? 0);
         setPage(res.data?.meta.current ?? p);
-        setLoading(false);
+
     }, [movieId]);
 
     useEffect(() => {

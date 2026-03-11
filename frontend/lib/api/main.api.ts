@@ -19,28 +19,6 @@ export const getMoviesByCategorySlug = (slug: string) => {
     return getMovies(`categories.slug:'${slug}'`, 1, 10);
 };
 
-export const searchMovies = (
-    params: {
-        q?: string;
-        type?: string;
-        category?: string;
-        page?: number;
-        size?: number;
-    }
-) => {
-    return sendRequest<IBackendRes<IModelPaginate<Movie>>>({
-        url: `${api_url}/movies/search`,
-        method: "GET",
-        queryParams: {
-            ...(params.q ? { q: params.q } : {}),
-            ...(params.type ? { type: params.type } : {}),
-            ...(params.category ? { category: params.category } : {}),
-            page: params.page ?? 1,
-            size: params.size ?? 10
-        }
-    });
-};
-
 export const getMovieBySlug = (slug: string) => {
     return sendRequest<IBackendRes<Movie>>({
         url: `${api_url}/movies/${slug}`,

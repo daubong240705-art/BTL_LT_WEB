@@ -36,15 +36,6 @@ public class PublicMovieController {
         return movieService.getAllMovies(spec, pageable);
     }
 
-    @GetMapping("/search")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiMessage("Tim kiem phim thanh cong")
-    public ResultPaginationDTO searchMovies(
-            @RequestParam(value = "q", required = false) String q,
-            Pageable pageable) {
-        return movieService.searchPublicMovies(q, pageable);
-    }
-
     @GetMapping("/top/5")
     @ApiMessage("Lay danh sach phim thanh cong")
     public List<MovieDTO> getTopMovie() {

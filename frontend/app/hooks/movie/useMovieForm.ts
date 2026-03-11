@@ -77,7 +77,7 @@ export const useMovieMutation = (
 };
 
 export const useDeleteMovie = () => {
-    const mutation = useDeleteWithRefresh(movieApi.deleteMovie, "Xoa thanh cong");
+    const mutation = useDeleteWithRefresh(movieApi.deleteMovie, "Xoá thành công");
 
     return {
         deleteMovie: mutation.mutate,

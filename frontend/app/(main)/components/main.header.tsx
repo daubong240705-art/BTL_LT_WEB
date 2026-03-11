@@ -2,8 +2,8 @@
 
 import { ChevronDown, Film, Heart, LogOut, Search, User } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -66,6 +66,12 @@ export default function Header({ categories, initialUser = null }: Props) {
         }
     }
 
+    const pathname = usePathname()
+
+    useEffect(() => {
+        setKeyword("")
+    }, [pathname])
+
     return (
         <header className="bg-[#141414] border-b border-gray-800/50 top-0 left-0 w-full z-500000">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -81,7 +87,7 @@ export default function Header({ categories, initialUser = null }: Props) {
 
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors focus:outline-none">
-                                The loai <ChevronDown className="w-4 h-4" />
+                                Thể loại <ChevronDown className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-100 bg-slate-900 border-slate-800 text-slate-300 p-4">
                                 <div className="grid grid-cols-3 gap-2">
@@ -115,7 +121,7 @@ export default function Header({ categories, initialUser = null }: Props) {
                         />
                     </div>
 
-                    <Link href="">
+                    <Link href="/favorites">
                         <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500 hover:bg-white/10">
                             <Heart className="h-5 w-5" />
                         </Button>

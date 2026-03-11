@@ -60,24 +60,6 @@ public class MovieService {
                 .toList();
     }
 
-    public ResultPaginationDTO searchPublicMovies(String q, Pageable pageable) {
-        String keyword = q == null ? "" : q.trim();
-        Page<Movie> pageMovie = movieRepository.searchPublicMovies(keyword, pageable);
-
-        ResultPaginationDTO rs = new ResultPaginationDTO();
-        Meta mt = new Meta();
-
-        mt.setPage(pageable.getPageNumber() + 1);
-        mt.setPageSize(pageable.getPageSize());
-        mt.setPages(pageMovie.getTotalPages());
-        mt.setTotal(pageMovie.getTotalElements());
-
-        rs.setMeta(mt);
-        rs.setResult(pageMovie.map(movieMapper::toDTO).getContent());
-
-        return rs;
-    }
-
     public MovieDTO getMovieById(Long id) {
 
         Movie movie = movieRepository.findById(id)
