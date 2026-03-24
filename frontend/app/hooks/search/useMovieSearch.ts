@@ -11,23 +11,17 @@ type UseMovieSearchProps = {
 
 export function useMovieSearch({ initialState }: UseMovieSearchProps) {
     const router = useRouter();
-    const [state, setState] = useState<MovieSearchState>(initialState);
+    const [state] = useState<MovieSearchState>(initialState);
     const [movies, setMovies] = useState<Movie[]>([]);
     const [currentPage, setCurrentPage] = useState(initialState.page);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        setState(initialState);
-    }, [initialState]);
-
     const buildHref = (nextState: MovieSearchState) =>
         MovieQueryBuilder.fromState(nextState).withSize(10).buildHref();
 
     const updateSearchState = (nextState: MovieSearchState) => {
-        setState(nextState);
-
         startTransition(() => {
             router.replace(buildHref(nextState), { scroll: false });
         });

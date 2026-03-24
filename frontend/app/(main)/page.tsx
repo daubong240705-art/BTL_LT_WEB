@@ -2,6 +2,7 @@
 import { getMovieBySlug, getMoviesByCategorySlug } from "@/lib/api/main.api";
 import HeroBanner from "./components/main.herobanner";
 import { MovieSlider } from "./components/main.movieslider";
+import HomeAdModal from "./components/home-ad-modal";
 
 
 
@@ -29,11 +30,16 @@ export default async function HomePage() {
     const cinemaMovie = cinemaRes.data?.result ?? [];
     // console.log(cartoonMovie);
     return (
-        <div className="min-h-screen bg-gray-900">
-            <HeroBanner MovieBanner={MovieBanner} />
-            <MovieSlider title="Hoạt hình" movies={cartoonMovie} />
-            <MovieSlider title="Anime" movies={animeMovie} />
-            <MovieSlider title="Chiếu rạp" movies={cinemaMovie} />
-        </div>
+        <>
+            <HomeAdModal />
+            <div className="min-h-screen bg-gray-900">
+
+                <HeroBanner MovieBanner={MovieBanner} />
+                <MovieSlider title="Hoạt hình" movies={cartoonMovie} />
+                <MovieSlider title="Anime" movies={animeMovie} />
+                <MovieSlider title="Chiếu rạp" movies={cinemaMovie} />
+            </div>
+        </>
+
     );
 }

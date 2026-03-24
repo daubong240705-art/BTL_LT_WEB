@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {  Check, Loader2, LogOut, User } from "lucide-react";
+import { Check, Loader2, LogOut, User } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -33,10 +33,13 @@ const AVATAR_OPTIONS: AvatarOption[] = [
     { id: "NA", url: "http://192.168.10.207/movies/Media/avatar/4.png" },
     { id: "Cuong", url: "http://192.168.10.207/movies/Media/avatar/5.png" },
     { id: "Hieu", url: "http://192.168.10.207/movies/Media/avatar/6.jpg" },
+    { id: "Dang", url: "http://192.168.10.207/movies/Media/avatar/12.png" },
     { id: "meme-1", url: "http://192.168.10.207/movies/Media/avatar/7.jpg" },
     { id: "meme-2", url: "http://192.168.10.207/movies/Media/avatar/8.jpg" },
     { id: "meme-3", url: "http://192.168.10.207/movies/Media/avatar/9.jpg" },
     { id: "meme-4", url: "http://192.168.10.207/movies/Media/avatar/10.jpg" },
+    { id: "meme-5", url: "http://192.168.10.207/movies/Media/avatar/11.jpg" },
+
 ];
 
 export default function AccountSettingsPage() {

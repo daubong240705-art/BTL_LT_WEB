@@ -166,7 +166,7 @@ export default function SearchFilterPanel({
                             onClick={handleApply}
                             className="bg-red-600 text-white hover:bg-red-700"
                         >
-                            Ap dung bo loc
+                            Áp dụng bộ lọc
                         </Button>
                         <Button
                             type="button"
@@ -174,7 +174,7 @@ export default function SearchFilterPanel({
                             onClick={() => setIsOpen(false)}
                             className="border-gray-700 bg-transparent text-gray-200 hover:bg-gray-800 hover:text-white"
                         >
-                            Dong
+                            Đóng
                         </Button>
                     </div>
                 </div>
