@@ -2,7 +2,6 @@ package com.movieapp.backend.controller.admin;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class DashboardController {
     private final DashboardService dashboardService;
 

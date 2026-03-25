@@ -47,7 +47,7 @@ public class SecurityConfiguration {
 
     @Value("${movieapp.jwt.secret}")
     private String jwtKey;
-    @Value("${movieapp.frontend-url:http://localhost:3000}")
+    @Value("${movieapp.frontend-url}")
     private String frontendUrl;
 
     @Bean

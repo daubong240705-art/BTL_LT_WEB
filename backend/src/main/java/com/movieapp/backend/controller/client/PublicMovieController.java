@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/public/movies")
 @AllArgsConstructor
-@CrossOrigin("*")
 public class PublicMovieController {
 
     private final EpisodeService episodeService;
