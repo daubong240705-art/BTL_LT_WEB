@@ -126,7 +126,7 @@ export default async function MovieDetailPage({ params }: Props) {
 
                         <div className="pb-[30vh]">
                             <h3 className="mb-4 border-l-4 border-red-600 pl-3 text-xl font-bold text-white">
-                                Danh sach tap
+                                Danh sách tập
                             </h3>
                             <div className="grid grid-cols-8 gap-3 p-5">
                                 {episodes.map((ep) => (

@@ -87,7 +87,7 @@ export default function CategoriesController({ categories }: { categories: Categ
                     });
                 }}
                 title="Xoá thể loại?"
-                message="Hanh dong nay khong the hoan tac."
+                message="Xóa thể loại này sẽ gỡ nó khỏi các phim đang sử dụng. Bạn có chắc không?"
             />
         </>
     );

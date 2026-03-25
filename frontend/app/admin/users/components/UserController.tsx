@@ -114,8 +114,9 @@ export default function UsersController({ users }: { users: User[] }) {
                         onSuccess: () => setUserToDelete(null),
                     });
                 }}
-                title="Xoa nguoi dung?"
-                message="Hanh dong nay khong the hoan tac."
+                title="Xoá người dùng?"
+                message="Xóa người dùng này sẽ xóa luôn toàn bộ comment của họ. Bạn có chắc không?"
+
             />
         </>
     );

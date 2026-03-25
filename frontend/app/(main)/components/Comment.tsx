@@ -1,20 +1,20 @@
 "use client";
 
-import { MessageCircle, MessageCircleMore, Send, Trash2, User } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
+import { useAuth } from "@/app/context/auth-provider";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Pagination,
     PaginationContent,
     PaginationItem,
     PaginationLink,
     PaginationNext,
-    PaginationPrevious
+    PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createComment, deleteComment, getCommentsByMovieId } from "@/lib/api/main.api";
-import { useAuth } from "@/app/context/auth-provider";
+import { MessageCircle, MessageCircleMore, Send, Trash2, User } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 type Props = {
     movieId: number;
@@ -22,18 +22,20 @@ type Props = {
 
 const formatDateTime = (value?: string) => {
     if (!value) return "";
+
     return new Intl.DateTimeFormat("vi-VN", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
     }).format(new Date(value));
 };
 
 export default function Comments({ movieId }: Props) {
     const { user: currentUser } = useAuth();
     const [comments, setComments] = useState<MovieComment[]>([]);
+    const [commentToDelete, setCommentToDelete] = useState<MovieComment | null>(null);
     const [content, setContent] = useState("");
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -51,6 +53,7 @@ export default function Comments({ movieId }: Props) {
         const timer = setTimeout(() => {
             void fetchComments(1);
         }, 0);
+
         return () => clearTimeout(timer);
     }, [fetchComments]);
 
@@ -65,39 +68,36 @@ export default function Comments({ movieId }: Props) {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm("Bạn có chắc muốn xoá bình luận?")) return;
+    const handleDelete = async () => {
+        if (!commentToDelete) return;
 
-        const res = await deleteComment(id);
+        const res = await deleteComment(commentToDelete.id);
         if (Number(res.statusCode) < 400) {
             const nextPage = comments.length === 1 && page > 1 ? page - 1 : page;
             await fetchComments(nextPage);
         }
+
+        setCommentToDelete(null);
     };
 
     return (
-        <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center gap-2 mb-6 border-b border-gray-700 pb-4">
-                <MessageCircle className="w-6 h-6 text-red-500" />
+        <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+            <div className="mb-6 flex items-center gap-2 border-b border-gray-700 pb-4">
+                <MessageCircle className="h-6 w-6 text-red-500" />
                 <h2 className="text-xl font-semibold text-white">
                     Bình luận ({totalComments})
                 </h2>
             </div>
 
-            <div className="flex gap-4 mb-8">
-
-                <Avatar className="w-10 h-10">
-                    <AvatarImage
-                        src={currentUser?.avatarUrl}
-                        className="object-cover"
-                    />
+            <div className="mb-8 flex gap-4">
+                <Avatar className="h-10 w-10">
+                    <AvatarImage src={currentUser?.avatarUrl} className="object-cover" />
                     <AvatarFallback>
-                        <User className="w-5 h-5 text-gray-300" />
+                        <User className="h-5 w-5 text-gray-300" />
                     </AvatarFallback>
                 </Avatar>
 
-
-                <div className="flex-1 relative">
+                <div className="relative flex-1">
                     <Textarea
                         value={content}
                         disabled={!currentUser}
@@ -110,59 +110,61 @@ export default function Comments({ movieId }: Props) {
                             }
                         }}
                         placeholder={currentUser ? "Viết bình luận..." : "Đăng nhập để bình luận"}
-                        className="w-full bg-gray-900 text-white pl-4 pr-12 py-3 rounded-lg border border-gray-700 resize-none break-all"
+                        className="w-full resize-none break-all rounded-lg border border-gray-700 bg-gray-900 py-3 pl-4 pr-12 text-white"
                     />
 
                     <button
                         onClick={() => void handleSubmit()}
                         disabled={!currentUser}
-                        className="absolute right-3 bottom-3 text-gray-400 hover:text-red-500 disabled:opacity-40"
+                        className="absolute bottom-3 right-3 text-gray-400 hover:text-red-500 disabled:opacity-40"
                     >
-                        <Send className="w-5 h-5" />
+                        <Send className="h-5 w-5" />
                     </button>
                 </div>
             </div>
 
             {comments.length === 0 ? (
-                <div className="h-50 flex flex-col items-center justify-center bg-gray-800 rounded-2xl border border-gray-700 text-gray-400">
+                <div className="flex h-50 flex-col items-center justify-center rounded-2xl border border-gray-700 bg-gray-800 text-gray-400">
                     <MessageCircleMore className="h-10 w-10" />
-                    <p>Chua co binh luan</p>
+                    <p>Chưa có bình luận</p>
                 </div>
             ) : (
                 <div className="space-y-6">
-                    {comments.map((c) => {
-                        const canDelete = currentUser?.role === "ADMIN" || currentUser?.id === c.user_id;
+                    {comments.map((comment) => {
+                        const canDelete =
+                            currentUser?.role === "ADMIN" || currentUser?.id === comment.user_id;
 
                         return (
-                            <div key={c.id} className="flex gap-4">
-                                <Avatar className="w-10 h-10">
-                                    <AvatarImage
-                                        src={c.avatarUrl}
-                                        className="object-cover"
-                                    />
+                            <div key={comment.id} className="flex gap-4">
+                                <Avatar className="h-10 w-10">
+                                    <AvatarImage src={comment.avatarUrl} className="object-cover" />
                                     <AvatarFallback>
-                                        <User className="w-5 h-5 text-gray-300" />
+                                        <User className="h-5 w-5 text-gray-300" />
                                     </AvatarFallback>
                                 </Avatar>
 
                                 <div className="flex-1">
-                                    <div className="flex justify-between mb-1">
+                                    <div className="mb-1 flex justify-between">
                                         <div className="flex gap-2 text-sm">
-                                            <span className="font-bold text-white">{c.fullName}</span>
-                                            <span className="text-gray-500">{formatDateTime(c.createdAt)}</span>
+                                            <span className="font-bold text-white">{comment.fullName}</span>
+                                            <span className="text-gray-500">
+                                                {formatDateTime(comment.createdAt)}
+                                            </span>
                                         </div>
 
                                         {canDelete ? (
                                             <button
-                                                onClick={() => void handleDelete(c.id)}
+                                                onClick={() => setCommentToDelete(comment)}
                                                 className="text-gray-400 hover:text-red-500"
                                             >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash2 className="h-4 w-4" />
                                             </button>
                                         ) : null}
                                     </div>
 
-                                    <p className="text-gray-300 text-sm break-all whitespace-pre-line">{c.content}</p>
+                                    <p className="break-all whitespace-pre-line text-sm text-gray-300">
+                                        {comment.content}
+                                    </p>
                                 </div>
                             </div>
                         );
@@ -181,26 +183,27 @@ export default function Comments({ movieId }: Props) {
                                         e.preventDefault();
                                         void fetchComments(page - 1);
                                     }}
-                                    className="border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800"
+                                    className="border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white"
                                 />
                             </PaginationItem>
                         ) : null}
 
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                            <PaginationItem key={p}>
+                        {Array.from({ length: totalPages }, (_, index) => index + 1).map((itemPage) => (
+                            <PaginationItem key={itemPage}>
                                 <PaginationLink
                                     href="#"
-                                    isActive={p === page}
+                                    isActive={itemPage === page}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        void fetchComments(p);
+                                        void fetchComments(itemPage);
                                     }}
-                                    className={`border-gray-700 ${p === page
-                                        ? "bg-red-600 text-white hover:bg-red-600"
-                                        : "text-gray-400 hover:text-white hover:bg-gray-800"
-                                        }`}
+                                    className={`border-gray-700 ${
+                                        itemPage === page
+                                            ? "bg-red-600 text-white hover:bg-red-600"
+                                            : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                                    }`}
                                 >
-                                    {p}
+                                    {itemPage}
                                 </PaginationLink>
                             </PaginationItem>
                         ))}
@@ -213,13 +216,23 @@ export default function Comments({ movieId }: Props) {
                                         e.preventDefault();
                                         void fetchComments(page + 1);
                                     }}
-                                    className="border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800"
+                                    className="border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white"
                                 />
                             </PaginationItem>
                         ) : null}
                     </PaginationContent>
                 </Pagination>
             ) : null}
+
+            <ConfirmDialog
+                Open={!!commentToDelete}
+                onClose={() => setCommentToDelete(null)}
+                onConfirm={() => {
+                    void handleDelete();
+                }}
+                title="Xóa bình luận?"
+                message="Hành động này không thể hoàn tác."
+            />
         </div>
     );
 }

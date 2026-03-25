@@ -8,6 +8,7 @@ import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
 import com.movieapp.backend.dto.auth.SignupDTO;
 import com.movieapp.backend.dto.auth.UpdateProfileDTO;
+import com.movieapp.backend.repository.CommentRepository;
 import com.movieapp.backend.repository.UserRepository;
 import com.movieapp.backend.service.mapper.UserMapper;
 import com.movieapp.backend.util.error.CustomValidationException;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -30,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final FileStorageService fileStorageService;
+    private final CommentRepository commentRepository;
 
     public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
         Page<User> pageUser = userRepository.findAll(spec, pageable);
@@ -109,9 +112,11 @@ public class UserService {
         return userMapper.toDTO(updatedUser);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay nguoi dung"));
+        commentRepository.deleteByUserId(id);
         userRepository.delete(user);
     }
 

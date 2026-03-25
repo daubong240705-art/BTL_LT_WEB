@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,11 +103,12 @@ public class CategoryService {
         return mapToDTO(categoryRepository.save(category));
     }
 
+    @Transactional
     public void deleteCategory(Long id) {
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category id = " + id));
-
+        categoryRepository.deleteMovieCategoryRelations(id);
         categoryRepository.delete(category);
     }
 
