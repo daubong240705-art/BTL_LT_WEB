@@ -1,12 +1,10 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MutateOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, UseFormReturn } from "react-hook-form";
+
 import { movieApi } from "../../admin/service/api/movie.api";
 import { EpisodePayload, episodeSchema } from "@/app/types/form.type";
 import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
-
-
 
 export function useEpisodeForm(
     mode: "add" | "edit",
@@ -31,8 +29,6 @@ export function useEpisodeForm(
             }
     });
 
-
-
     return form;
 }
 
@@ -47,7 +43,9 @@ export const useEpisodeMutation = (
 
     return useMutation<IBackendRes<Episode>, IBackendRes<null>, EpisodePayload>({
         mutationFn: async (data: EpisodePayload) => {
-            if (mode === "edit" && !episodeId) {
+            const currentEpisodeId = episodeId;
+
+            if (mode === "edit" && !currentEpisodeId) {
                 throw {
                     statusCode: 400,
                     message: "Khong tim thay id tap phim de cap nhat",
@@ -56,7 +54,8 @@ export const useEpisodeMutation = (
 
             const response = await (mode === "add"
                 ? movieApi.createEpisode(data)
-                : movieApi.updateEpisode(episodeId!, data));
+                : movieApi.updateEpisode(currentEpisodeId!, data));
+
             return assertApiSuccess(response);
         },
         onSuccess: () => {
@@ -66,29 +65,28 @@ export const useEpisodeMutation = (
         },
         onError: (err) => {
             handleFormError(err, form.setError);
-
         },
     });
 };
 
-
-export const useDeleteEpisode = (movieId: number) => { // Nhận movieId ở đây
+export const useDeleteEpisode = (movieId: number) => {
     const queryClient = useQueryClient();
-
-    // mutation gốc từ helper của bạn
     const mutation = useDeleteWithRefresh(
         movieApi.deleteEpisode,
-        "Xóa tập phim thành công"
+        "Xoa tap phim thanh cong"
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const deleteEpisode = (episodeId: number, options?: any) => {
+    const deleteEpisode = (
+        episodeId: number,
+        options?: MutateOptions<IBackendRes<unknown>, IBackendRes<null>, number, unknown>
+    ) => {
         mutation.mutate(episodeId, {
             ...options,
-            onSuccess: () => {
+            onSuccess: (data, variables, context, mutationContext) => {
                 queryClient.invalidateQueries({ queryKey: ["episodes", movieId] });
                 queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
-            }
+                options?.onSuccess?.(data, variables, context, mutationContext);
+            },
         });
     };
 

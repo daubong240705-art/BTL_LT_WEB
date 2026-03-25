@@ -6,15 +6,15 @@ import com.movieapp.backend.dto.Meta;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.dto.User.UserDTO;
 import com.movieapp.backend.dto.User.UserRequest;
-import com.movieapp.backend.dto.auth.UpdateProfileDTO;
 import com.movieapp.backend.dto.auth.SignupDTO;
+import com.movieapp.backend.dto.auth.UpdateProfileDTO;
 import com.movieapp.backend.repository.UserRepository;
 import com.movieapp.backend.service.mapper.UserMapper;
 import com.movieapp.backend.util.error.CustomValidationException;
 import com.movieapp.backend.util.error.ResourceNotFoundException;
-
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,20 +22,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 @AllArgsConstructor
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
-
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final FileStorageService fileStorageService;
 
     public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
-
         Page<User> pageUser = userRepository.findAll(spec, pageable);
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
@@ -53,25 +49,21 @@ public class UserService {
     }
 
     public UserDTO getUserById(Long id) {
-
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay nguoi dung voi id: " + id));
 
         return userMapper.toDTO(user);
     }
 
     public UserDTO createUser(UserRequest request) {
-        // CHECK USERNAME
-
         Map<String, String> errors = new HashMap<>();
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            errors.put("username", "Tên đăng nhập đã tồn tại");
+            errors.put("username", "Ten dang nhap da ton tai");
         }
 
-        // 2. Kiểm tra Email
         if (userRepository.existsByEmail(request.getEmail())) {
-            errors.put("email", "Email đã được sử dụng");
+            errors.put("email", "Email da duoc su dung");
         }
 
         if (!errors.isEmpty()) {
@@ -92,13 +84,15 @@ public class UserService {
 
     public UserDTO updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y ngÆ°á»i dÃ¹ng vá»›i id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay nguoi dung voi id: " + id));
 
         if (request.getEmail() != null
                 && !request.getEmail().equalsIgnoreCase(user.getEmail())
                 && userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomValidationException(Map.of("email", "Email Ä‘Ã£ Ä‘Æ°á»£c sá»­ dá»¥ng"));
+            throw new CustomValidationException(Map.of("email", "Email da duoc su dung"));
         }
+
+        String oldAvatarUrl = user.getAvatarUrl();
 
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
@@ -110,12 +104,14 @@ public class UserService {
         }
 
         User updatedUser = userRepository.save(user);
+        deleteOldManagedFileIfReplaced(oldAvatarUrl, updatedUser.getAvatarUrl());
+
         return userMapper.toDTO(updatedUser);
     }
 
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay nguoi dung"));
         userRepository.delete(user);
     }
 
@@ -129,10 +125,14 @@ public class UserService {
             throw new ResourceNotFoundException("Khong tim thay nguoi dung dang nhap");
         }
 
+        String oldAvatarUrl = user.getAvatarUrl();
+
         user.setFullName(request.getFullName().trim());
         user.setAvatarUrl(request.getAvatarUrl().trim());
 
         User updatedUser = userRepository.save(user);
+        deleteOldManagedFileIfReplaced(oldAvatarUrl, updatedUser.getAvatarUrl());
+
         return userMapper.toDTO(updatedUser);
     }
 
@@ -157,15 +157,14 @@ public class UserService {
     }
 
     public SignupDTO createUser(SignupDTO signup) {
-
         Map<String, String> errors = new HashMap<>();
 
         if (userRepository.existsByUsername(signup.getUsername())) {
-            errors.put("username", "Tên đăng nhập đã tồn tại");
+            errors.put("username", "Ten dang nhap da ton tai");
         }
 
         if (userRepository.existsByEmail(signup.getEmail())) {
-            errors.put("email", "Email đã được sử dụng");
+            errors.put("email", "Email da duoc su dung");
         }
 
         if (!errors.isEmpty()) {
@@ -176,13 +175,18 @@ public class UserService {
         user.setUsername(signup.getUsername());
         user.setEmail(signup.getEmail());
         user.setFullName(signup.getFullName());
-
         user.setPassword(passwordEncoder.encode(signup.getPassword()));
-
-        // mặc định role USER
         user.setRole(Role.USER);
-        User saveUser = userRepository.save(user);
 
+        User saveUser = userRepository.save(user);
         return userMapper.toSignupDTO(saveUser);
+    }
+
+    private void deleteOldManagedFileIfReplaced(String oldFileUrl, String newFileUrl) {
+        if (!StringUtils.hasText(oldFileUrl) || oldFileUrl.equals(newFileUrl)) {
+            return;
+        }
+
+        fileStorageService.deleteManagedFile(oldFileUrl);
     }
 }

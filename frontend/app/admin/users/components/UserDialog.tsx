@@ -37,6 +37,7 @@ export default function UserDialog({ open,
                 </DialogHeader>
 
                 <UserForm
+                    key={mode === "edit" ? `user-${initialData?.id ?? "edit"}` : "user-add"}
                     mode={mode}
                     initialData={initialData}
                     onClose={() => onOpenChange(false)}

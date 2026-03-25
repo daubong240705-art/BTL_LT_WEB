@@ -56,6 +56,7 @@ export default function MovieDialog({
                 </DialogHeader>
 
                 <MovieForm
+                    key={mode === "edit" ? `movie-${initialData?.id ?? "edit"}` : "movie-add"}
                     mode={mode}
                     initialData={initialData}
                     onClose={() => onOpenChange(false)}

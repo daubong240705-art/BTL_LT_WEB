@@ -6,10 +6,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
 
-import { UserPayload, userSchema, UserSubmitValues } from "@/app/types/form.type";
+import { UserPayload, UserSubmitPayload, userSchema, UserSubmitValues } from "@/app/types/form.type";
 import { toast } from "sonner";
 import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
 import { userApi } from "@/app/admin/service/api/user.api";
+import { fileApi } from "@/app/services/file.service";
 
 
 export function useUserForm(
@@ -47,11 +48,26 @@ export const useUserMutation = (
 ) => {
     const router = useRouter();
 
-    return useMutation<IBackendRes<User>, IBackendRes<null>, UserPayload>({
-        mutationFn: async (data: UserPayload) => {
+    return useMutation<IBackendRes<User>, IBackendRes<null>, UserSubmitPayload>({
+        mutationFn: async (data: UserSubmitPayload) => {
+            const { avatarFile, ...rest } = data;
+            let avatarUrl = rest.avatarUrl;
+
+            if (avatarFile) {
+                const uploadAvatarResponse = assertApiSuccess(
+                    await fileApi.uploadImage(avatarFile, "avatars")
+                );
+                avatarUrl = uploadAvatarResponse.data?.fileUrl ?? avatarUrl;
+            }
+
+            const payload: UserPayload = {
+                ...rest,
+                avatarUrl,
+            };
+
             const response = await (mode === "add"
-                ? userApi.createUser(data)
-                : userApi.updateUser(userId!, data));
+                ? userApi.createUser(payload)
+                : userApi.updateUser(userId!, payload));
             return assertApiSuccess(response);
         },
         onSuccess: (res) => {

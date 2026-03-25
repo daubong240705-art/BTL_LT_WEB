@@ -7,7 +7,8 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
 import { movieApi } from "../../admin/service/api/movie.api";
 import { toast } from "sonner";
-import { MoviePayload, movieSchema } from "@/app/types/form.type";
+import { MoviePayload, MovieSubmitPayload, movieSchema } from "@/app/types/form.type";
+import { fileApi } from "@/app/services/file.service";
 
 
 export function useMovieForm(
@@ -53,11 +54,35 @@ export const useMovieMutation = (
 ) => {
     const router = useRouter();
 
-    return useMutation<IBackendRes<Movie>, IBackendRes<null>, MoviePayload>({
-        mutationFn: async (data: MoviePayload) => {
+    return useMutation<IBackendRes<Movie>, IBackendRes<null>, MovieSubmitPayload>({
+        mutationFn: async (data: MovieSubmitPayload) => {
+            const { posterFile, thumbFile, ...rest } = data;
+            let posterUrl = rest.posterUrl;
+            let thumbUrl = rest.thumbUrl;
+
+            if (posterFile) {
+                const uploadPosterResponse = assertApiSuccess(
+                    await fileApi.uploadImage(posterFile, "movies/posters")
+                );
+                posterUrl = uploadPosterResponse.data?.fileUrl ?? posterUrl;
+            }
+
+            if (thumbFile) {
+                const uploadThumbResponse = assertApiSuccess(
+                    await fileApi.uploadImage(thumbFile, "movies/thumbs")
+                );
+                thumbUrl = uploadThumbResponse.data?.fileUrl ?? thumbUrl;
+            }
+
+            const payload: MoviePayload = {
+                ...rest,
+                posterUrl,
+                thumbUrl,
+            };
+
             const response = await (mode === "add"
-                ? movieApi.createMovie(data)
-                : movieApi.updateMovie(movieId!, data));
+                ? movieApi.createMovie(payload)
+                : movieApi.updateMovie(movieId!, payload));
             return assertApiSuccess(response);
         },
 

@@ -60,6 +60,7 @@ export default function Episodedialog({
                 </DialogHeader>
 
                 <EpisodeForm
+                    key={mode === "edit" ? `episode-${initialData?.id ?? "edit"}` : `episode-add-${movieId}`}
                     mode={mode}
                     initialData={initialData}
                     onClose={() => onOpenChange(false)}

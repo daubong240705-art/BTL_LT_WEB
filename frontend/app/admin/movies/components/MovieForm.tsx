@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { Controller } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
@@ -8,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { AppInput } from "@/components/shared/AppInput";
 import { FormError } from "@/components/shared/FormError";
+import ImageUploadField from "@/components/shared/ImageUploadField";
 
 import EpisodeList from "./EpisodeList";
 import { categoryApi } from "../../service/api/category.api";
@@ -31,12 +33,44 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
     const selected = form.watch("categoryIds") || [];
     const posterUrl = form.watch("posterUrl");
     const thumbUrl = form.watch("thumbUrl");
+    const [posterFile, setPosterFile] = useState<File | null>(null);
+    const [thumbFile, setThumbFile] = useState<File | null>(null);
 
     const mutation = useMovieMutation(mode, form, initialData?.id, onClose);
 
+    const posterPreview = useMemo(
+        () => (posterFile ? URL.createObjectURL(posterFile) : (posterUrl ?? "")),
+        [posterFile, posterUrl]
+    );
+
+    const thumbPreview = useMemo(
+        () => (thumbFile ? URL.createObjectURL(thumbFile) : (thumbUrl ?? "")),
+        [thumbFile, thumbUrl]
+    );
+
+    useEffect(() => {
+        return () => {
+            if (posterPreview.startsWith("blob:")) {
+                URL.revokeObjectURL(posterPreview);
+            }
+        };
+    }, [posterPreview]);
+
+    useEffect(() => {
+        return () => {
+            if (thumbPreview.startsWith("blob:")) {
+                URL.revokeObjectURL(thumbPreview);
+            }
+        };
+    }, [thumbPreview]);
+
     const onSubmit = (data: MovieFormValues) => {
         form.clearErrors("root");
-        mutation.mutate(data);
+        mutation.mutate({
+            ...data,
+            posterFile,
+            thumbFile,
+        });
     };
 
     return (
@@ -45,69 +79,53 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                 <form id="movie-form" onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-8">
                     <div className="col-span-3 space-y-6">
                         <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-400">Poster URL</label>
-                            <AppInput
-                                placeholder="https://..."
-                                type="text"
-                                color="red"
-                                className="text-white px-4 py-2.5"
-                                {...form.register("posterUrl")}
+                            <label className="block text-sm font-semibold text-gray-400">Poster</label>
+                            <ImageUploadField
+                                previewUrl={posterPreview}
+                                alt="Poster preview"
+                                emptyLabel="Chưa có poster"
+                                canReset={Boolean(posterFile)}
+                                onFileSelect={setPosterFile}
+                                onReset={() => setPosterFile(null)}
+                                frameClassName="aspect-2/3 w-full rounded-xl"
                             />
-                            <FormError message={form.formState.errors.posterUrl?.message} />
-
-                            <div className="relative aspect-2/3 w-full border border-gray-700 rounded-xl bg-gray-800 overflow-hidden">
-                                {posterUrl ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={posterUrl} alt="Poster preview" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="h-full flex items-center justify-center text-gray-500 text-xs">Chưa có poster</div>
-                                )}
-                            </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-400">Thumbnail URL</label>
-                            <AppInput
-                                placeholder="https://..."
-                                type="text"
-                                color="red"
-                                className="text-white px-4 py-2.5"
-                                {...form.register("thumbUrl")}
+                            <label className="block text-sm font-semibold text-gray-400">Thumbnail</label>
+                            <ImageUploadField
+                                previewUrl={thumbPreview}
+                                alt="Thumbnail preview"
+                                emptyLabel="Chưa có thumbnail"
+                                canReset={Boolean(thumbFile)}
+                                onFileSelect={setThumbFile}
+                                onReset={() => setThumbFile(null)}
+                                frameClassName="aspect-video w-full rounded-xl"
                             />
-                            <FormError message={form.formState.errors.thumbUrl?.message} />
-
-                            <div className="relative aspect-video w-full border border-gray-700 rounded-xl bg-gray-800 overflow-hidden">
-                                {thumbUrl ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={thumbUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="h-full flex items-center justify-center text-gray-500 text-xs">Chưaa có thumbnail</div>
-                                )}
-                            </div>
                         </div>
                     </div>
 
-                    <div className="col-span-9 space-y-4">
+                    <div className="col-span-9">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Tên phim</label>
+                                <label className="mb-2 block text-sm font-semibold text-gray-400">Tên phim</label>
                                 <AppInput
                                     placeholder="Nhập tên phim..."
                                     type="text"
                                     color="red"
-                                    className="text-white px-4 py-5"
+                                    className="px-4 py-5 text-white"
                                     {...form.register("title")}
                                 />
                                 <FormError message={form.formState.errors.title?.message} />
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Dường dẫn</label>
+                                <label className="mb-2 block text-sm font-semibold text-gray-400">Đường dẫn</label>
                                 <AppInput
-                                    placeholder="Nhap duong dan phim..."
+                                    placeholder="Nhập slug phim..."
                                     type="text"
                                     color="red"
-                                    className="text-white px-4 py-5"
+                                    className="px-4 py-5 text-white"
                                     {...form.register("slug")}
                                 />
                                 <FormError message={form.formState.errors.slug?.message} />
@@ -116,30 +134,30 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Năm</label>
+                                <label className="mb-2 block text-sm font-semibold text-gray-400">Năm</label>
                                 <AppInput
-                                    placeholder="Nam san xuat"
+                                    placeholder="Năm sản xuất"
                                     type="text"
                                     color="red"
-                                    className="text-white px-4 py-2.5"
+                                    className="px-4 py-2.5 text-white"
                                     {...form.register("publishYear", { valueAsNumber: true })}
                                 />
                                 <FormError message={form.formState.errors.publishYear?.message} />
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Trạng thái</label>
+                                <label className="mb-2 block text-sm font-semibold text-gray-400">Trạng thái</label>
                                 <Controller
                                     control={form.control}
                                     name="status"
                                     render={({ field }) => (
                                         <Select key={field.value} value={field.value} onValueChange={field.onChange}>
-                                            <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white px-4 py-2.5 rounded-lg focus-visible:ring-0 focus:border-red-500 hover:border-red-500 transition-all data-placeholder:text-gray-400 data-placeholder:font-sm">
+                                            <SelectTrigger className="w-full rounded-lg border-gray-700 bg-gray-800 px-4 py-2.5 text-white transition-all hover:border-red-500 focus-visible:ring-0 focus:border-red-500 data-placeholder:font-sm data-placeholder:text-gray-400">
                                                 <SelectValue placeholder="Trang thai" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-gray-800 border border-gray-700 text-white">
-                                                <SelectItem value="ONGOING" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Dang phat</SelectItem>
-                                                <SelectItem value="COMPLETED" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Hoan thanh</SelectItem>
+                                            <SelectContent className="border border-gray-700 bg-gray-800 text-white">
+                                                <SelectItem value="ONGOING" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Đang phát</SelectItem>
+                                                <SelectItem value="COMPLETED" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Hoàn thành</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     )}
@@ -148,16 +166,16 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-400 mb-2 block">Loại phim</label>
+                                <label className="mb-2 block text-sm font-semibold text-gray-400">Loại phim</label>
                                 <Controller
                                     control={form.control}
                                     name="type"
                                     render={({ field }) => (
                                         <Select key={field.value} value={field.value} onValueChange={field.onChange}>
-                                            <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white px-4 py-2.5 rounded-lg focus-visible:ring-0 focus:border-red-500 hover:border-red-500 transition-all data-placeholder:text-gray-400 data-placeholder:font-sm">
+                                            <SelectTrigger className="w-full rounded-lg border-gray-700 bg-gray-800 px-4 py-2.5 text-white transition-all hover:border-red-500 focus-visible:ring-0 focus:border-red-500 data-placeholder:font-sm data-placeholder:text-gray-400">
                                                 <SelectValue placeholder="Chon loai phim" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-gray-800 border border-gray-700 text-white">
+                                            <SelectContent className="border border-gray-700 bg-gray-800 text-white">
                                                 <SelectItem value="SERIES" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Phim bộ</SelectItem>
                                                 <SelectItem value="SINGLE" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-red-600">Phim lẻ</SelectItem>
                                             </SelectContent>
@@ -169,8 +187,8 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Thể loại</label>
-                            <div className="grid gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700 grid-cols-[repeat(auto-fill,minmax(110px,1fr))]">
+                            <label className="mb-2 block text-sm font-semibold text-gray-400">Thể loại</label>
+                            <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-2 rounded-lg border border-gray-700 bg-gray-800/50 p-3">
                                 {isLoading && <span className="text-sm text-gray-500">Dang tai the loai...</span>}
                                 {isError && <span className="text-sm text-red-500">Khong tai duoc the loai</span>}
 
@@ -187,10 +205,11 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
 
                                                 form.setValue("categoryIds", next, { shouldDirty: true, shouldValidate: true });
                                             }}
-                                            className={`px-3 py-1 rounded text-sm border transition ${isSelected
-                                                ? "bg-red-600 text-white border-red-600"
-                                                : "bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
-                                                }`}
+                                            className={`rounded border px-3 py-1 text-sm transition ${
+                                                isSelected
+                                                    ? "border-red-600 bg-red-600 text-white"
+                                                    : "border-gray-600 bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white"
+                                            }`}
                                         >
                                             {cat.name}
                                         </Button>
@@ -201,14 +220,17 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-400 mb-2 block">Mô tả nội dung</label>
+                            <label className="mb-2 block text-sm font-semibold text-gray-400">Mô tả nội dung</label>
                             <Textarea
                                 {...form.register("description")}
                                 placeholder="Nhập mô tả nội dung phim..."
-                                className="w-full h-30 bg-gray-800 border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20 transition-all"
+                                className="h-30 w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-white transition-all hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20 focus:border-red-500 focus:ring-2 focus:ring-red-500"
                             />
                             <FormError message={form.formState.errors.description?.message} />
                         </div>
+
+                        <input type="hidden" {...form.register("posterUrl")} />
+                        <input type="hidden" {...form.register("thumbUrl")} />
                     </div>
                 </form>
 

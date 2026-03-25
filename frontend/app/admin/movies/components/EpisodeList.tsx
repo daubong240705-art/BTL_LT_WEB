@@ -38,7 +38,7 @@ export default function EpisodeList({ movieId }: Props) {
             <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Film className="w-4 h-4 text-blue-500" />
-                    Danh sach tap ({episodes.length})
+                    Danh sách tập ({episodes.length})
                 </h3>
                 <Button
                     type="button"
@@ -46,7 +46,7 @@ export default function EpisodeList({ movieId }: Props) {
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg shadow-lg"
                 >
                     <Plus className="w-5 h-5" />
-                    Them tap
+                    Thêm tập
                 </Button>
             </div>
 
@@ -88,7 +88,7 @@ export default function EpisodeList({ movieId }: Props) {
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-gray-500">
                         <Film className="w-8 h-8 opacity-20" />
-                        <span className="text-xs">Chua co tap phim nao</span>
+                        <span className="text-xs">Chưa có tập phim nào</span>
                     </div>
                 )}
             </div>

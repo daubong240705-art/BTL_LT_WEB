@@ -38,14 +38,15 @@ export default async function MovieDetailPage({ params }: Props) {
                 <div className="grid grid-cols-4">
                     <div className="rounded-4xl bg-gray-900 p-7 lg:col-span-1">
                         <div className="space-y-5">
-                            <div className="relative aspect-2/3 w-30 overflow-hidden">
+                            <div className="relative aspect-2/3 w-32 overflow-hidden">
                                 <Image
                                     src={movie.posterUrl}
                                     alt={movie.title}
+                                    unoptimized
                                     className="rounded-lg object-cover"
-                                    sizes="120px"
+                                    sizes="128px"
                                     fill
-                                    quality={90}
+                                    quality={75}
                                 />
                             </div>
 

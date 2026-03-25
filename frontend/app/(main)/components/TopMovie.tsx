@@ -1,5 +1,5 @@
 
-import {  getTop5Movie } from '@/lib/api/main.api';
+import { getTop5Movie } from '@/lib/api/main.api';
 import Image from 'next/image';
 
 import Link from 'next/link';
@@ -32,12 +32,14 @@ export async function Top5Movies() {
                                 {index + 1}
                             </div>
                             {/* Poster */}
-                            <div className="w-20 h-28 rounded-md overflow-hidden">
+                            <div className="relative w-20 h-28 rounded-md overflow-hidden">
 
                                 <Image
                                     src={movie.posterUrl}
                                     alt={movie.title}
+                                    unoptimized
                                     fill
+                                    sizes='120'
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                 />
                                 {/* Play Overlay */}

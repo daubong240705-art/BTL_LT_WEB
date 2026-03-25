@@ -84,7 +84,7 @@ public class MovieController {
     @GetMapping("/{movieId}/episodes")
     @ApiMessage("Lấy danh sách tập phim thành công")
     public List<EpisodeDTO> getEpisodesByMovie(
-            @PathVariable Long movieId) {
+            @PathVariable("movieId") Long movieId) {
 
         return episodeService.getEpisodesByMovieId(movieId);
     }

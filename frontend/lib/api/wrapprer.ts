@@ -62,8 +62,10 @@ export const sendRequest = async <T>(props: IRequest): Promise<T> => {
         url = `${url}?${queryString.stringify(queryParams)}`
     }
 
+    const isFormData = typeof FormData !== "undefined" && body instanceof FormData
+
     const finalHeaders: any = {
-        "content-type": "application/json",
+        ...(!isFormData ? { "content-type": "application/json" } : {}),
         ...headers
     }
 
@@ -74,7 +76,11 @@ export const sendRequest = async <T>(props: IRequest): Promise<T> => {
     const options: RequestInit = {
         method,
         headers: new Headers(finalHeaders),
-        body: body ? JSON.stringify(body) : null,
+        body: body
+            ? isFormData
+                ? body
+                : JSON.stringify(body)
+            : null,
         cache: "no-store",
         ...nextOption
     }

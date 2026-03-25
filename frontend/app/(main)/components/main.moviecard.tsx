@@ -15,6 +15,7 @@ export function MovieCard({ movie }: MovieCardProps) {
                     <Image
                         src={movie.posterUrl}
                         alt={movie.title}
+                        unoptimized
                         className="object-cover transition-transform duration-300 group-hover:scale-110"
                         fill
                         sizes="100"

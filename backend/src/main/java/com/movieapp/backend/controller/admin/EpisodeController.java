@@ -35,7 +35,7 @@ public class EpisodeController {
 
     @GetMapping("/{id}")
     @ApiMessage("Lấy thông tin tập phim thành công")
-    public EpisodeDTO getEpisodeById(@PathVariable Long id) {
+    public EpisodeDTO getEpisodeById(@PathVariable("id") Long id) {
 
         return episodeService.getEpisodeById(id);
     }
@@ -54,7 +54,7 @@ public class EpisodeController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @ApiMessage("Cập nhật tập phim thành công")
     public EpisodeDTO updateEpisode(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody EpisodeRequest request) {
 
         return episodeService.updateEpisode(id, request);
@@ -63,7 +63,7 @@ public class EpisodeController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ApiMessage("Xóa tập phim thành công")
-    public void deleteEpisode(@PathVariable Long id) {
+    public void deleteEpisode(@PathVariable("id") Long id) {
 
         episodeService.deleteEpisode(id);
     }

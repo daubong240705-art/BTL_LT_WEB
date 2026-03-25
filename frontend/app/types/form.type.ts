@@ -137,7 +137,7 @@ export type SignupForm = z.infer<typeof signupSchema>
 export type MovieFormValues = z.infer<typeof movieSchema>;
 export type CategoryFormValues = z.infer<typeof categorySchema>;
 export type UserFormValues = z.infer<typeof userSchema>;
-export type UserSubmitValues = UserPayload & { confirmPassword?: string };
+export type UserSubmitValues = z.infer<typeof userSchema>;
 export type EpisodeFormValues = z.infer<typeof episodeSchema>;
 
 
@@ -153,6 +153,11 @@ export type MoviePayload = {
     thumbUrl?: string;
     publishYear: number;
     categoryIds: number[];
+};
+
+export type MovieSubmitPayload = MoviePayload & {
+    posterFile?: File | null;
+    thumbFile?: File | null;
 };
 
 export type EpisodePayload = {
@@ -177,4 +182,8 @@ export type UserPayload = {
     role: Role;
     password?: string;
     avatarUrl?: string;
+};
+
+export type UserSubmitPayload = UserPayload & {
+    avatarFile?: File | null;
 };
