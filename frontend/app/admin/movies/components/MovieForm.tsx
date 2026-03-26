@@ -15,6 +15,9 @@ import EpisodeList from "./EpisodeList";
 import { categoryApi } from "../../service/api/category.api";
 import { useMovieForm, useMovieMutation } from "../../../hooks/movie/useMovieForm";
 import { MovieFormValues } from "@/app/types/form.type";
+import { toast } from "sonner";
+import { Save } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Props = {
     mode: "add" | "edit";
@@ -64,13 +67,34 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
         };
     }, [thumbPreview]);
 
-    const onSubmit = (data: MovieFormValues) => {
+
+    const router = useRouter();
+    const onSubmit = async (data: MovieFormValues) => {
         form.clearErrors("root");
-        mutation.mutate({
-            ...data,
-            posterFile,
-            thumbFile,
-        });
+        
+        await toast.promise(
+            mutation.mutateAsync({
+                ...data,
+                posterFile,
+                thumbFile,
+            }),
+            {
+                loading: mode === "add" ? "Đang tạo phim..." : "Đang cập nhật phim...",
+                success: (res) => {
+                    router.refresh();
+                    const name = res.data?.title || "phim";
+                    onClose();
+                    return mode === "add"
+                        ? `Tạo ${name} thành công!`
+                        : `Cập nhật ${name} thành công!`;
+                },
+                error: () => {
+                    return mode === "add"
+                        ? "Tạo phim thất bại!"
+                        : "Cập nhật phim thất bại!";
+                },
+            }
+        );
     };
 
     return (
@@ -235,6 +259,20 @@ export default function MovieForm({ mode, initialData, onClose }: Props) {
                 </form>
 
                 {mode === "edit" && initialData?.id && <EpisodeList movieId={initialData.id} />}
+            </div>
+                 <div className="px-6 py-4 flex justify-end gap-3 border-t border-gray-800">
+                <Button type="button" onClick={onClose} className="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800">
+                    Huy bo
+                </Button>
+                <Button
+                    type="submit"
+                    form="movie-form"
+                    disabled={mutation.isPending}
+                    className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2"
+                >
+                    <Save className="w-4 h-4" />
+                    {mutation.isPending ? "Đang lưu..." : "Lưu"}
+                </Button>
             </div>
         </div>
     );

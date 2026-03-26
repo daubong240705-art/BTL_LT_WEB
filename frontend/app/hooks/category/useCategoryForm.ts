@@ -29,7 +29,6 @@ export function useCategoryForm(
     });
     return form;
 }
-
 export const useCategoryMutation = (
     mode: "add" | "edit",
     form: UseFormReturn<CategoryPayload>,
@@ -40,17 +39,15 @@ export const useCategoryMutation = (
 
     return useMutation<IBackendRes<Category>, IBackendRes<null>, CategoryPayload>({
         mutationFn: async (data: CategoryPayload) => {
-            const response = await (mode === "add"
-                ? categoryApi.createCategory(data)
-                : categoryApi.updateCategory(categoryId!, data));
+            const response = await (
+                mode === "add"
+                    ? categoryApi.createCategory(data)
+                    : categoryApi.updateCategory(categoryId!, data)
+            );
             return assertApiSuccess(response);
         },
-        onSuccess: (res) => {
+        onSuccess: () => {
             router.refresh();
-            const categoryName = res.data?.name || "thể loại";
-            toast.success(
-                mode === "add" ? `Tạo ${categoryName} thành công!` : `Cập nhật ${categoryName} thành công!`
-            );
             onClose?.();
         },
         onError: (err) => {

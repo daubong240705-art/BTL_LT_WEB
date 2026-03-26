@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUserForm, useUserMutation } from "@/app/hooks/user/useUserForm";
 import { UserFormValues, UserSubmitPayload } from "@/app/types/form.type";
+import { toast } from "sonner";
 
 type Props = {
     mode: "add" | "edit";
@@ -33,21 +34,36 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
         };
     }, [avatarPreview]);
 
-    const onSubmit = (data: UserFormValues) => {
-        form.clearErrors("root");
+    const onSubmit = async (data: UserFormValues) => {
 
-        const payload: UserSubmitPayload = {
-            fullName: data.fullName,
-            username: data.username,
-            email: data.email,
-            role: data.role,
-            password: data.password || undefined,
-            avatarUrl: initialData?.avatarUrl || undefined,
-            avatarFile,
-        };
-
-        mutation.mutate(payload);
+    const payload: UserSubmitPayload = {
+        fullName: data.fullName,
+        username: data.username,
+        email: data.email,
+        role: data.role,
+        password: data.password || undefined,
+        avatarUrl: initialData?.avatarUrl || undefined,
+        avatarFile,
     };
+        await toast.promise(
+            mutation.mutateAsync(payload),
+            {
+                loading: mode === "add" ? "Đang tạo user..." : "Đang cập nhật user...",
+                success: (res) => {
+                    const name = res.data?.username || "user";
+                    return mode === "add"
+                        ? `Tạo ${name} thành công!`
+                        : `Cập nhật ${name} thành công!`;
+                },
+                error: () => {
+                    return mode === "add"
+                        ? "Tạo user thất bại!"
+                        : "Cập nhật user thất bại!";
+                },
+            }
+        );
+    }
+   
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -165,7 +181,7 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
 
             <div className="flex justify-end gap-3 border-t border-gray-800 px-6 py-4">
                 <Button type="button" onClick={onClose} className="rounded-lg px-5 py-2 text-gray-300 hover:bg-gray-800">
-                    Huy bo
+                    Huỷ bỏ
                 </Button>
 
                 <Button
@@ -174,7 +190,7 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                     className="flex items-center gap-2 rounded-lg bg-red-600 px-6 py-2 font-bold text-white hover:bg-red-700"
                 >
                     <Save className="h-4 w-4" />
-                    {mutation.isPending ? "Dang luu..." : "Lưu"}
+                    {mutation.isPending ? "Đang lưu..." : "Lưu"}
                 </Button>
             </div>
         </form>

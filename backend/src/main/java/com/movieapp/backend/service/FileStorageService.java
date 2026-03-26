@@ -3,23 +3,19 @@ package com.movieapp.backend.service;
 import com.movieapp.backend.dto.file.UploadFileResponse;
 import com.movieapp.backend.util.error.BadRequestException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
-import java.util.stream.Stream;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
+@RequiredArgsConstructor
 public class FileStorageService {
 
     private static final List<String> ALLOWED_IMAGE_TYPES = List.of(
@@ -28,61 +24,39 @@ public class FileStorageService {
             "image/webp",
             "image/gif");
 
-    private final Path uploadRootPath;
+    private final CloudinaryService cloudinaryService;
 
-    public FileStorageService(@Value("${luoifilix.upload-file.base-path}") String basePath) {
-        this.uploadRootPath = resolveBasePath(basePath);
-    }
+    @Value("${cloudinary.cloud-name}")
+    private String cloudName;
 
     public UploadFileResponse storeImage(MultipartFile file, String folder) {
         validateImage(file);
+        String safeFolder = sanitizeFolder(folder);
 
         try {
-            String safeFolder = sanitizeFolder(folder);
-            String extension = getExtension(file.getOriginalFilename());
-            String fileName = UUID.randomUUID() + extension;
+            Map<String, Object> uploadResult = cloudinaryService.uploadImage(file, safeFolder);
 
-            Path targetDirectory = uploadRootPath.resolve(safeFolder).normalize();
-            Files.createDirectories(targetDirectory);
+            String publicId = getRequiredString(uploadResult, "public_id");
+            String fileUrl = getRequiredString(uploadResult, "secure_url");
+            String fileName = buildFileName(
+                    publicId,
+                    getOptionalString(uploadResult, "original_filename"),
+                    getOptionalString(uploadResult, "format"));
 
-            Path targetFile = targetDirectory.resolve(fileName).normalize();
-            if (!targetFile.startsWith(uploadRootPath)) {
-                throw new BadRequestException("Thu muc upload khong hop le");
-            }
-
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
-            }
-
-            String relativePath = safeFolder.isBlank()
-                    ? fileName
-                    : safeFolder.replace("\\", "/") + "/" + fileName;
-
-            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/storage/")
-                    .path(relativePath)
-                    .toUriString();
-
-            return new UploadFileResponse(fileName, fileUrl, relativePath);
+            return new UploadFileResponse(fileName, fileUrl, publicId);
         } catch (IOException ex) {
             throw new BadRequestException("Khong the luu file upload");
         }
     }
 
     public void deleteManagedFile(String fileUrl) {
-        String relativePath = extractRelativePath(fileUrl);
-        if (relativePath == null) {
+        String publicId = extractCloudinaryPublicId(fileUrl);
+        if (!StringUtils.hasText(publicId)) {
             return;
         }
 
         try {
-            Path targetFile = uploadRootPath.resolve(relativePath).normalize();
-            if (!targetFile.startsWith(uploadRootPath)) {
-                return;
-            }
-
-            Files.deleteIfExists(targetFile);
-            cleanupEmptyDirectories(targetFile.getParent());
+            cloudinaryService.deleteImage(publicId);
         } catch (IOException ignored) {
             // Ignore delete failures to avoid blocking successful entity updates.
         }
@@ -119,68 +93,92 @@ public class FileStorageService {
         return normalized;
     }
 
-    private String getExtension(String originalFileName) {
-        if (!StringUtils.hasText(originalFileName) || !originalFileName.contains(".")) {
-            return "";
+    private String getRequiredString(Map<String, Object> values, String key) {
+        Object value = values.get(key);
+        if (value == null || !StringUtils.hasText(value.toString())) {
+            throw new BadRequestException("Phan hoi upload khong hop le");
         }
 
-        String extension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-        return extension.replaceAll("[^a-zA-Z0-9.]", "");
+        return value.toString();
     }
 
-    private String extractRelativePath(String fileUrl) {
+    private String getOptionalString(Map<String, Object> values, String key) {
+        Object value = values.get(key);
+        return value == null ? "" : value.toString();
+    }
+
+    private String buildFileName(String publicId, String originalFileName, String format) {
+        if (StringUtils.hasText(originalFileName) && StringUtils.hasText(format)) {
+            return originalFileName + "." + format;
+        }
+
+        int lastSlashIndex = publicId.lastIndexOf('/');
+        String baseName = lastSlashIndex >= 0
+                ? publicId.substring(lastSlashIndex + 1)
+                : publicId;
+
+        if (!StringUtils.hasText(format)) {
+            return baseName;
+        }
+
+        return baseName + "." + format;
+    }
+
+    private String extractCloudinaryPublicId(String fileUrl) {
         if (!StringUtils.hasText(fileUrl)) {
             return null;
         }
 
-        String normalized = fileUrl.trim().replace("\\", "/");
-        String marker = "/storage/";
+        String normalized = fileUrl.trim();
 
-        int markerIndex = normalized.indexOf(marker);
-        if (markerIndex >= 0) {
-            String relativePath = normalized.substring(markerIndex + marker.length());
-            return relativePath.isBlank() || relativePath.contains("..") ? null : relativePath;
+        if (!normalized.contains("res.cloudinary.com")) {
+            return normalized.startsWith("http://") || normalized.startsWith("https://")
+                    ? null
+                    : stripExtension(normalized);
         }
 
-        if (normalized.startsWith("storage/")) {
-            String relativePath = normalized.substring("storage/".length());
-            return relativePath.isBlank() || relativePath.contains("..") ? null : relativePath;
-        }
+        try {
+            URI uri = URI.create(normalized);
+            String uploadPrefix = "/" + cloudName + "/image/upload/";
+            String path = uri.getPath();
 
-        return null;
-    }
+            int uploadIndex = path.indexOf(uploadPrefix);
+            if (uploadIndex < 0) {
+                return null;
+            }
 
-    private void cleanupEmptyDirectories(Path directory) {
-        Path current = directory;
+            String afterUpload = path.substring(uploadIndex + uploadPrefix.length());
+            if (!StringUtils.hasText(afterUpload)) {
+                return null;
+            }
 
-        while (current != null && !current.equals(uploadRootPath) && current.startsWith(uploadRootPath)) {
-            try (Stream<Path> children = Files.list(current)) {
-                if (children.findAny().isPresent()) {
+            String[] segments = afterUpload.split("/");
+            int publicIdStartIndex = 0;
+            for (int i = segments.length - 1; i >= 0; i--) {
+                if (segments[i].matches("v\\d+")) {
+                    publicIdStartIndex = i + 1;
                     break;
                 }
-            } catch (IOException ex) {
-                break;
+            }
+            if (publicIdStartIndex >= segments.length) {
+                return null;
             }
 
-            try {
-                Files.deleteIfExists(current);
-            } catch (IOException ex) {
-                break;
-            }
+            String publicIdWithExtension = String.join("/",
+                    Arrays.copyOfRange(segments, publicIdStartIndex, segments.length));
 
-            current = current.getParent();
+            return stripExtension(publicIdWithExtension);
+        } catch (RuntimeException ex) {
+            return null;
         }
     }
 
-    private Path resolveBasePath(String basePath) {
-        if (!StringUtils.hasText(basePath)) {
-            throw new IllegalStateException("Upload base path is not configured");
+    private String stripExtension(String value) {
+        int extensionIndex = value.lastIndexOf('.');
+        if (extensionIndex <= value.lastIndexOf('/')) {
+            return value;
         }
 
-        if (basePath.startsWith("file:")) {
-            return Paths.get(URI.create(basePath));
-        }
-
-        return Paths.get(basePath);
+        return value.substring(0, extensionIndex);
     }
 }

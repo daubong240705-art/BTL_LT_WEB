@@ -62,7 +62,7 @@ export default function MovieDialog({
                     onClose={() => onOpenChange(false)}
                 />
 
-                <div className="px-6 py-4 border-t border-gray-800 flex justify-end gap-3">
+                {/* <div className="px-6 py-4 border-t border-gray-800 flex justify-end gap-3">
                     <Button
                         type="button"
                         onClick={() => onOpenChange(false)}
@@ -78,7 +78,7 @@ export default function MovieDialog({
                         <Save className="w-4 h-4" />
                         Luu
                     </Button>
-                </div>
+                </div> */}
             </DialogContent>
         </Dialog>
     );

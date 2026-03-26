@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { useCategoryForm, useCategoryMutation } from "@/app/hooks/category/useCategoryForm";
 import { CategoryFormValues } from "@/app/types/form.type";
+import { toast } from "sonner";
 
 
 type Props = {
@@ -13,14 +14,33 @@ type Props = {
     onClose: () => void;
 };
 
+
+
 export default function CategoryForm({ mode, initialData, onClose }: Props) {
     const form = useCategoryForm(mode, initialData);
     const mutation = useCategoryMutation(mode, form, initialData?.id, onClose);
 
-    const onSubmit = (data: CategoryFormValues) => {
-        form.clearErrors("root");
-        mutation.mutate(data);
-    };
+    const onSubmit = async (data: CategoryFormValues) => {
+    form.clearErrors("root");
+
+    await toast.promise(
+        mutation.mutateAsync(data),
+        {
+            loading: mode === "add" ? "Đang tạo thể loại..." : "Đang cập nhật thể loại...",
+            success: (res) => {
+                const categoryName = res.data?.name || "thể loại";
+                return mode === "add"
+                    ? `Tạo ${categoryName} thành công!`
+                    : `Cập nhật ${categoryName} thành công!`;
+            },
+            error: () => {
+                return mode === "add"
+                    ? "Tạo thể loại thất bại!"
+                    : "Cập nhật thể loại thất bại!";
+            },
+        }
+    );
+};
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -62,7 +82,7 @@ export default function CategoryForm({ mode, initialData, onClose }: Props) {
                     className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2"
                 >
                     <Save className="w-4 h-4" />
-                    {mutation.isPending ? "Dang luu..." : "Luu"}
+                    {mutation.isPending ? "Đang lưu..." : "Lưu"}
                 </Button>
             </div>
 

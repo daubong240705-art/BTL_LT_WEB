@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { assertApiSuccess, handleFormError, useDeleteWithRefresh } from "../_shared/mutation.utils";
 import { movieApi } from "../../admin/service/api/movie.api";
-import { toast } from "sonner";
 import { MoviePayload, MovieSubmitPayload, movieSchema } from "@/app/types/form.type";
 import { fileApi } from "@/app/services/file.service";
 
@@ -86,15 +85,6 @@ export const useMovieMutation = (
             return assertApiSuccess(response);
         },
 
-        onSuccess: (res) => {
-            router.refresh();
-            const movieName = res.data?.title || "phim";
-            toast.success(
-                mode === "add" ? `Tạo ${movieName} thành công!` : `Cập nhật ${movieName} thành công!`
-            );
-
-            onClose?.();
-        },
         onError: (err) => {
             handleFormError(err, form.setError);
         }
