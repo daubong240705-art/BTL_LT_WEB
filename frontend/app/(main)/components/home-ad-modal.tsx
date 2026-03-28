@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 
 const HOME_AD_SEEN_KEY = "home-ad-seen"
-const HOME_AD_IMAGE_URL = "http://192.168.10.208/movies/Media/avatar/add1.png"
+const HOME_AD_IMAGE_URL = "https://res.cloudinary.com/de5eiayqo/image/upload/v1774697154/add1_bgl0ly.png"
 
 export default function HomeAdModal() {
 
