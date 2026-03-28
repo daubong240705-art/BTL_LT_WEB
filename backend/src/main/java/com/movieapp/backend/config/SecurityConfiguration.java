@@ -68,7 +68,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authz -> authz
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/comments/**").permitAll()
-                        .requestMatchers("/", "/api/v1/auth/**", "/api/v1/public/**", "/storage/**").permitAll()
+                        .requestMatchers("/", "/api/v1/auth/**", "/api/v1/public/**").permitAll()
 
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt

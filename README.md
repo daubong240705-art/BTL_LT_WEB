@@ -31,4 +31,4 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml logs -f
 Notes:
 - Production compose only exposes Nginx on port `80`; backend and frontend stay internal.
 - If you terminate TLS on the host or another reverse proxy, keep `HTTP_PORT` internal and point your proxy to this stack.
-- `UPLOADS_DIR` should point to persistent storage that is included in backups.
+- Image upload is handled by Cloudinary, so production no longer needs a local uploads volume.

@@ -19,12 +19,9 @@ services:
       MOVIEAPP_JWT_ACCESS_TOKEN: "8640000"
       MOVIEAPP_JWT_REFRESH_TOKEN: "8640000"
       MOVIEAPP_FRONTEND_URL: http://localhost,http://localhost:3000
-      LUOIFILIX_UPLOAD_FILE_BASE_PATH: file:///app/uploads/
       CLOUDINARY_CLOUD_NAME: de5eiayqo
       CLOUDINARY_API_KEY: 389914966887368
       CLOUDINARY_API_SECRET: uTvzbsk-5h380Cog5n3VtcB_jGU
-    volumes:
-      - ./data/uploads:/app/uploads
 
   frontend:
     build:
