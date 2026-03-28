@@ -3,6 +3,12 @@ import Footer from "./components/main.footer";
 import Header from "./components/main.header";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { AuthProvider } from "../context/auth-provider";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Luoiflix",
+  description: "Website bài tập thôi nhá",
+};
 
 export default async function MainLayout({
   children,
