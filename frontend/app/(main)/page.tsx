@@ -24,7 +24,7 @@ export default async function HomePage() {
 
 
 
-    const MovieBanner = bannerRes.data!;
+    const MovieBanner = bannerRes.data ?? null;
     const cartoonMovie = cartoonRes.data?.result ?? [];
     const animeMovie = animeRes.data?.result ?? [];
     const cinemaMovie = cinemaRes.data?.result ?? [];
@@ -34,7 +34,7 @@ export default async function HomePage() {
             <HomeAdModal />
             <div className="min-h-screen bg-gray-900">
 
-                <HeroBanner MovieBanner={MovieBanner} />
+                {MovieBanner ? <HeroBanner MovieBanner={MovieBanner} /> : null}
                 <MovieSlider title="Hoạt hình" movies={cartoonMovie} />
                 <MovieSlider title="Anime" movies={animeMovie} />
                 <MovieSlider title="Chiếu rạp" movies={cinemaMovie} />

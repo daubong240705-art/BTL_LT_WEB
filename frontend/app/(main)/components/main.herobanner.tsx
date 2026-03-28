@@ -9,8 +9,16 @@ type Props = {
     MovieBanner: Movie
 }
 export default async function HeroBanner({ MovieBanner }: Props) {
+    if (!MovieBanner?.slug) {
+        return null;
+    }
+
     const firstEpisodeRes = await getFirstEpisode(MovieBanner.slug);
-    const firstEpisode = firstEpisodeRes.data!;
+    const firstEpisode = firstEpisodeRes.data ?? null;
+    const primaryHref = firstEpisode?.slug
+        ? `/watch/${MovieBanner.slug}/${firstEpisode.slug}`
+        : `/movie/${MovieBanner.slug}`;
+
     return (
         <div className="relative min-h-screen w-full overflow-hidden">
             <div className="absolute bg-cover inset-0 bg-center"
@@ -36,7 +44,7 @@ export default async function HeroBanner({ MovieBanner }: Props) {
                         <div className="flex items-center gap-6">
 
 
-                            <Link href={`/watch/${MovieBanner.slug}/${firstEpisode.slug}`}>
+                            <Link href={primaryHref}>
                                 <Button className="w-16 h-16 rounded-full bg-red-400 hover:bg-red-200 flex items-center justify-center shadow-lg shadow-yellow-500/30 transition-transform hover:scale-105">
                                     <Play className="w-6 h-6 fill-black text-black ml-1" />
                                 </Button>
