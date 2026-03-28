@@ -36,21 +36,22 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
 
     const onSubmit = async (data: UserFormValues) => {
 
-    const payload: UserSubmitPayload = {
-        fullName: data.fullName,
-        username: data.username,
-        email: data.email,
-        role: data.role,
-        password: data.password || undefined,
-        avatarUrl: initialData?.avatarUrl || undefined,
-        avatarFile,
-    };
+        const payload: UserSubmitPayload = {
+            fullName: data.fullName,
+            username: data.username,
+            email: data.email,
+            role: data.role,
+            password: data.password || undefined,
+            avatarUrl: initialData?.avatarUrl || undefined,
+            avatarFile,
+        };
         await toast.promise(
             mutation.mutateAsync(payload),
             {
                 loading: mode === "add" ? "Đang tạo user..." : "Đang cập nhật user...",
                 success: (res) => {
                     const name = res.data?.username || "user";
+                    onClose();
                     return mode === "add"
                         ? `Tạo ${name} thành công!`
                         : `Cập nhật ${name} thành công!`;
@@ -63,7 +64,7 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
             }
         );
     }
-   
+
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)}>

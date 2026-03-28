@@ -70,14 +70,7 @@ export const useUserMutation = (
                 : userApi.updateUser(userId!, payload));
             return assertApiSuccess(response);
         },
-        onSuccess: (res) => {
-            router.refresh();
-            const userName = res.data?.username || "người dùng";
-            toast.success(
-                mode === "add" ? `Tạo ${userName} thành công!` : `Cập nhật ${userName} thành công!`
-            );
-            onClose?.();
-        },
+
         onError: (err) => {
             handleFormError(err, form.setError);
         }

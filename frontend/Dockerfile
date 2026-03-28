@@ -10,7 +10,9 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 
 FROM base AS builder
 ARG NEXT_PUBLIC_BACKEND_URL
+ARG NEXT_PUBLIC_MEDIA_BASE_URL
 ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ENV NEXT_PUBLIC_MEDIA_BASE_URL=${NEXT_PUBLIC_MEDIA_BASE_URL}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN mkdir -p public && npm run build

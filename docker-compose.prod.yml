@@ -32,6 +32,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_BACKEND_URL: /api/v1
+        NEXT_PUBLIC_MEDIA_BASE_URL: ${NEXT_PUBLIC_MEDIA_BASE_URL:-https://media.lazy247.xyz}
     image: luoiflix-frontend:${APP_TAG:-latest}
     restart: unless-stopped
     depends_on:
@@ -39,6 +40,7 @@ services:
     environment:
       NEXT_PUBLIC_BACKEND_URL: /api/v1
       BACKEND_INTERNAL_URL: http://backend:8080/api/v1
+      NEXT_PUBLIC_MEDIA_BASE_URL: ${NEXT_PUBLIC_MEDIA_BASE_URL:-https://media.lazy247.xyz}
     networks:
       - app
     logging:
