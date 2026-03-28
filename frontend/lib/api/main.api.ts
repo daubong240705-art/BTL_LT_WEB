@@ -1,7 +1,8 @@
 import { sendRequest } from "./wrapprer";
+import { getBackendBaseUrl } from "../config/api-url";
 
 
-const api_url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/public`;
+const api_url = `${getBackendBaseUrl()}/public`;
 
 export const getMovies = (filter?: string, page = 1, size = 10) => {
     return sendRequest<IBackendRes<IModelPaginate<Movie>>>({
@@ -65,7 +66,7 @@ export const getCategories = () => {
 
 export const getCommentsByMovieId = (movieId: number, page = 1, size = 5) => {
     return sendRequest<IBackendRes<IModelPaginate<MovieComment>>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/comments/movie/${movieId}`,
+        url: `${getBackendBaseUrl()}/comments/movie/${movieId}`,
         method: "GET",
         queryParams: { page, size },
         useCredentials: true
@@ -74,7 +75,7 @@ export const getCommentsByMovieId = (movieId: number, page = 1, size = 5) => {
 
 export const createComment = (movie_id: number, content: string) => {
     return sendRequest<IBackendRes<MovieComment>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/comments`,
+        url: `${getBackendBaseUrl()}/comments`,
         method: "POST",
         body: { movie_id, content },
         useCredentials: true
@@ -83,7 +84,7 @@ export const createComment = (movie_id: number, content: string) => {
 
 export const deleteComment = (id: number) => {
     return sendRequest<IBackendRes<null>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/comments/${id}`,
+        url: `${getBackendBaseUrl()}/comments/${id}`,
         method: "DELETE",
         useCredentials: true
     });
@@ -91,7 +92,7 @@ export const deleteComment = (id: number) => {
 
 export const getAccount = () => {
     return sendRequest<IBackendRes<User>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/account`,
+        url: `${getBackendBaseUrl()}/auth/account`,
         method: "GET",
         useCredentials: true
     });
@@ -99,7 +100,7 @@ export const getAccount = () => {
 
 export const getFavoriteMovies = () => {
     return sendRequest<IBackendRes<Movie[]>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites`,
+        url: `${getBackendBaseUrl()}/favorites`,
         method: "GET",
         useCredentials: true,
         auth: true,
@@ -109,7 +110,7 @@ export const getFavoriteMovies = () => {
 
 export const addFavoriteMovie = (movieId: number) => {
     return sendRequest<IBackendRes<Movie>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites/${movieId}`,
+        url: `${getBackendBaseUrl()}/favorites/${movieId}`,
         method: "POST",
         useCredentials: true,
         auth: true,
@@ -119,7 +120,7 @@ export const addFavoriteMovie = (movieId: number) => {
 
 export const removeFavoriteMovie = (movieId: number) => {
     return sendRequest<IBackendRes<null>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites/${movieId}`,
+        url: `${getBackendBaseUrl()}/favorites/${movieId}`,
         method: "DELETE",
         useCredentials: true,
         auth: true,

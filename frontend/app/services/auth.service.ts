@@ -1,7 +1,8 @@
 import { LoginForm, SignupForm } from "@/app/types/form.type";
+import { getBackendBaseUrl } from "@/lib/config/api-url";
 import { sendRequest } from "@/lib/api/wrapprer";
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1";
+const API_URL = getBackendBaseUrl();
 
 export type SignupPayload = Omit<SignupForm, "confirmPassword">;
 

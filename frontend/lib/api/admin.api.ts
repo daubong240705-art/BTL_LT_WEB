@@ -1,7 +1,8 @@
 import { MoviePayload } from "@/app/types/form.type";
 import { adminRequest } from "./adminRequest";
+import { getBackendBaseUrl } from "../config/api-url";
 
-const api_url = `${process.env.NEXT_PUBLIC_BACKEND_URL}`;
+const api_url = getBackendBaseUrl();
 
 type AdminRequestOptions = {
     cookieHeader?: string

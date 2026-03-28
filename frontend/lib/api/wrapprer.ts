@@ -1,10 +1,8 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { getBackendBaseUrl } from "@/lib/config/api-url"
 import queryString from "query-string"
-
-const BACKEND_BASE_URL =
-    process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -15,8 +13,9 @@ type RefreshProps = {
 }
 
 const refreshToken = async (props?: RefreshProps): Promise<string | null> => {
+    const backendBaseUrl = getBackendBaseUrl()
 
-    const res = await fetch(`${BACKEND_BASE_URL}/auth/refresh`, {
+    const res = await fetch(`${backendBaseUrl}/auth/refresh`, {
         method: "GET",
         headers: props?.cookieHeader ? { cookie: props.cookieHeader } : undefined,
         credentials: "include",

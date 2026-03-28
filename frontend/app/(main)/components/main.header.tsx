@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { sendRequest } from "@/lib/api/wrapprer"
+import { getBackendBaseUrl } from "@/lib/config/api-url"
 import { buildMovieSearchHref } from "@/lib/filter/MovieQueryBuilder"
 import { useAuth } from "@/app/context/auth-provider"
 
@@ -23,7 +24,7 @@ interface Props {
 
 
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080/api/v1"
+const API_URL = getBackendBaseUrl()
 
 export default function Header({ categories }: Props) {
 

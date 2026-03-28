@@ -104,13 +104,13 @@ export default function AccountSettingsPage() {
         setIsSaving(false);
 
         if (+res.statusCode === 401 || +res.statusCode === 403) {
-            toast.error("Phien dang nhap da het han.");
+            toast.error("Phiên đăng nhập đã hết hạn.");
             router.push("/login");
             return;
         }
 
         if (+res.statusCode >= 400 || !res.data?.user) {
-            toast.error(res.message || "Khong the cap nhat.");
+            toast.error(res.message || "Không thể cập nhật.");
             return;
         }
 
@@ -123,7 +123,7 @@ export default function AccountSettingsPage() {
 
         setUser(updatedUser);
 
-        toast.success("Cap nhat ho so thanh cong");
+        toast.success("Cập nhật hồ sơ thành công");
     };
 
     const handleLogout = async () => {
@@ -143,7 +143,7 @@ export default function AccountSettingsPage() {
             <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-white">
                 <div className="flex items-center gap-3 rounded-2xl border border-gray-800 bg-[#111] px-6 py-4">
                     <Loader2 className="h-5 w-5 animate-spin text-red-500" />
-                    Dang tai thong tin tai khoan...
+                    Đang tải thông tin tài khoản...
                 </div>
             </div>
         );
