@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useAuth } from "@/app/context/auth-provider";
 import {
     addFavoriteMovie as addFavoriteMovieRequest,
     getFavoriteMovies as getFavoriteMoviesRequest,
@@ -24,10 +25,12 @@ type ToggleFavoriteResult = {
 const FAVORITE_QUERY_KEY = ["favorite-movies"];
 
 export function useFavoriteMovies() {
+    const { user } = useAuth();
     const queryClient = useQueryClient();
 
     const favoritesQuery = useQuery<FavoriteQueryResult>({
         queryKey: FAVORITE_QUERY_KEY,
+        enabled: !!user,
         queryFn: async () => {
             const res = await getFavoriteMoviesRequest();
 
@@ -49,7 +52,7 @@ export function useFavoriteMovies() {
         () => favoritesQuery.data?.movies ?? [],
         [favoritesQuery.data?.movies]
     );
-    const isAuthenticated = favoritesQuery.data?.isAuthenticated ?? true;
+    const isAuthenticated = !!user && (favoritesQuery.data?.isAuthenticated ?? true);
 
     const favoriteMovieIds = useMemo(
         () => new Set(favoriteMovies.map((movie) => movie.id)),
@@ -62,6 +65,14 @@ export function useFavoriteMovies() {
 
     const toggleFavorite = useCallback(
         async (movie: Movie): Promise<ToggleFavoriteResult> => {
+            if (!user) {
+                return {
+                    success: false,
+                    authRequired: true,
+                    message: "Vui long dang nhap de dung tinh nang yeu thich.",
+                };
+            }
+
             const favorite = favoriteMovieIds.has(movie.id);
 
             const res = favorite
@@ -91,11 +102,19 @@ export function useFavoriteMovies() {
                 message: res.message,
             };
         },
-        [favoriteMovieIds, refreshFavorites]
+        [favoriteMovieIds, refreshFavorites, user]
     );
 
     const removeFavorite = useCallback(
         async (movieId: number): Promise<ToggleFavoriteResult> => {
+            if (!user) {
+                return {
+                    success: false,
+                    authRequired: true,
+                    message: "Vui long dang nhap de dung tinh nang yeu thich.",
+                };
+            }
+
             const res = await removeFavoriteMovieRequest(movieId);
 
             if (+res.statusCode === 401 || +res.statusCode === 403) {
@@ -121,7 +140,7 @@ export function useFavoriteMovies() {
                 message: res.message,
             };
         },
-        [refreshFavorites]
+        [refreshFavorites, user]
     );
 
     return {
