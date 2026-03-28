@@ -1,6 +1,11 @@
+import { Metadata } from "next";
 import AdminSidebar from "./components/admin.sidebar";
 
 
+export const metadata: Metadata = {
+  title: "Luoiflix-Admin",
+  description: "Website bài tập thôi nhá",
+};
 
 export default function RootLayout({
   children,
