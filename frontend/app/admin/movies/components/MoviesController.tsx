@@ -133,8 +133,8 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
                         onSuccess: () => setMovieToDelete(null),
                     });
                 }}
-                title="Xoa phim?"
-                message="Hanh dong nay khong the hoan tac."
+                title="Xoá phim?"
+                message="Xoá phim này sễ xoá tất sẽ xoá luôn tất cả tập phim của phim. Bạn có chắc không?"
             />
         </>
     );
