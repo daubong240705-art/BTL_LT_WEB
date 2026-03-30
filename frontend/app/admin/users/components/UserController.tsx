@@ -28,7 +28,7 @@ export default function UsersController({ users }: { users: User[] }) {
     const [roleFilter, setRoleFilter] = useState("ALL");
     const [currentPage, setCurrentPage] = useState(1);
     const { deleteUser } = useDeleteUser();
-    const pageSize = 10;
+    const pageSize = 8;
 
     const filteredUsers = useMemo(() => {
         const keyword = search.trim().toLowerCase();

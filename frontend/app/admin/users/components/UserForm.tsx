@@ -93,7 +93,7 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                 {...form.register("fullName")}
                                 type="text"
                                 color="blue"
-                                placeholder="Nhap ho va ten"
+                                placeholder="Nhập họ và tên"
                                 className="px-4 py-5 text-white"
                             />
                             <FormError message={form.formState.errors.fullName?.message} />
