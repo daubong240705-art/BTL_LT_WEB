@@ -16,7 +16,7 @@ export default function UserTable({ users, onEdit, onDelete }: Props) {
                 <Table className="w-full">
                     <TableHeader>
                         <TableRow className="border-b border-gray-700 bg-gray-900/50 text-left">
-                            <TableHead className="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-gray-400">ID</TableHead>
+                            <TableHead className="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-gray-400">ID1</TableHead>
                             <TableHead className="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-gray-400">Người dùng</TableHead>
                             <TableHead className="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-gray-400">Email</TableHead>
                             <TableHead className="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-gray-400">Vai trò</TableHead>
