@@ -58,13 +58,9 @@ export default async function MovieDetailPage({ params }: Props) {
                                 {movie.description}
                             </p>
                         </div>
-
-                        <Comments movieId={movie.id} />
                     </div>
 
-                    <aside className="space-y-5 xl:col-span-1">
-                        <Top5Movies />
-
+                    <aside className="xl:col-span-1">
                         <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-5 sm:p-6 xl:sticky xl:top-20">
                             <h2 className="mb-4 border-l-4 border-red-600 pl-3 text-lg font-bold text-white">
                                 Danh sách tập
@@ -90,6 +86,13 @@ export default async function MovieDetailPage({ params }: Props) {
                         </div>
                     </aside>
                 </div>
+
+                <section className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_320px] 2xl:grid-cols-[minmax(0,1fr)_360px]">
+                    <Comments movieId={movie.id} />
+                    <div className="self-start">
+                        <Top5Movies />
+                    </div>
+                </section>
             </div>
         </div>
     );

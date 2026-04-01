@@ -89,8 +89,6 @@ export default async function MovieDetailPage({ params }: Props) {
                                     {movie.description}
                                 </p>
                             </div>
-
-                            <Top5Movies />
                         </div>
                     </aside>
 
@@ -146,12 +144,18 @@ export default async function MovieDetailPage({ params }: Props) {
                                 ))}
                             </div>
                         </section>
-
-                        <div id="comments" className="pt-[20vh]">
-                            <Comments movieId={movie.id} />
-                        </div>
                     </main>
                 </div>
+
+                <section
+                    id="comments"
+                    className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_360px]"
+                >
+                    <Comments movieId={movie.id} />
+                    <div className="self-start">
+                        <Top5Movies />
+                    </div>
+                </section>
             </div>
         </div>
     );

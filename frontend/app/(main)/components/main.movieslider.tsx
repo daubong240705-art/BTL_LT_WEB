@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -45,6 +46,21 @@ function PrevArrow(props: ArrowProps) {
 }
 
 export function MovieSlider({ title, movies }: MovieSliderProps) {
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(hover: none), (pointer: coarse)");
+
+        const updateDeviceMode = () => {
+            setIsTouchDevice(mediaQuery.matches);
+        };
+
+        updateDeviceMode();
+        mediaQuery.addEventListener("change", updateDeviceMode);
+
+        return () => mediaQuery.removeEventListener("change", updateDeviceMode);
+    }, []);
+
     const settings = {
         dots: false,
         infinite: movies.length > 6,
@@ -54,40 +70,55 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
         swipeToSlide: true,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
-        responsive: [
-            {
-                breakpoint: 1536,
-                settings: {
-                    slidesToShow: Math.min(5, movies.length),
+        responsive: isTouchDevice
+            ? [
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: Math.min(2, movies.length),
+                        arrows: false,
+                    },
                 },
-            },
-            {
-                breakpoint: 1280,
-                settings: {
-                    slidesToShow: Math.min(4, movies.length),
+                {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                        arrows: false,
+                    },
                 },
-            },
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: Math.min(3, movies.length),
+            ]
+            : [
+                {
+                    breakpoint: 1600,
+                    settings: {
+                        slidesToShow: Math.min(5, movies.length),
+                    },
                 },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: Math.min(2, movies.length),
-                    arrows: false,
+                {
+                    breakpoint: 1360,
+                    settings: {
+                        slidesToShow: Math.min(4, movies.length),
+                    },
                 },
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                    slidesToShow: 1,
-                    arrows: false,
+                {
+                    breakpoint: 1120,
+                    settings: {
+                        slidesToShow: Math.min(3, movies.length),
+                    },
                 },
-            },
-        ],
+                {
+                    breakpoint: 820,
+                    settings: {
+                        slidesToShow: Math.min(2, movies.length),
+                    },
+                },
+                {
+                    breakpoint: 560,
+                    settings: {
+                        slidesToShow: 1,
+                    },
+                },
+            ],
     };
 
     if (!movies || movies.length === 0) return null;
