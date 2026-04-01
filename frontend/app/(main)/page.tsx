@@ -16,7 +16,7 @@ export default async function HomePage() {
         animeRes,
         cinemaRes
     ] = await Promise.all([
-        getMovieBySlug("tieu-yeu"),
+        getMovieBySlug("que"),
         getMoviesByCategorySlug("hoat-hinh"),
         getMoviesByCategorySlug("anime"),
         getMoviesByCategorySlug("chieu-rap")
