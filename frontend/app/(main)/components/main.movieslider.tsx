@@ -70,6 +70,7 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
         };
     }, []);
 
+    const useMobileScroller = isMobileDevice;
     const useCompactDesktopGrid = !isMobileDevice && viewportWidth > 0 && viewportWidth < 1536;
 
     const settings = {
@@ -81,62 +82,20 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
         swipeToSlide: true,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
-        responsive: isMobileDevice
-            ? [
-                {
-                    breakpoint: 1024,
-                    settings: {
-                        slidesToShow: Math.min(3, movies.length),
-                        arrows: false,
-                    },
+        responsive: [
+            {
+                breakpoint: 1800,
+                settings: {
+                    slidesToShow: Math.min(5, movies.length),
                 },
-                {
-                    breakpoint: 768,
-                    settings: {
-                        slidesToShow: Math.min(2, movies.length),
-                        arrows: false,
-                    },
+            },
+            {
+                breakpoint: 1600,
+                settings: {
+                    slidesToShow: Math.min(4, movies.length),
                 },
-                {
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 1,
-                        arrows: false,
-                    },
-                },
-            ]
-            : [
-                {
-                    breakpoint: 1600,
-                    settings: {
-                        slidesToShow: Math.min(5, movies.length),
-                    },
-                },
-                {
-                    breakpoint: 1360,
-                    settings: {
-                        slidesToShow: Math.min(4, movies.length),
-                    },
-                },
-                {
-                    breakpoint: 1120,
-                    settings: {
-                        slidesToShow: Math.min(3, movies.length),
-                    },
-                },
-                {
-                    breakpoint: 820,
-                    settings: {
-                        slidesToShow: Math.min(2, movies.length),
-                    },
-                },
-                {
-                    breakpoint: 560,
-                    settings: {
-                        slidesToShow: 1,
-                    },
-                },
-            ],
+            },
+        ],
     };
 
     if (!movies || movies.length === 0) return null;
@@ -147,7 +106,18 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
                 {title}
             </h2>
 
-            {useCompactDesktopGrid ? (
+            {useMobileScroller ? (
+                <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6">
+                    {movies.map((movie) => (
+                        <div
+                            key={movie.id}
+                            className="w-[72vw] min-w-[170px] max-w-[220px] shrink-0 snap-start"
+                        >
+                            <MovieCard movie={movie} />
+                        </div>
+                    ))}
+                </div>
+            ) : useCompactDesktopGrid ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                     {movies.map((movie) => (
                         <div key={movie.id}>
