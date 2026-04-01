@@ -7,11 +7,22 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { useFavoriteMovies } from "@/app/hooks/favorites/useFavoriteMovies";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 10;
 
 export default function MyFavoritesPage() {
     const { favoriteMovies, isAuthenticated, isLoading, removeFavorite } = useFavoriteMovies();
     const [keyword, setKeyword] = useState("");
     const [filterGenre, setFilterGenre] = useState("all");
+    const [currentPage, setCurrentPage] = useState(1);
 
     const availableGenres = useMemo(() => {
         const genres = new Map<string, string>();
@@ -29,10 +40,11 @@ export default function MyFavoritesPage() {
         const normalizedKeyword = keyword.trim().toLowerCase();
 
         return favoriteMovies.filter((movie) => {
+            const movieDescription = movie.description?.toLowerCase() ?? "";
             const matchKeyword =
                 !normalizedKeyword ||
                 movie.title.toLowerCase().includes(normalizedKeyword) ||
-                movie.description.toLowerCase().includes(normalizedKeyword);
+                movieDescription.includes(normalizedKeyword);
 
             const matchGenre =
                 filterGenre === "all" ||
@@ -41,6 +53,38 @@ export default function MyFavoritesPage() {
             return matchKeyword && matchGenre;
         });
     }, [favoriteMovies, filterGenre, keyword]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+
+    const paginatedMovies = useMemo(() => {
+        const start = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+        return filteredMovies.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredMovies, safeCurrentPage]);
+
+    const handlePageChange = (page: number) => {
+        if (page < 1 || page > totalPages || page === safeCurrentPage) return;
+        setCurrentPage(page);
+    };
+
+    const renderPageLink = (page: number) => (
+        <PaginationItem key={page}>
+            <PaginationLink
+                href="#favorites-grid"
+                isActive={page === safeCurrentPage}
+                onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(page);
+                }}
+                className={`border-gray-700 ${page === safeCurrentPage
+                    ? "bg-red-600 text-white hover:bg-red-600"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    }`}
+            >
+                {page}
+            </PaginationLink>
+        </PaginationItem>
+    );
 
     return (
         <div className="min-h-screen bg-gray-900 pb-20">
@@ -73,7 +117,10 @@ export default function MyFavoritesPage() {
                                 type="text"
                                 placeholder="Tìm kiếm trong tủ phim..."
                                 value={keyword}
-                                onChange={(e) => setKeyword(e.target.value)}
+                                onChange={(e) => {
+                                    setKeyword(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 className="w-full rounded-lg border border-gray-700 bg-gray-900 py-3 pl-12 pr-10 text-white transition-all focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                             />
                             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 transition-colors group-focus-within:text-red-500" />
@@ -82,7 +129,10 @@ export default function MyFavoritesPage() {
                         <div className="w-full md:w-64">
                             <select
                                 value={filterGenre}
-                                onChange={(e) => setFilterGenre(e.target.value)}
+                                onChange={(e) => {
+                                    setFilterGenre(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 className="w-full appearance-none rounded-lg border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:border-red-500 focus:outline-none"
                                 style={{ backgroundImage: "none" }}
                             >
@@ -98,69 +148,106 @@ export default function MyFavoritesPage() {
                 </div>
 
                 {filteredMovies.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                        {filteredMovies.map((movie) => (
-                            <div
-                                key={movie.id}
-                                className="group overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 shadow-lg shadow-black/20"
-                            >
-                                <Link href={`/movie/${movie.slug}`} className="block">
-                                    <div className="relative aspect-2/3 overflow-hidden">
-                                        <Image
-                                            src={movie.posterUrl}
-                                            alt={movie.title}
-                                            fill
-                                            unoptimized
-                                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
-                                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
-                                        <div className="absolute bottom-3 left-3 right-3">
-                                            <p className="line-clamp-2 text-sm text-gray-200">
-                                                {movie.description}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Link>
+                    <>
 
-                                <div className="space-y-3 p-4">
+                        <div id="favorites-grid" className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                            {paginatedMovies.map((movie) => (
+                                <div
+                                    key={movie.id}
+                                    className="group overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 shadow-lg shadow-black/20"
+                                >
                                     <Link href={`/movie/${movie.slug}`} className="block">
-                                        <h2 className="line-clamp-1 text-lg font-semibold text-white transition-colors group-hover:text-red-500">
-                                            {movie.title}
-                                        </h2>
-                                        <p className="mt-1 text-sm text-gray-400">{movie.publishYear}</p>
+                                        <div className="relative aspect-2/3 overflow-hidden">
+                                            <Image
+                                                src={movie.posterUrl}
+                                                alt={movie.title}
+                                                fill
+                                                unoptimized
+                                                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
+                                            <div className="absolute bottom-3 left-3 right-3">
+                                                <p className="line-clamp-2 text-sm text-gray-200">
+                                                    {movie.description}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </Link>
 
-                                    <div className="flex flex-wrap gap-2">
-                                        {movie.categories.slice(0, 2).map((category) => (
-                                            <span
-                                                key={category.id}
-                                                className="rounded-full border border-gray-700 bg-gray-900 px-2.5 py-1 text-xs text-gray-300"
-                                            >
-                                                {category.name}
-                                            </span>
-                                        ))}
-                                    </div>
+                                    <div className="space-y-3 p-4">
+                                        <Link href={`/movie/${movie.slug}`} className="block">
+                                            <h2 className="line-clamp-1 text-lg font-semibold text-white transition-colors group-hover:text-red-500">
+                                                {movie.title}
+                                            </h2>
+                                            <p className="mt-1 text-sm text-gray-400">{movie.publishYear}</p>
+                                        </Link>
 
-                                    <button
-                                        type="button"
-                                        onClick={async () => {
-                                            const result = await removeFavorite(movie.id);
-                                            if (!result.success) {
-                                                toast.error(result.message ?? "Không thể xoá phim yêu thích.");
-                                                return;
-                                            }
-                                            toast.success(`Đã xoá "${movie.title}" khỏi yêu thích`);
-                                        }}
-                                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/20"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                        Xoá khỏi yêu thích
-                                    </button>
+                                        <div className="flex flex-wrap gap-2">
+                                            {movie.categories.slice(0, 2).map((category) => (
+                                                <span
+                                                    key={category.id}
+                                                    className="rounded-full border border-gray-700 bg-gray-900 px-2.5 py-1 text-xs text-gray-300"
+                                                >
+                                                    {category.name}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                const result = await removeFavorite(movie.id);
+                                                if (!result.success) {
+                                                    toast.error(result.message ?? "Không thể xoá phim yêu thích.");
+                                                    return;
+                                                }
+                                                toast.success(`Đã xoá "${movie.title}" khỏi yêu thích`);
+                                            }}
+                                            className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/20"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                            Xoá khỏi yêu thích
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+
+                        {totalPages > 1 ? (
+                            <Pagination className="mt-10">
+                                <PaginationContent>
+                                    {safeCurrentPage > 1 ? (
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                href="#favorites-grid"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(safeCurrentPage - 1);
+                                                }}
+                                                className="border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white"
+                                            />
+                                        </PaginationItem>
+                                    ) : null}
+
+                                    {Array.from({ length: totalPages }, (_, index) => renderPageLink(index + 1))}
+
+                                    {safeCurrentPage < totalPages ? (
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                href="#favorites-grid"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(safeCurrentPage + 1);
+                                                }}
+                                                className="border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white"
+                                            />
+                                        </PaginationItem>
+                                    ) : null}
+                                </PaginationContent>
+                            </Pagination>
+                        ) : null}
+                    </>
                 ) : isLoading ? (
                     <div className="rounded-2xl border border-dashed border-gray-700 bg-gray-800/40 px-6 py-16 text-center">
                         <h2 className="text-2xl font-bold text-white">Đang tải danh sách yêu thích...</h2>
