@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MovieCard } from './main.moviecard';
 
-
+const MOBILE_DEVICE_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
 
 interface MovieSliderProps {
     title: string;
@@ -46,20 +46,31 @@ function PrevArrow(props: ArrowProps) {
 }
 
 export function MovieSlider({ title, movies }: MovieSliderProps) {
-    const [isTouchDevice, setIsTouchDevice] = useState(false);
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
+    const [viewportWidth, setViewportWidth] = useState(0);
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia("(hover: none), (pointer: coarse)");
+        const desktopPointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
-        const updateDeviceMode = () => {
-            setIsTouchDevice(mediaQuery.matches);
+        const updateLayoutMode = () => {
+            const hasDesktopPointer = desktopPointerQuery.matches;
+            const matchesMobileDevice = MOBILE_DEVICE_REGEX.test(window.navigator.userAgent);
+
+            setIsMobileDevice(matchesMobileDevice && !hasDesktopPointer);
+            setViewportWidth(window.innerWidth);
         };
 
-        updateDeviceMode();
-        mediaQuery.addEventListener("change", updateDeviceMode);
+        updateLayoutMode();
+        window.addEventListener("resize", updateLayoutMode);
+        desktopPointerQuery.addEventListener("change", updateLayoutMode);
 
-        return () => mediaQuery.removeEventListener("change", updateDeviceMode);
+        return () => {
+            window.removeEventListener("resize", updateLayoutMode);
+            desktopPointerQuery.removeEventListener("change", updateLayoutMode);
+        };
     }, []);
+
+    const useCompactDesktopGrid = !isMobileDevice && viewportWidth > 0 && viewportWidth < 1536;
 
     const settings = {
         dots: false,
@@ -70,8 +81,15 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
         swipeToSlide: true,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
-        responsive: isTouchDevice
+        responsive: isMobileDevice
             ? [
+                {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: Math.min(3, movies.length),
+                        arrows: false,
+                    },
+                },
                 {
                     breakpoint: 768,
                     settings: {
@@ -123,23 +141,31 @@ export function MovieSlider({ title, movies }: MovieSliderProps) {
 
     if (!movies || movies.length === 0) return null;
 
-
-
     return (
         <section className="px-4 py-8 sm:px-6 lg:px-8">
             <h2 className="mb-6 border-l-4 border-red-600 pl-3 text-xl font-bold text-white sm:text-2xl">
                 {title}
             </h2>
 
-            <div className="relative">
-                <Slider {...settings}>
+            {useCompactDesktopGrid ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                     {movies.map((movie) => (
-                        <div key={movie.id} className="px-1.5 pb-4 sm:px-2">
+                        <div key={movie.id}>
                             <MovieCard movie={movie} />
                         </div>
                     ))}
-                </Slider>
-            </div>
+                </div>
+            ) : (
+                <div className="relative">
+                    <Slider {...settings}>
+                        {movies.map((movie) => (
+                            <div key={movie.id} className="px-1.5 pb-4 sm:px-2">
+                                <MovieCard movie={movie} />
+                            </div>
+                        ))}
+                    </Slider>
+                </div>
+            )}
         </section>
     );
 }
