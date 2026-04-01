@@ -13,9 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-gray-900 flex">
+    <div className="flex min-h-screen flex-col bg-gray-900 lg:flex-row">
       <AdminSidebar />
-      <main className="flex-1 min-w-0 p-8">
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
         {children}
       </main>
     </div>

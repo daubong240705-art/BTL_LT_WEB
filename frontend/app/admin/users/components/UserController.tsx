@@ -104,8 +104,8 @@ export default function UsersController({
                         onSuccess: () => setUserToDelete(null),
                     });
                 }}
-                title="Xoa nguoi dung?"
-                message="Xoa nguoi dung nay se xoa luon toan bo comment cua ho. Ban co chac khong?"
+                title="Xoá người dùng?"
+                message="Xoá người dùng này sẽ xoá luôn toàn bộ comment của họ. Bạn có chắc không?"
             />
         </>
     );

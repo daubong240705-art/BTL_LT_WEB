@@ -9,7 +9,7 @@ interface MovieCardProps {
 
 export function MovieCard({ movie }: MovieCardProps) {
     return (
-        <div className="group relative">
+        <div className="group relative min-w-0">
             <Link href={`/movie/${movie.slug}`} className="block cursor-pointer">
                 <div className="relative aspect-2/3 overflow-hidden rounded-lg">
                     <Image
@@ -23,7 +23,9 @@ export function MovieCard({ movie }: MovieCardProps) {
 
                     <div className="absolute inset-0 z-10 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 transition duration-300 group-hover:opacity-100">
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                            <p className="line-clamp-2 text-sm text-gray-200">{movie.description}</p>
+                            <p className="line-clamp-2 break-words text-sm text-gray-200 [overflow-wrap:anywhere]">
+                                {movie.description}
+                            </p>
                         </div>
                     </div>
 
@@ -32,8 +34,8 @@ export function MovieCard({ movie }: MovieCardProps) {
                     </div>
                 </div>
 
-                <div className="mt-3">
-                    <h3 className="line-clamp-1 font-semibold text-white transition group-hover:text-red-600">
+                <div className="mt-3 min-w-0">
+                    <h3 className="line-clamp-2 break-words font-semibold text-white transition group-hover:text-red-600 [overflow-wrap:anywhere]">
                         {movie.title}
                     </h3>
                     <p className="mt-1 text-xs text-gray-500">{movie.publishYear}</p>

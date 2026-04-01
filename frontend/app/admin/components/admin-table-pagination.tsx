@@ -26,7 +26,7 @@ export default function AdminTablePagination({
 
     return (
         <Pagination className="mt-6">
-            <PaginationContent>
+            <PaginationContent className="flex-wrap justify-center gap-2">
                 {currentPage > 1 ? (
                     <PaginationItem>
                         <PaginationPrevious

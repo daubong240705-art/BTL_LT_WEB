@@ -41,14 +41,14 @@ export default function AdminSidebar() {
     };
 
     return (
-        <aside className="sticky top-0 flex h-screen w-72 flex-col overflow-hidden border-r border-gray-700 bg-gray-800">
-            <div className="flex h-full min-h-0 flex-1 flex-col p-6">
-                <div className="mb-8 flex items-center gap-2 text-red-600">
-                    <Film className="h-8 w-8" />
-                    <span className="text-2xl font-bold">Admin</span>
+        <aside className="sticky top-0 z-40 w-full border-b border-gray-700 bg-gray-800 lg:h-screen lg:w-72 lg:shrink-0 lg:border-r lg:border-b-0">
+            <div className="flex w-full flex-col gap-4 p-3 sm:p-4 lg:h-full lg:min-h-0 lg:flex-1 lg:gap-6 lg:p-6">
+                <div className="flex items-center gap-2 text-red-600">
+                    <Film className="h-7 w-7 shrink-0 lg:h-8 lg:w-8" />
+                    <span className="text-xl font-bold lg:text-2xl">Admin</span>
                 </div>
 
-                <nav className="flex-1 space-y-2 overflow-y-auto pr-2">
+                <nav className="flex gap-2 overflow-x-auto pb-1 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pr-2">
                     {menuItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
@@ -59,14 +59,14 @@ export default function AdminSidebar() {
                                 asChild
                                 variant="ghost"
                                 className={cn(
-                                    "w-full justify-start gap-3 rounded-lg px-4 py-3 font-medium transition-colors",
+                                    "h-auto shrink-0 justify-start gap-3 whitespace-nowrap rounded-lg px-4 py-3 font-medium transition-colors lg:w-full",
                                     isActive
                                         ? "bg-red-600 text-white shadow-lg shadow-red-900/20 hover:bg-red-600"
                                         : "text-gray-300 hover:bg-gray-700 hover:text-white"
                                 )}
                             >
                                 <Link href={item.href}>
-                                    <Icon className="h-5 w-5" />
+                                    <Icon className="h-5 w-5 shrink-0" />
                                     <span>{item.label}</span>
                                 </Link>
                             </Button>
@@ -74,14 +74,14 @@ export default function AdminSidebar() {
                     })}
                 </nav>
 
-                <div className="mt-4 shrink-0 space-y-2 border-t border-gray-700 pt-6">
+                <div className="flex flex-wrap gap-2 border-t border-gray-700 pt-4 lg:mt-auto lg:flex-col lg:gap-2 lg:pt-6">
                     <Button
                         asChild
                         variant="ghost"
-                        className="w-full justify-start gap-3 rounded-lg px-4 py-3 font-medium text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+                        className="h-auto justify-start gap-3 rounded-lg px-4 py-3 font-medium text-gray-300 transition-colors hover:bg-gray-700 hover:text-white lg:w-full"
                     >
                         <Link href="/">
-                            <Home className="h-5 w-5" />
+                            <Home className="h-5 w-5 shrink-0" />
                             <span>Về trang chủ</span>
                         </Link>
                     </Button>
@@ -91,9 +91,9 @@ export default function AdminSidebar() {
                         variant="ghost"
                         disabled={isLoggingOut}
                         onClick={handleLogout}
-                        className="w-full justify-start gap-3 rounded-lg px-4 py-3 font-medium text-red-400 transition-colors hover:bg-red-600/10 hover:text-red-300 disabled:opacity-60"
+                        className="h-auto justify-start gap-3 rounded-lg px-4 py-3 font-medium text-red-400 transition-colors hover:bg-red-600/10 hover:text-red-300 disabled:opacity-60 lg:w-full"
                     >
-                        <LogOut className="h-5 w-5" />
+                        <LogOut className="h-5 w-5 shrink-0" />
                         <span>{isLoggingOut ? "Dang dang xuat..." : "Đăng xuất"}</span>
                     </Button>
                 </div>

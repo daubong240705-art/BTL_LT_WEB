@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 type PageHeaderProps = {
     title: string;
@@ -12,31 +13,32 @@ export default function PageHeader({
     title,
     description,
     count,
-    onAdd
+    onAdd,
 }: PageHeaderProps) {
     return (
-        <div className="flex items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 className="text-3xl font-bold text-white">Trang quản lý {title}</h1>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+                <h1 className="break-words text-2xl font-bold text-white sm:text-3xl [overflow-wrap:anywhere]">
+                    Trang quản lý {title}
+                </h1>
 
                 {(description || count !== undefined) && (
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="mt-1 break-words text-sm text-gray-400 [overflow-wrap:anywhere]">
                         {description}
-                        {count !== undefined && (
-                            <span> Tổng số: {count}</span>
-                        )}
+                        {count !== undefined && <span> Tổng số: {count}</span>}
                     </p>
                 )}
             </div>
 
-            <div>
+            <div className="sm:shrink-0">
                 <Button
-                    onClick={() => onAdd()}
-                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg shadow-lg"
+                    onClick={onAdd}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-white shadow-lg hover:bg-green-700 sm:w-auto sm:px-6"
                 >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="h-5 w-5" />
                     Thêm {title}
-                </Button></div>
+                </Button>
+            </div>
         </div>
     );
 }

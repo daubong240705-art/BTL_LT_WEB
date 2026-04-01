@@ -35,7 +35,7 @@ export default function AdminTableToolbar({
                     />
                 </div>
 
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:items-center lg:justify-end">
                     {children}
                 </div>
             </div>
