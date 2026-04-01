@@ -64,7 +64,7 @@ export default async function MovieDetailPage({ params }: Props) {
                                 <h2 className="mb-4 border-l-4 border-red-600 pl-3 text-lg font-bold text-white">
                                     Danh sách tập
                                 </h2>
-                                <div className="custom-scrollbar grid max-h-100 grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-5 lg:grid-cols-3">
+                                <div className="custom-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] grid max-h-100 grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-5 lg:grid-cols-3">
                                     {episodes.map((ep) => (
                                         <Link
                                             key={ep.id}
