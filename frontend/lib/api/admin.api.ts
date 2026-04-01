@@ -4,6 +4,24 @@ import { getBackendBaseUrl } from "../config/api-url";
 
 const api_url = getBackendBaseUrl();
 
+export type DashboardMovieRanking = {
+    id: number
+    title: string
+    slug: string
+    posterUrl: string | null
+    publishYear: number | null
+    viewCount: number
+    favoriteCount: number
+}
+
+export type DashboardSummary = {
+    totalMovies: number
+    totalUsers: number
+    totalViews: number
+    topViewedMovies: DashboardMovieRanking[]
+    topFavoritedMovies: DashboardMovieRanking[]
+}
+
 type AdminRequestOptions = {
     cookieHeader?: string
 }
@@ -78,11 +96,7 @@ export const getAdminUsers = (options?: AdminListRequestOptions) => {
 }
 
 export const getDashboardSummary = (options?: AdminRequestOptions) => {
-    return adminRequest<IBackendRes<{
-        totalMovies: number
-        totalUsers: number
-        totalViews: number
-    }>>({
+    return adminRequest<IBackendRes<DashboardSummary>>({
         url: `${api_url}/dashboard/summary`,
         method: "GET",
         cookieHeader: options?.cookieHeader
