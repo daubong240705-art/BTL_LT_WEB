@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import {
@@ -11,6 +11,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useDeleteMovie } from "@/app/hooks/movie/useMovieForm";
+import { useAdminListNavigation } from "@/app/hooks/admin/useAdminListNavigation";
+import { type AdminMovieListState } from "@/lib/filter/admin-list";
 import AdminTablePagination from "../../components/admin-table-pagination";
 import AdminTableToolbar from "../../components/admin-table-toolbar";
 import PageHeader from "../../components/admin.header";
@@ -22,61 +24,46 @@ type MovieDialogState =
     | { type: "edit"; movie: Movie }
     | null;
 
-export default function MoviesController({ movies }: { movies: Movie[] }) {
+type MoviesControllerProps = {
+    movies: Movie[];
+    initialState: AdminMovieListState;
+    totalPages: number;
+    totalItems: number;
+};
+
+export default function MoviesController({
+    movies,
+    initialState,
+    totalPages,
+    totalItems,
+}: MoviesControllerProps) {
     const [dialog, setDialog] = useState<MovieDialogState>(null);
     const [movieToDelete, setMovieToDelete] = useState<Movie | null>(null);
-    const [search, setSearch] = useState("");
-    const [typeFilter, setTypeFilter] = useState("ALL");
-    const [statusFilter, setStatusFilter] = useState("ALL");
-    const [currentPage, setCurrentPage] = useState(1);
     const { deleteMovie } = useDeleteMovie();
-    const pageSize = 8;
-
-    const filteredMovies = useMemo(() => {
-        const keyword = search.trim().toLowerCase();
-
-        return movies.filter((movie) => {
-            const matchesSearch = !keyword
-                || movie.title.toLowerCase().includes(keyword)
-                || movie.slug.toLowerCase().includes(keyword);
-            const matchesType = typeFilter === "ALL" || movie.type === typeFilter;
-            const matchesStatus = statusFilter === "ALL" || movie.status === statusFilter;
-
-            return matchesSearch && matchesType && matchesStatus;
-        });
-    }, [movies, search, statusFilter, typeFilter]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredMovies.length / pageSize));
-    const safeCurrentPage = Math.min(currentPage, totalPages);
-    const paginatedMovies = filteredMovies.slice(
-        (safeCurrentPage - 1) * pageSize,
-        safeCurrentPage * pageSize
-    );
+    const { state, buildHref, updateState } = useAdminListNavigation(initialState);
 
     return (
         <>
             <PageHeader
                 title="phim"
-                count={filteredMovies.length}
+                count={totalItems}
                 onAdd={() => setDialog({ type: "add" })}
             />
 
             <AdminTableToolbar
-                searchValue={search}
-                onSearchChange={(value) => {
-                    setSearch(value);
-                    setCurrentPage(1);
-                }}
-                searchPlaceholder="Tìm theo tên phim hoạc slug..."
-                totalItems={movies.length}
-                filteredItems={filteredMovies.length}
+                searchValue={state.q}
+                onSearchChange={(value) => updateState({ q: value, page: 1 })}
+                searchPlaceholder="Tim theo tên phim hoặc slug..."
+                totalItems={totalItems}
+                filteredItems={totalItems}
             >
                 <Select
-                    value={typeFilter}
-                    onValueChange={(value) => {
-                        setTypeFilter(value);
-                        setCurrentPage(1);
-                    }}
+                    value={state.type || "ALL"}
+                    onValueChange={(value) =>
+                        updateState({
+                            type: value === "ALL" ? "" : value,
+                            page: 1,
+                        })}
                 >
                     <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-45">
                         <SelectValue placeholder="Loai phim" />
@@ -89,11 +76,12 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
                 </Select>
 
                 <Select
-                    value={statusFilter}
-                    onValueChange={(value) => {
-                        setStatusFilter(value);
-                        setCurrentPage(1);
-                    }}
+                    value={state.status || "ALL"}
+                    onValueChange={(value) =>
+                        updateState({
+                            status: value === "ALL" ? "" : value,
+                            page: 1,
+                        })}
                 >
                     <SelectTrigger className="w-full border-gray-700 bg-gray-900 text-white lg:w-45">
                         <SelectValue placeholder="Trang thai" />
@@ -107,14 +95,15 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
             </AdminTableToolbar>
 
             <MoviesTable
-                movies={paginatedMovies}
+                movies={movies}
                 onEdit={(movie) => setDialog({ type: "edit", movie })}
                 onDelete={(movie) => setMovieToDelete(movie)}
             />
             <AdminTablePagination
-                currentPage={safeCurrentPage}
+                currentPage={state.page}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={(page) => updateState({ page })}
+                getPageHref={(page) => buildHref({ page })}
             />
 
             <MovieDialog
@@ -134,7 +123,7 @@ export default function MoviesController({ movies }: { movies: Movie[] }) {
                     });
                 }}
                 title="Xoá phim?"
-                message="Xoá phim này sễ xoá tất sẽ xoá luôn tất cả tập phim của phim. Bạn có chắc không?"
+                message="Xoá phim này sẽ xoá luôn tất cả tập phim của phim. Bạn có chắc không?"
             />
         </>
     );

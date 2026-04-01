@@ -150,7 +150,7 @@ export default function AccountSettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] pb-12 pt-24">
+        <div className="min-h-screen bg-[#0a0a0a] pb-12 pt-10">
             <div className="container mx-auto max-w-6xl px-4">
                 <h1 className="mb-8 text-3xl font-bold text-white">
                     Tài khoản
@@ -158,7 +158,7 @@ export default function AccountSettingsPage() {
 
                 <div className="flex flex-col gap-8 lg:flex-row">
                     <aside className="lg:w-1/4">
-                        <div className="sticky top-24 rounded-xl border border-gray-800 bg-[#111] p-4">
+                        <div className="sticky top-20 rounded-xl border border-gray-800 bg-[#111] p-4">
                             <nav className="space-y-1">
                                 <button
                                     onClick={() => setActiveTab("general")}

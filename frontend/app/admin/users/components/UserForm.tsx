@@ -141,8 +141,8 @@ export default function UserForm({ mode, initialData, onClose }: Props) {
                                         <SelectValue placeholder="Vai tro" />
                                     </SelectTrigger>
                                     <SelectContent className="border border-gray-700 bg-gray-800 text-white">
-                                        <SelectItem value="ADMIN" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Quản trị viên</SelectItem>
-                                        <SelectItem value="USER" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Người dùng</SelectItem>
+                                        <SelectItem value="ADMIN" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">Admin</SelectItem>
+                                        <SelectItem value="USER" className="cursor-pointer focus:bg-gray-700 data-[state=checked]:bg-blue-600">User</SelectItem>
                                     </SelectContent>
                                 </Select>
                             )}

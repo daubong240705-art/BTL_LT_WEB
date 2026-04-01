@@ -62,11 +62,10 @@ export default function UserTable({ users, onEdit, onDelete }: Props) {
                                 </TableCell>
 
                                 <TableCell className="px-6 py-4x">
-                                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${
-                                        user.role === "ADMIN"
+                                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${user.role === "ADMIN"
                                             ? "border border-purple-500/20 bg-purple-500/10 text-purple-400"
                                             : "border-green-500/20 bg-green-500/10 text-green-500"
-                                    }`}>
+                                        }`}>
                                         <Shield className="h-3 w-3" />
                                         {user.role === "ADMIN" ? "Admin" : "User"}
                                     </span>

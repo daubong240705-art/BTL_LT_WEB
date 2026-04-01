@@ -28,7 +28,7 @@ export default function MoviesTable({ movies, onEdit, onDelete }: Props) {
                         {movies?.map((movie) => (
                             <TableRow key={movie.id} className="hover:bg-gray-700/30 transition-all group hover:-translate-y-1">
                                 <TableCell className="px-6 py-4 text-gray-500 font-mono">{movie.id}</TableCell>
-                                <TableCell className="px-6 py-4x">
+                                <TableCell className="px-6 py-4">
                                     <div className="flex items-center gap-4">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
@@ -59,7 +59,7 @@ export default function MoviesTable({ movies, onEdit, onDelete }: Props) {
                                                 </span>);
                                         })}
                                         {movie.categories.length > 2 && (
-                                            <span className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded text-xs border border-gray-600">
+                                            <span className="bg-gray-700 text-gray-300 px-2.5 py-0.5 rounded text-xs border border-gray-600">
                                                 +{movie.categories.length - 2}
                                             </span>
                                         )} </div>

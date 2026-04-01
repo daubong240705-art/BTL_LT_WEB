@@ -8,13 +8,26 @@ type AdminRequestOptions = {
     cookieHeader?: string
 }
 
+type AdminListRequestOptions = AdminRequestOptions & {
+    filter?: string
+    page?: number
+    size?: number
+}
+
+const buildAdminListQuery = (options?: AdminListRequestOptions) => ({
+    ...(options?.filter ? { filter: options.filter } : {}),
+    ...(options?.page ? { page: options.page } : {}),
+    ...(options?.size ? { size: options.size } : {}),
+})
+
 
 //Movie
-export const getAdminMovies = (options?: AdminRequestOptions) => {
+export const getAdminMovies = (options?: AdminListRequestOptions) => {
     return adminRequest<IBackendRes<IModelPaginate<Movie>>>({
         url: `${api_url}/movies`,
         method: "GET",
-        cookieHeader: options?.cookieHeader
+        cookieHeader: options?.cookieHeader,
+        queryParams: buildAdminListQuery(options)
     })
 }
 
@@ -45,20 +58,22 @@ export const deleteMovie = (id: number) => {
 
 //Category
 
-export const getAdminCategories = () => {
+export const getAdminCategories = (options?: AdminListRequestOptions) => {
     return adminRequest<IBackendRes<IModelPaginate<Category>>>({
         url: `${api_url}/categories`,
-        method: "GET"
+        method: "GET",
+        queryParams: buildAdminListQuery(options)
     })
 }
 
 
 //User
 
-export const getAdminUsers = () => {
+export const getAdminUsers = (options?: AdminListRequestOptions) => {
     return adminRequest<IBackendRes<IModelPaginate<User>>>({
         url: `${api_url}/users`,
-        method: "GET"
+        method: "GET",
+        queryParams: buildAdminListQuery(options)
     })
 }
 

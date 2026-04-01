@@ -13,12 +13,14 @@ type AdminTablePaginationProps = {
     currentPage: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    getPageHref?: (page: number) => string;
 };
 
 export default function AdminTablePagination({
     currentPage,
     totalPages,
     onPageChange,
+    getPageHref,
 }: AdminTablePaginationProps) {
     if (totalPages <= 1) return null;
 
@@ -28,7 +30,7 @@ export default function AdminTablePagination({
                 {currentPage > 1 ? (
                     <PaginationItem>
                         <PaginationPrevious
-                            href="#"
+                            href={getPageHref?.(currentPage - 1) ?? "#"}
                             onClick={(e) => {
                                 e.preventDefault();
                                 onPageChange(currentPage - 1);
@@ -41,7 +43,7 @@ export default function AdminTablePagination({
                 {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
                     <PaginationItem key={page}>
                         <PaginationLink
-                            href="#"
+                            href={getPageHref?.(page) ?? "#"}
                             isActive={page === currentPage}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -60,7 +62,7 @@ export default function AdminTablePagination({
                 {currentPage < totalPages ? (
                     <PaginationItem>
                         <PaginationNext
-                            href="#"
+                            href={getPageHref?.(currentPage + 1) ?? "#"}
                             onClick={(e) => {
                                 e.preventDefault();
                                 onPageChange(currentPage + 1);

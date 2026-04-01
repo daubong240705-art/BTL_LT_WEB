@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useDeleteCategory } from "@/app/hooks/category/useCategoryForm";
+import { useAdminListNavigation } from "@/app/hooks/admin/useAdminListNavigation";
+import { type AdminCategoryListState } from "@/lib/filter/admin-list";
 import AdminTablePagination from "../../components/admin-table-pagination";
 import AdminTableToolbar from "../../components/admin-table-toolbar";
 import PageHeader from "../../components/admin.header";
@@ -15,59 +17,50 @@ export type CategoryDialogState =
     | { type: "edit"; category: Category }
     | null;
 
-export default function CategoriesController({ categories }: { categories: Category[] }) {
+type CategoriesControllerProps = {
+    categories: Category[];
+    initialState: AdminCategoryListState;
+    totalPages: number;
+    totalItems: number;
+};
+
+export default function CategoriesController({
+    categories,
+    initialState,
+    totalPages,
+    totalItems,
+}: CategoriesControllerProps) {
     const [dialog, setDialog] = useState<CategoryDialogState>(null);
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-    const [search, setSearch] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
     const { deleteCategory } = useDeleteCategory();
-    const pageSize = 12;
-
-    const filteredCategories = useMemo(() => {
-        const keyword = search.trim().toLowerCase();
-
-        return categories.filter((category) =>
-            !keyword
-            || category.name.toLowerCase().includes(keyword)
-            || category.slug.toLowerCase().includes(keyword)
-        );
-    }, [categories, search]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredCategories.length / pageSize));
-    const safeCurrentPage = Math.min(currentPage, totalPages);
-    const paginatedCategories = filteredCategories.slice(
-        (safeCurrentPage - 1) * pageSize,
-        safeCurrentPage * pageSize
-    );
+    const { state, buildHref, updateState } = useAdminListNavigation(initialState);
 
     return (
         <>
             <PageHeader
-                title="thể loại"
-                count={filteredCategories.length}
+                title="the loai"
+                count={totalItems}
                 onAdd={() => setDialog({ type: "add" })}
             />
 
             <AdminTableToolbar
-                searchValue={search}
-                onSearchChange={(value) => {
-                    setSearch(value);
-                    setCurrentPage(1);
-                }}
-                searchPlaceholder="Tìm theo tên thể loại hoặc slug..."
-                totalItems={categories.length}
-                filteredItems={filteredCategories.length}
+                searchValue={state.q}
+                onSearchChange={(value) => updateState({ q: value, page: 1 })}
+                searchPlaceholder="Tim theo ten the loai hoac slug..."
+                totalItems={totalItems}
+                filteredItems={totalItems}
             />
 
             <CategoryTable
-                categories={paginatedCategories}
+                categories={categories}
                 onEdit={(category) => setDialog({ type: "edit", category })}
                 onDelete={(category) => setCategoryToDelete(category)}
             />
             <AdminTablePagination
-                currentPage={safeCurrentPage}
+                currentPage={state.page}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={(page) => updateState({ page })}
+                getPageHref={(page) => buildHref({ page })}
             />
 
             <CategoryDialog
@@ -86,8 +79,8 @@ export default function CategoriesController({ categories }: { categories: Categ
                         onSuccess: () => setCategoryToDelete(null),
                     });
                 }}
-                title="Xoá thể loại?"
-                message="Xóa thể loại này sẽ gỡ nó khỏi các phim đang sử dụng. Bạn có chắc không?"
+                title="Xoa the loai?"
+                message="Xoa the loai nay se go no khoi cac phim dang su dung. Ban co chac khong?"
             />
         </>
     );

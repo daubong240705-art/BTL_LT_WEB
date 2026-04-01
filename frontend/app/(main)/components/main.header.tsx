@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { ChevronDown, Film, Heart, LogOut, Search, User } from "lucide-react"
+import { ChevronDown, Film, Heart, LogOut, Search, ShieldUser, User } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
@@ -54,6 +54,7 @@ export default function Header({ categories }: Props) {
     //serch
 
     const [keyword, setKeyword] = useState("")
+    const [isScrolled, setIsScrolled] = useState(false)
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter" && keyword.trim()) {
@@ -67,9 +68,34 @@ export default function Header({ categories }: Props) {
         setKeyword("")
     }, [pathname])
 
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 24)
+        }
+
+        handleScroll()
+        window.addEventListener("scroll", handleScroll, { passive: true })
+
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
+
+    const isHomePage = pathname === "/"
+    const isBannerOverlay = pathname === "/" && !isScrolled
+
     return (
-        <header className="bg-[#141414] border-b border-gray-800/50 top-0 left-0 w-full z-500000">
-            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <>
+            <header className={`${isHomePage
+                ? "fixed top-0 left-0"
+                : "sticky top-0"
+                } z-50 w-full border-b transition-all duration-300 ${isBannerOverlay
+                    ? "border-transparent bg-transparent"
+                    : "border-gray-800/80 bg-[#111111]/95 shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-md"
+                    }`}>
+                <div className={`absolute inset-0 transition-opacity duration-300 ${isBannerOverlay
+                    ? "bg-linear-to-b from-black/55 via-black/20 to-transparent opacity-100"
+                    : "opacity-0"
+                    }`} />
+                <div className="relative container mx-auto flex h-16 items-center justify-between px-4">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors">
                         <Film className="w-7 h-7" />
@@ -105,19 +131,28 @@ export default function Header({ categories }: Props) {
 
                 <div className="flex items-center gap-4">
                     <div className="relative w-64">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+                        <Search className={`pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 ${isBannerOverlay
+                            ? "text-gray-200"
+                            : "text-slate-400"
+                            }`} />
                         <Input
                             type="text"
                             placeholder="Tìm phim..."
                             value={keyword ?? ""}
                             onChange={(e) => setKeyword(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="bg-slate-900 border-slate-800 pl-9 text-white focus-visible:ring-red-600 h-9"
+                            className={`h-9 border pl-9 text-white focus-visible:ring-red-600 transition-colors ${isBannerOverlay
+                                ? "border-white/10 bg-black/35 backdrop-blur text-white placeholder:text-gray-300"
+                                : "border-slate-800 bg-slate-900"
+                                }`}
                         />
                     </div>
 
                     <Link href="/favorites">
-                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500 hover:bg-white/10">
+                        <Button variant="ghost" size="icon" className={`${isBannerOverlay
+                            ? "text-gray-200 hover:bg-white/12 hover:text-red-400"
+                            : "text-gray-400 hover:bg-white/10 hover:text-red-500"
+                            }`}>
                             <Heart className="h-5 w-5" />
                         </Button>
                     </Link>
@@ -125,7 +160,10 @@ export default function Header({ categories }: Props) {
                     {user ? (
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
-                                <button className="h-9 w-9 rounded-full border border-slate-700 overflow-hidden bg-slate-900 flex items-center justify-center hover:border-red-500 transition">
+                                <button className={`flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border transition ${isBannerOverlay
+                                    ? "border-white/20 bg-black/35 backdrop-blur hover:border-red-400"
+                                    : "border-slate-700 bg-slate-900 hover:border-red-500"
+                                    }`}>
                                     {user?.avatarUrl ? (
                                         // eslint-disable-next-line @next/next/no-img-element
                                         <img src={user.avatarUrl} alt="avatar" className="h-full w-full object-cover" />
@@ -147,6 +185,13 @@ export default function Header({ categories }: Props) {
                                         Thông tin tài khoản
                                     </Link>
                                 </DropdownMenuItem>
+                                {user?.role === "ADMIN" && (<DropdownMenuItem asChild className="cursor-pointer hover:bg-slate-800 hover:text-white">
+                                    <Link href="/admin" className="flex items-center gap-2">
+                                        <ShieldUser className="h-4 w-4" />
+                                        Trang quản trị
+                                    </Link>
+                                </DropdownMenuItem>)}
+
 
                                 <DropdownMenuItem
                                     className="cursor-pointer text-red-400 hover:bg-red-500/10 hover:text-red-300"
@@ -164,7 +209,8 @@ export default function Header({ categories }: Props) {
                         </Link>
                     )}
                 </div>
-            </div>
-        </header>
+                </div>
+            </header>
+        </>
     )
 }
