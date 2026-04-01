@@ -74,7 +74,7 @@ export default function LoginPage() {
                                     href="/signup"
                                     className="text-red-600 hover:text-red-500 font-semibold transition-colors"
                                 >
-                                    Đang ký ngay
+                                    Đăng ký ngay
                                 </Link>
                             </p>
                         </div>
