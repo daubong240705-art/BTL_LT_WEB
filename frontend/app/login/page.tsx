@@ -50,7 +50,7 @@ export default function LoginPage() {
                             <Label className="text-zinc-200">Mật khẩu</Label>
                             <Input
                                 type="password"
-                                placeholder="Nhap mat khau"
+                                placeholder="Nhập mật khẩu"
                                 className="bg-zinc-800 border-zinc-700 text-white"
                                 {...register("password")}
                             />
@@ -64,7 +64,7 @@ export default function LoginPage() {
                             disabled={loginMutation.isPending}
                             className="w-full bg-red-600 hover:bg-red-700 text-white py-6"
                         >
-                            {loginMutation.isPending ? "Dang dang nhap..." : "Đăng nhập"}
+                            {loginMutation.isPending ? "Đang dang nhap..." : "Đăng nhập"}
                         </Button>
 
                         <div className="text-center">

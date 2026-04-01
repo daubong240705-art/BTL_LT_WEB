@@ -101,7 +101,7 @@ export default function RegisterPage() {
               disabled={signupMutation.isPending}
               className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-6 rounded-lg transition-all duration-200 shadow-lg shadow-red-600/20"
             >
-              {signupMutation.isPending ? "Dang xu ly..." : "Tạo tài khoản"}
+              {signupMutation.isPending ? "Đang xử lý..." : "Tạo tài khoản"}
             </Button>
           </form>
 
