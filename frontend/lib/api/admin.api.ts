@@ -12,6 +12,7 @@ export type DashboardMovieRanking = {
     publishYear: number | null
     viewCount: number
     favoriteCount: number
+    commentCount: number
 }
 
 export type DashboardSummary = {
@@ -20,6 +21,7 @@ export type DashboardSummary = {
     totalViews: number
     topViewedMovies: DashboardMovieRanking[]
     topFavoritedMovies: DashboardMovieRanking[]
+    topCommentedMovies: DashboardMovieRanking[]
 }
 
 type AdminRequestOptions = {

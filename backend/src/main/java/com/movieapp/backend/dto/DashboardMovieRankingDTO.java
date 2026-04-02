@@ -17,4 +17,5 @@ public class DashboardMovieRankingDTO {
     private Integer publishYear;
     private Long viewCount;
     private Long favoriteCount;
+    private Long commentCount;
 }

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Film, Heart, Play, User } from "lucide-react";
+import { Film, Heart, MessageCircle, Play, User } from "lucide-react";
 
 import { getDashboardSummary, type DashboardMovieRanking, type DashboardSummary } from "@/lib/api/admin.api";
 
@@ -11,13 +11,14 @@ const emptySummary: DashboardSummary = {
     totalViews: 0,
     topViewedMovies: [],
     topFavoritedMovies: [],
+    topCommentedMovies: [],
 };
 
 type LeaderboardSectionProps = {
     title: string;
     description: string;
     items: DashboardMovieRanking[];
-    primaryMetric: "views" | "favorites";
+    primaryMetric: "views" | "favorites" | "comments";
 };
 
 function LeaderboardSection({
@@ -45,8 +46,16 @@ function LeaderboardSection({
                     </div>
                 ) : (
                     items.map((movie, index) => {
-                        const primaryValue = primaryMetric === "views" ? movie.viewCount : movie.favoriteCount;
-                        const primaryLabel = primaryMetric === "views" ? "Lượt xem" : "Yêu thích";
+                        const primaryValue = primaryMetric === "views"
+                            ? movie.viewCount
+                            : primaryMetric === "favorites"
+                                ? movie.favoriteCount
+                                : movie.commentCount;
+                        const primaryLabel = primaryMetric === "views"
+                            ? "Lượt xem"
+                            : primaryMetric === "favorites"
+                                ? "Yêu thích"
+                                : "Bình luận";
 
                         return (
                             <div
@@ -84,6 +93,10 @@ function LeaderboardSection({
                                         <span className="inline-flex items-center gap-1">
                                             <Heart className="h-3.5 w-3.5" />
                                             {formatNumber(movie.favoriteCount)}
+                                        </span>
+                                        <span className="inline-flex items-center gap-1">
+                                            <MessageCircle className="h-3.5 w-3.5" />
+                                            {formatNumber(movie.commentCount)}
                                         </span>
                                     </div>
                                 </div>
@@ -145,20 +158,32 @@ export default async function AdminPage() {
             </div>
 
             <div className="grid gap-6 xl:grid-cols-2">
-                <LeaderboardSection
-                    title="Phim được xem nhiều nhất"
-                    description="Những bộ phim đang thu hút nhiều lượt xem nhất trên hệ thống."
-                    items={summary.topViewedMovies}
-                    primaryMetric="views"
-                />
+                <div>
+                    <LeaderboardSection
+                        title="Phim được xem nhiều nhất"
+                        description="Những bộ phim đang thu hút nhiều lượt xem nhất trên hệ thống."
+                        items={summary.topViewedMovies}
+                        primaryMetric="views"
+                    />
+                </div>
 
-                <LeaderboardSection
-                    title="Phim được yêu thích nhiều nhất"
-                    description="Các phim được người dùng thêm vào danh sách yêu thích nhiều nhất."
-                    items={summary.topFavoritedMovies}
-                    primaryMetric="favorites"
-                />
+                <div>
+                    <LeaderboardSection
+                        title="Phim được yêu thích nhiều nhất"
+                        description="Các phim được người dùng thêm vào danh sách yêu thích nhiều nhất."
+                        items={summary.topFavoritedMovies}
+                        primaryMetric="favorites"
+                    /></div>
+
+
+
             </div>
+            <div><LeaderboardSection
+                title="Phim nhiều comment nhất"
+                description="Các phim đang có lượng bình luận nhiều nhất từ người dùng."
+                items={summary.topCommentedMovies}
+                primaryMetric="comments"
+            /></div>
         </div>
     );
 }

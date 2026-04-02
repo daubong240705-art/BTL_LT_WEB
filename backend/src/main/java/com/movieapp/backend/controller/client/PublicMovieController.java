@@ -1,10 +1,12 @@
 package com.movieapp.backend.controller.client;
 
 import com.movieapp.backend.domain.Movie;
+import com.movieapp.backend.dto.MovieRankingSummaryDTO;
 import com.movieapp.backend.dto.ResultPaginationDTO;
 import com.movieapp.backend.service.EpisodeService;
 import com.movieapp.backend.dto.Movie.EpisodeDTO;
 import com.movieapp.backend.dto.Movie.MovieDTO;
+import com.movieapp.backend.service.DashboardService;
 import com.movieapp.backend.service.MovieService;
 import com.movieapp.backend.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
@@ -25,6 +27,7 @@ public class PublicMovieController {
 
     private final EpisodeService episodeService;
     private final MovieService movieService;
+    private final DashboardService dashboardService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -39,6 +42,12 @@ public class PublicMovieController {
     @ApiMessage("Lay danh sach phim thanh cong")
     public List<MovieDTO> getTopMovie() {
         return movieService.getTop5ViewCountMovie();
+    }
+
+    @GetMapping("/rankings")
+    @ApiMessage("Lay danh sach xep hang phim thanh cong")
+    public MovieRankingSummaryDTO getMovieRankings() {
+        return dashboardService.getMovieRankings();
     }
 
     @GetMapping("/{slug}")

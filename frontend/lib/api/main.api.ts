@@ -4,6 +4,23 @@ import { getBackendBaseUrl } from "../config/api-url";
 
 const api_url = `${getBackendBaseUrl()}/public`;
 
+export type PublicMovieRanking = {
+    id: number
+    title: string
+    slug: string
+    posterUrl: string | null
+    publishYear: number | null
+    viewCount: number
+    favoriteCount: number
+    commentCount: number
+}
+
+export type PublicMovieRankingSummary = {
+    topViewedMovies: PublicMovieRanking[]
+    topFavoritedMovies: PublicMovieRanking[]
+    topCommentedMovies: PublicMovieRanking[]
+}
+
 export const getMovies = (filter?: string, page = 1, size = 10) => {
     return sendRequest<IBackendRes<IModelPaginate<Movie>>>({
         url: `${api_url}/movies`,
@@ -53,6 +70,13 @@ export const getFirstEpisode = (slug: string) => {
 export const getTop5Movie = () => {
     return sendRequest<IBackendRes<Movie[]>>({
         url: `${api_url}/movies/top/5`,
+        method: "GET",
+    })
+}
+
+export const getMovieRankings = () => {
+    return sendRequest<IBackendRes<PublicMovieRankingSummary>>({
+        url: `${api_url}/movies/rankings`,
         method: "GET",
     })
 }

@@ -1,45 +1,41 @@
+import { getMovieBySlug, getMovieRankings, getMoviesByCategorySlug } from "@/lib/api/main.api";
 
-import { getMovieBySlug, getMoviesByCategorySlug } from "@/lib/api/main.api";
+import HomeAdModal from "./components/home-ad-modal";
+import { HomeRankings } from "./components/home.rankings";
 import HeroBanner from "./components/main.herobanner";
 import { MovieSlider } from "./components/main.movieslider";
-import HomeAdModal from "./components/home-ad-modal";
-
-
 
 export default async function HomePage() {
-
-
-
     const [
         bannerRes,
         cartoonRes,
         animeRes,
-        cinemaRes
+        cinemaRes,
+        rankingsRes,
     ] = await Promise.all([
         getMovieBySlug("que"),
         getMoviesByCategorySlug("hoat-hinh"),
         getMoviesByCategorySlug("anime"),
-        getMoviesByCategorySlug("chieu-rap")
+        getMoviesByCategorySlug("chieu-rap"),
+        getMovieRankings(),
     ]);
 
-
-
-    const MovieBanner = bannerRes.data ?? null;
+    const movieBanner = bannerRes.data ?? null;
     const cartoonMovie = cartoonRes.data?.result ?? [];
     const animeMovie = animeRes.data?.result ?? [];
     const cinemaMovie = cinemaRes.data?.result ?? [];
-    // console.log(cartoonMovie);
+    const rankings = rankingsRes.data ?? null;
+
     return (
         <>
             <HomeAdModal />
             <div className="min-h-screen bg-gray-900">
-
-                {MovieBanner ? <HeroBanner MovieBanner={MovieBanner} /> : null}
+                {movieBanner ? <HeroBanner MovieBanner={movieBanner} /> : null}
                 <MovieSlider title="Hoạt hình" movies={cartoonMovie} />
                 <MovieSlider title="Anime" movies={animeMovie} />
                 <MovieSlider title="Chiếu rạp" movies={cinemaMovie} />
+                <HomeRankings rankings={rankings} />
             </div>
         </>
-
     );
 }
