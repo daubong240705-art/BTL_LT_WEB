@@ -34,7 +34,7 @@ export default async function HomePage() {
                 <MovieSlider title="Hoạt hình" movies={cartoonMovie} />
                 <MovieSlider title="Anime" movies={animeMovie} />
                 <MovieSlider title="Chiếu rạp" movies={cinemaMovie} />
-                <HomeRankings rankings={rankings} />
+                {/* <HomeRankings rankings={rankings} /> */}
             </div>
         </>
     );
