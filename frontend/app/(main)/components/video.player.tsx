@@ -69,9 +69,12 @@ export default function VideoPlayer({ src }: { src: string }) {
             }
 
             player = new Plyr(video, {
+                seekTime: 10,
                 controls: [
                     "play-large",
+                    "rewind",
                     "play",
+                    "fast-forward",
                     "progress",
                     "current-time",
                     "mute",
